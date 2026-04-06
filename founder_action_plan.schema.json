@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://fusionems.quantum/schemas/founder_action_plan.schema.json",
+  "$id": "https://adaptixcore.com/schemas/founder_action_plan.schema.json",
   "title": "Founder Copilot Action Plan",
   "type": "object",
   "additionalProperties": false,
