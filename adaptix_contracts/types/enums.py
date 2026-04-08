@@ -12,6 +12,21 @@ import enum
 
 # ─── CrewLink ───────────────────────────────────────────────────────────
 
+class CrewStatus(str, enum.Enum):
+    AVAILABLE = "available"
+    ON_DUTY = "on_duty"
+    OFF_DUTY = "off_duty"
+    ON_CALL = "on_call"
+    EN_ROUTE = "en_route"
+    ON_SCENE = "on_scene"
+
+
+class CrewAvailabilityStatus(str, enum.Enum):
+    AVAILABLE = "available"
+    UNAVAILABLE = "unavailable"
+    ON_CALL = "on_call"
+
+
 class AvailabilityType(str, enum.Enum):
     SHIFT = "shift"
     CALLBACK = "callback"
@@ -100,6 +115,27 @@ class DeliveryStatus(str, enum.Enum):
 
 
 # ─── CAD ────────────────────────────────────────────────────────────────
+
+class CallType(str, enum.Enum):
+    MEDICAL = "medical"
+    FIRE = "fire"
+    TRAUMA = "trauma"
+    CARDIAC = "cardiac"
+    RESPIRATORY = "respiratory"
+    MVC = "mvc"
+    PSYCHIATRIC = "psychiatric"
+    TRANSFER = "transfer"
+    OTHER = "other"
+
+
+class DispatchPriority(str, enum.Enum):
+    ECHO = "echo"
+    DELTA = "delta"
+    CHARLIE = "charlie"
+    BRAVO = "bravo"
+    ALPHA = "alpha"
+    OMEGA = "omega"  # Non-urgent
+
 
 class CadSyncStatus(str, enum.Enum):
     PENDING = "pending"
@@ -277,6 +313,26 @@ class MutualAidType(str, enum.Enum):
     REQUESTED = "requested"
 
 
+class InspectionStatus(str, enum.Enum):
+    SCHEDULED = "scheduled"
+    COMPLETED = "completed"
+    VIOLATIONS_FOUND = "violations_found"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+
+class TrainingType(str, enum.Enum):
+    DRILL = "drill"
+    LIVE_BURN = "live_burn"
+    CLASSROOM = "classroom"
+    CERTIFICATION = "certification"
+    FIREFIGHTER_I = "firefighter_i"
+    FIREFIGHTER_II = "firefighter_ii"
+    HAZMAT = "hazmat"
+    VEHICLE_EXTRICATION = "vehicle_extrication"
+    OTHER = "other"
+
+
 # ─── MDT ────────────────────────────────────────────────────────────────
 
 class UnitStatusCode(str, enum.Enum):
@@ -430,6 +486,35 @@ class PCSABNStatus(enum.StrEnum):
     ON_FILE = "on_file"
     ABN_SIGNED = "abn_signed"
     MISSING = "missing"
+
+
+ALLOWED_TRANSPORT_TRANSITIONS: dict = {
+    TransportStatus.REQUESTED: {TransportStatus.SCHEDULED, TransportStatus.CANCELLED},
+    TransportStatus.SCHEDULED: {
+        TransportStatus.CAD_QUEUED,
+        TransportStatus.DISPATCHED,
+        TransportStatus.CANCELLED,
+    },
+    TransportStatus.CAD_QUEUED: {TransportStatus.DISPATCHED, TransportStatus.CANCELLED},
+    TransportStatus.DISPATCHED: {TransportStatus.EN_ROUTE, TransportStatus.CANCELLED},
+    TransportStatus.EN_ROUTE: {
+        TransportStatus.PATIENT_CONTACT,
+        TransportStatus.CANCELLED,
+    },
+    TransportStatus.PATIENT_CONTACT: {
+        TransportStatus.TRANSPORTING,
+        TransportStatus.CANCELLED,
+    },
+    TransportStatus.TRANSPORTING: {TransportStatus.ARRIVED, TransportStatus.CANCELLED},
+    TransportStatus.ARRIVED: {TransportStatus.COMPLETED, TransportStatus.CANCELLED},
+    TransportStatus.COMPLETED: set(),  # Terminal state
+    TransportStatus.CANCELLED: set(),  # Terminal state
+}
+
+
+def allowed_transport_transition_targets(from_status: "TransportStatus") -> set:
+    """Get allowed transition targets for a given transport status."""
+    return ALLOWED_TRANSPORT_TRANSITIONS.get(from_status, set())
 
 
 # ─── Patient ─────────────────────────────────────────────────────────────
