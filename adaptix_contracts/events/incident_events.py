@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from core_app.events.domain_event import DomainEvent
-from core_app.events.event_catalog import EventCatalog
+from adaptix_contracts.events.domain_event import DomainEvent
+from adaptix_contracts.events.event_catalog import EventCatalog
 
 # ---------------------------------------------------------------------------
 # Event classes

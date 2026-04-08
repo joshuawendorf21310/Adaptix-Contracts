@@ -11,7 +11,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from core_app.models.transportlink import (
+from adaptix_contracts.types.enums import (
     FacilityType,
     PCSABNStatus,
     TransportStatus,

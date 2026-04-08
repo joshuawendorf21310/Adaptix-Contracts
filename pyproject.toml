@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "adaptix-contracts"
+version = "0.1.0"
+description = "Shared Pydantic schemas, event types, and domain enums for the Adaptix platform"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0",
+    "email-validator>=2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["adaptix_contracts*"]

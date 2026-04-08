@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from core_app.models.crewlink import (
+from adaptix_contracts.types.enums import (
     AlertPriority,
     AssignmentAckStatus,
     AssignmentStatus,

@@ -3,7 +3,7 @@ from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from core_app.models.inventory import (
+from adaptix_contracts.types.enums import (
     AssetStatus,
     CycleCountStatus,
     ItemCategory,
@@ -11,7 +11,7 @@ from core_app.models.inventory import (
     LocationType,
     MaintenanceType,
     PurchaseOrderStatus,
-    TransactionType,
+    InventoryTransactionType as TransactionType,
 )
 
 

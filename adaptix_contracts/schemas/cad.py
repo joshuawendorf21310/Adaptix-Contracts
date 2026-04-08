@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from core_app.models.cad import CadSyncStatus, CadSystemType, CadUnitStatus
+from adaptix_contracts.types.enums import CadSyncStatus, CadSystemType, CadUnitStatus
 
 
 # CAD System Schemas

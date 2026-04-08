@@ -7,7 +7,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from core_app.models.mdt import (
+from adaptix_contracts.types.enums import (
     AvailabilityStatus,
     MdtStatus,
     MessagePriority,

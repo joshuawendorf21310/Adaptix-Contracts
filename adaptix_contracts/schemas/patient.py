@@ -3,7 +3,7 @@ from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from core_app.models.patient import PatientGender
+from adaptix_contracts.types.enums import PatientGender
 
 
 class PatientBasePayload(BaseModel):

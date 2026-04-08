@@ -16,7 +16,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
 
-from core_app.models.fire import (
+from adaptix_contracts.types.enums import (
     FireIncidentStatus,
     FireIncidentType,
     IncidentPriority,

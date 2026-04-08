@@ -2,7 +2,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
 
-from core_app.security import normalize_role_claims
+from adaptix_contracts.utils.roles import normalize_role_claims
 
 
 class LoginRequest(BaseModel):

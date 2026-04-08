@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from core_app.models.incident import IncidentStatus
+from adaptix_contracts.types.enums import IncidentStatus
 
 
 class IncidentBasePayload(BaseModel):

@@ -8,7 +8,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from core_app.models.patient_financial import (
+from adaptix_contracts.types.enums import (
     PatientAccountStatus,
     PatientDisputeStatus,
     PatientPaymentStatus,
