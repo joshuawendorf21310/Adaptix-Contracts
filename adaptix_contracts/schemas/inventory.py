@@ -573,3 +573,87 @@ class InventoryCycleCountResponse(BaseModel):
 class InventoryCycleCountListResponse(BaseModel):
     items: list[InventoryCycleCountResponse]
     total: int
+
+
+class InventoryLocationReadinessSummary(BaseModel):
+    location_id: uuid.UUID | None = None
+    location_name: str | None = None
+    location_type: str | None = None
+    item_count: int = 0
+    low_stock_count: int = 0
+    out_of_stock_count: int = 0
+    expiring_soon_count: int = 0
+    active_asset_count: int = 0
+    maintenance_asset_count: int = 0
+    readiness_score: float = 0.0
+    readiness_status: str | None = None
+    readiness_issues: list[str] = Field(default_factory=list)
+
+
+class InventoryReadinessSummaryResponse(BaseModel):
+    generated_at: datetime | None = None
+    total_locations: int = 0
+    degraded_locations: int = 0
+    critical_locations: int = 0
+    locations: list[InventoryLocationReadinessSummary] = Field(default_factory=list)
+
+
+class InventoryEventFeedEntry(BaseModel):
+    event_type: str | None = None
+    severity: str | None = None
+    occurred_at: datetime | None = None
+    title: str | None = None
+    detail: str | None = None
+    item_id: uuid.UUID | None = None
+    item_name: str | None = None
+    location_name: str | None = None
+    incident_id: uuid.UUID | None = None
+    unit_id: uuid.UUID | None = None
+    reference_id: uuid.UUID | None = None
+
+
+class InventoryEventFeedResponse(BaseModel):
+    items: list[InventoryEventFeedEntry] = Field(default_factory=list)
+    total: int = 0
+
+
+class InventoryLocationReadinessSummary(BaseModel):
+    location_id: uuid.UUID | None = None
+    location_name: str | None = None
+    location_type: str | None = None
+    item_count: int = 0
+    low_stock_count: int = 0
+    out_of_stock_count: int = 0
+    expiring_soon_count: int = 0
+    active_asset_count: int = 0
+    maintenance_asset_count: int = 0
+    readiness_score: float = 0.0
+    readiness_status: str | None = None
+    readiness_issues: list[str] = Field(default_factory=list)
+
+
+class InventoryReadinessSummaryResponse(BaseModel):
+    generated_at: datetime | None = None
+    total_locations: int = 0
+    degraded_locations: int = 0
+    critical_locations: int = 0
+    locations: list[InventoryLocationReadinessSummary] = Field(default_factory=list)
+
+
+class InventoryEventFeedEntry(BaseModel):
+    event_type: str | None = None
+    severity: str | None = None
+    occurred_at: datetime | None = None
+    title: str | None = None
+    detail: str | None = None
+    item_id: uuid.UUID | None = None
+    item_name: str | None = None
+    location_name: str | None = None
+    incident_id: uuid.UUID | None = None
+    unit_id: uuid.UUID | None = None
+    reference_id: uuid.UUID | None = None
+
+
+class InventoryEventFeedResponse(BaseModel):
+    items: list[InventoryEventFeedEntry] = Field(default_factory=list)
+    total: int = 0

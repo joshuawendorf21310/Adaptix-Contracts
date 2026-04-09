@@ -485,3 +485,174 @@ class FacilityTransportStats(BaseModel):
     on_time_percentage: float | None
 
 
+# ============================================================================
+# DOCUMENT REQUIREMENT SCHEMAS
+# ============================================================================
+
+
+class TransportDocumentRequirementUpsertRequest(BaseModel):
+    """Request to create or update a document requirement"""
+
+    document_code: str = Field(min_length=1, max_length=64)
+    document_name: str = Field(min_length=1, max_length=255)
+    required_for_phase: str = Field(
+        default="pre_pickup",
+        description="Phase when document is required: pre_pickup, in_transit, or handoff"
+    )
+    source_scope: str = Field(
+        default="sending",
+        description="Scope of document source: sending, receiving, or shared"
+    )
+    is_blocking: bool = Field(default=True)
+    due_at: datetime | None = None
+    external_reference: str | None = Field(default=None, max_length=255)
+    extra_metadata: dict = Field(default_factory=dict)
+
+
+class TransportDocumentReceiveRequest(BaseModel):
+    """Request to mark a document as received"""
+
+    external_reference: str | None = Field(default=None, max_length=255)
+    extra_metadata: dict = Field(default_factory=dict)
+
+
+class TransportDocumentChaseRequest(BaseModel):
+    """Request to chase/follow up on a document"""
+
+    reason: str = Field(min_length=1, max_length=500)
+    chase_channel: str = Field(
+        default="manual",
+        description="Channel for chase: portal, phone, fax, hl7, or manual"
+    )
+    extra_metadata: dict = Field(default_factory=dict)
+
+
+class TransportDocumentRequirementResponse(BaseModel):
+    """Response for document requirement"""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    tenant_id: uuid.UUID
+    transport_id: uuid.UUID
+    document_code: str
+    document_name: str
+    required_for_phase: str
+    source_scope: str
+    status: str
+    is_blocking: bool
+    due_at: datetime | None
+    received_at: datetime | None
+    received_by_user_id: uuid.UUID | None
+    waived_at: datetime | None
+    waiver_reason: str | None
+    last_chased_at: datetime | None
+    chase_count: int
+    external_reference: str | None
+    extra_metadata: dict
+    created_at: datetime
+    updated_at: datetime
+
+
+# ============================================================================
+# TRANSPORT READINESS SCHEMAS
+# ============================================================================
+
+
+class TransportReadinessCheckpointUpsertRequest(BaseModel):
+    """Request to create or update a readiness checkpoint"""
+
+    checkpoint_type: str = Field(
+        description="Type of checkpoint: sending or receiving"
+    )
+    status: str = Field(
+        description="Status: pending, ready, or blocked"
+    )
+    summary: str | None = Field(default=None, max_length=1000)
+    blocker_codes: list[str] = Field(default_factory=list)
+    extra_metadata: dict = Field(default_factory=dict)
+
+
+class TransportReadinessCheckpointResponse(BaseModel):
+    """Response for readiness checkpoint"""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    tenant_id: uuid.UUID
+    transport_id: uuid.UUID
+    checkpoint_type: str
+    status: str
+    summary: str | None
+    blocker_codes: list
+    acknowledged_at: datetime | None
+    acknowledged_by_user_id: uuid.UUID | None
+    extra_metadata: dict
+    created_at: datetime
+    updated_at: datetime
+
+
+class TransportReadinessPublicationRequest(BaseModel):
+    """Request to publish readiness to downstream systems"""
+
+    downstream_systems: list[str] = Field(
+        min_length=1,
+        description="Downstream systems: cad, care, billing"
+    )
+    response_data: dict = Field(default_factory=dict)
+
+
+class TransportReadinessPublicationResponse(BaseModel):
+    """Response for readiness publication"""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    tenant_id: uuid.UUID
+    transport_id: uuid.UUID
+    downstream_system: str
+    readiness_state: str
+    payload: dict
+    published_at: datetime
+    published_by_user_id: uuid.UUID | None
+    correlation_id: str | None
+    acknowledged: bool
+    response_data: dict
+
+
+class TransportContinuityTimelineEventResponse(BaseModel):
+    """Response for transport continuity timeline event"""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    tenant_id: uuid.UUID
+    transport_id: uuid.UUID
+    event_type: str
+    event_category: str
+    message: str
+    event_payload: dict
+    actor_user_id: uuid.UUID | None
+    occurred_at: datetime
+
+
+class TransportReadinessResponse(BaseModel):
+    """Response for transport readiness status"""
+
+    transport_id: uuid.UUID
+    readiness_state: str = Field(description="ready or blocked")
+    packet_complete: bool
+    pickup_ready: bool
+    transfer_ready: bool
+    blockers: list[str] = Field(default_factory=list)
+    required_documents: list[TransportDocumentRequirementResponse] = Field(
+        default_factory=list
+    )
+    checkpoints: list[TransportReadinessCheckpointResponse] = Field(
+        default_factory=list
+    )
+    publications: list[TransportReadinessPublicationResponse] = Field(
+        default_factory=list
+    )
+
+
