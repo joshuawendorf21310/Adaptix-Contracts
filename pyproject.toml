@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "adaptix-contracts"
-version = "0.1.1"
-description = "Shared Pydantic schemas, event types, and domain enums for the Adaptix platform"
+version = "0.2.0"
+description = "Shared Pydantic schemas, event types, domain enums, and event envelope contracts for the Adaptix platform"
 requires-python = ">=3.11"
 dependencies = [
     "pydantic>=2.0",
@@ -15,3 +15,10 @@ dependencies = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["adaptix_contracts*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --tb=short"
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23"]

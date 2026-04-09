@@ -1,0 +1,253 @@
+{
+  "$schema": "https://adaptixcore.com/schemas/compatibility_matrix.schema.json",
+  "generated_by": "adaptix-contracts",
+  "matrix_version": "0.2.0",
+  "description": "Machine-readable compatibility declarations for all downstream repos. Each repo MUST keep its entry current. CI rejects PRs that leave a repo incompatible with the current contract version.",
+  "policy": {
+    "major_bump": "BREAKING — downstream MUST update before consuming new events",
+    "minor_bump": "ADDITIVE — downstream MAY consume without changes; new fields will be ignored",
+    "patch_bump": "BUG_FIX — downstream is unaffected",
+    "declaration_requirement": "Every repo consuming cross-repo events MUST have an entry here. Absence = intentional isolation (no cross-repo event consumption)."
+  },
+  "consumers": [
+    {
+      "repo": "adaptix-core",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": [
+        "audit.entry.created",
+        "tenant.created",
+        "tenant.suspended",
+        "user.created",
+        "user.deactivated",
+        "feature_flag.toggled",
+        "webhook.delivered",
+        "webhook.failed"
+      ],
+      "owns_event_types": [
+        "audit.entry.created",
+        "tenant.created",
+        "tenant.suspended",
+        "user.created",
+        "user.deactivated",
+        "feature_flag.toggled",
+        "webhook.delivered",
+        "webhook.failed"
+      ],
+      "notes": "Core owns auth/tenancy/governance events. Authoritative source for backbone events."
+    },
+    {
+      "repo": "adaptix-cad",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": [
+        "incident.created",
+        "incident.status_changed",
+        "incident.closed",
+        "unit.status_changed",
+        "cad.sync.completed",
+        "cad.sync.failed"
+      ],
+      "owns_event_types": [
+        "incident.created",
+        "incident.status_changed",
+        "incident.closed",
+        "unit.status_changed",
+        "cad.sync.completed",
+        "cad.sync.failed"
+      ],
+      "notes": "CAD dispatches incidents and unit assignments."
+    },
+    {
+      "repo": "adaptix-field",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": [
+        "incident.created",
+        "incident.status_changed",
+        "mdt.login",
+        "mdt.logout",
+        "mdt.status_changed",
+        "mdt.message.sent"
+      ],
+      "owns_event_types": [
+        "mdt.login",
+        "mdt.logout",
+        "mdt.status_changed",
+        "mdt.message.sent"
+      ],
+      "notes": "Field/MDT consumes CAD dispatch events and emits unit status events."
+    },
+    {
+      "repo": "adaptix-epcr",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": [
+        "incident.created",
+        "epcr.created",
+        "epcr.signed",
+        "epcr.locked",
+        "epcr.nemsis.exported"
+      ],
+      "owns_event_types": [
+        "epcr.created",
+        "epcr.signed",
+        "epcr.locked",
+        "epcr.nemsis.exported"
+      ],
+      "notes": "ePCR consumes incident events and emits NEMSIS export lifecycle events."
+    },
+    {
+      "repo": "adaptix-billing",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": [
+        "epcr.signed",
+        "epcr.locked",
+        "billing.claim.created",
+        "billing.claim.submitted",
+        "billing.claim.paid",
+        "billing.claim.denied",
+        "patient.account.updated",
+        "payment.posted",
+        "payment.failed",
+        "payment.refunded",
+        "patient.financial.dispute.created"
+      ],
+      "owns_event_types": [
+        "billing.claim.created",
+        "billing.claim.submitted",
+        "billing.claim.paid",
+        "billing.claim.denied",
+        "patient.account.updated",
+        "payment.posted",
+        "payment.failed",
+        "payment.refunded",
+        "patient.financial.dispute.created"
+      ],
+      "notes": "Billing consumes signed/locked ePCRs and emits claim lifecycle events. Telnyx used for patient billing communications ONLY."
+    },
+    {
+      "repo": "adaptix-fire",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": [
+        "fire.incident.created",
+        "fire.incident.status_changed",
+        "fire.incident.closed",
+        "neris.submission.created",
+        "neris.submission.acknowledged",
+        "neris.submission.rejected"
+      ],
+      "owns_event_types": [
+        "fire.incident.created",
+        "fire.incident.status_changed",
+        "fire.incident.closed",
+        "neris.submission.created",
+        "neris.submission.acknowledged",
+        "neris.submission.rejected"
+      ],
+      "policy_isolation": "Fire standalone — MUST NOT consume MDT, CAD, or CrewLink events by architecture policy",
+      "notes": "Fire-only orgs do not get MDT/CrewLink/CAD. Governed by service-line entitlement policy."
+    },
+    {
+      "repo": "adaptix-crewlink",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": [
+        "incident.created",
+        "incident.status_changed",
+        "crewlink.alert.created",
+        "crewlink.alert.acknowledged",
+        "crewlink.alert.expired",
+        "crewlink.assignment.accepted",
+        "crewlink.assignment.declined"
+      ],
+      "owns_event_types": [
+        "crewlink.alert.created",
+        "crewlink.alert.acknowledged",
+        "crewlink.alert.expired",
+        "crewlink.assignment.accepted",
+        "crewlink.assignment.declined"
+      ],
+      "policy_isolation": "CrewLink is push-first / device-registry-based. MUST NOT consume Telnyx SMS events.",
+      "notes": "Delivery targets are resolved via device registry (push token, app registration), not phone number."
+    },
+    {
+      "repo": "adaptix-workforce",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": [
+        "scheduling.shift.created",
+        "scheduling.shift.filled",
+        "scheduling.shift.missed",
+        "personnel.created",
+        "personnel.deactivated",
+        "training.completed"
+      ],
+      "owns_event_types": [
+        "scheduling.shift.created",
+        "scheduling.shift.filled",
+        "scheduling.shift.missed",
+        "personnel.created",
+        "personnel.deactivated",
+        "training.completed"
+      ],
+      "notes": "Workforce owns scheduling and personnel lifecycle events."
+    },
+    {
+      "repo": "adaptix-interop",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": ["*"],
+      "owns_event_types": [],
+      "notes": "Interop translates all domain events for external integrations (FHIR, HL7, CAD feeds). Wildcard subscription."
+    },
+    {
+      "repo": "adaptix-ai",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": [
+        "epcr.signed",
+        "billing.claim.denied",
+        "patient.financial.dispute.created"
+      ],
+      "owns_event_types": [],
+      "notes": "AI augments ePCR and billing events. No direct write access to production entities."
+    },
+    {
+      "repo": "adaptix-admin",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": [
+        "audit.entry.created",
+        "feature_flag.toggled",
+        "tenant.suspended"
+      ],
+      "owns_event_types": [],
+      "notes": "Admin governance surface — read-only consumer of audit and governance events."
+    },
+    {
+      "repo": "adaptix-command",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": [
+        "incident.created",
+        "incident.status_changed",
+        "unit.status_changed",
+        "mdt.status_changed",
+        "fire.incident.status_changed"
+      ],
+      "owns_event_types": [],
+      "notes": "Command dashboard — read-only consumer for operational awareness."
+    },
+    {
+      "repo": "adaptix-insight",
+      "min_contract_version": "0.1.1",
+      "max_contract_version": "0.2.x",
+      "event_types": ["*"],
+      "owns_event_types": [],
+      "notes": "Insight aggregates all events for founder intelligence and analytics. Wildcard subscription."
+    }
+  ]
+}
