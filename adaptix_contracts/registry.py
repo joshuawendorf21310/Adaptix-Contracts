@@ -219,6 +219,57 @@ CONTRACT_REGISTRY: tuple[ContractEntry, ...] = (
         stability="stable",
         payload_fields=("export_id", "epcr_id", "state_code", "export_status"),
     ),
+    # ── NEMSIS Export Pipeline ────────────────────────────────────────────
+    ContractEntry(
+        event_type="nemsis.epcr.locked",
+        source_repo="adaptix-epcr",
+        schema_version=1,
+        stability="stable",
+        payload_fields=("epcr_id", "lock_reason"),
+        notes="Triggers NEMSIS export pipeline. lock → compliance → queue → validate → submit → accept/reject.",
+    ),
+    ContractEntry(
+        event_type="nemsis.compliance.check_completed",
+        source_repo="adaptix-epcr",
+        schema_version=1,
+        stability="stable",
+        payload_fields=("epcr_id", "is_compliant", "blocker_count", "readiness_state"),
+    ),
+    ContractEntry(
+        event_type="nemsis.export.queued",
+        source_repo="adaptix-epcr",
+        schema_version=1,
+        stability="stable",
+        payload_fields=("epcr_id", "export_id", "export_format"),
+    ),
+    ContractEntry(
+        event_type="nemsis.export.validated",
+        source_repo="adaptix-epcr",
+        schema_version=1,
+        stability="stable",
+        payload_fields=("export_id", "validation_passed", "error_count", "warning_count"),
+    ),
+    ContractEntry(
+        event_type="nemsis.export.submitted",
+        source_repo="adaptix-epcr",
+        schema_version=1,
+        stability="stable",
+        payload_fields=("export_id", "submission_method", "submission_id"),
+    ),
+    ContractEntry(
+        event_type="nemsis.export.accepted",
+        source_repo="adaptix-epcr",
+        schema_version=1,
+        stability="stable",
+        payload_fields=("export_id", "state_reference"),
+    ),
+    ContractEntry(
+        event_type="nemsis.export.rejected",
+        source_repo="adaptix-epcr",
+        schema_version=1,
+        stability="stable",
+        payload_fields=("export_id", "rejection_count", "rejection_codes"),
+    ),
     # ── Billing ───────────────────────────────────────────────────────────
     ContractEntry(
         event_type="billing.claim.created",
@@ -457,4 +508,40 @@ def catalog_summary() -> dict[str, object]:
         "total_event_types": len(CONTRACT_REGISTRY),
         "by_stability": by_stab,
         "by_source_repo": by_repo,
+    }
+
+
+def validate_catalog_against_registry() -> dict[str, object]:
+    """Validate that every CONTRACT_REGISTRY event type has a matching EventCatalog schema.
+
+    Call this after ``import_all_events()`` to verify that the typed event class
+    layer is complete.  Returns a dict with ``ok`` (bool), ``missing`` (list of
+    event_type strings with no catalog schema), and ``extra`` (list of
+    event_type strings in the catalog but not in the registry).
+
+    Usage::
+
+        from adaptix_contracts.events import import_all_events
+        from adaptix_contracts.registry import validate_catalog_against_registry
+
+        import_all_events()
+        result = validate_catalog_against_registry()
+        assert result["ok"], f"Missing schemas: {result['missing']}"
+    """
+    from adaptix_contracts.events.event_catalog import EventCatalog
+
+    catalog = EventCatalog()
+
+    registry_types = {e.event_type for e in CONTRACT_REGISTRY}
+    catalog_types = {e["event_type"] for e in catalog.list_events()}
+
+    missing = sorted(registry_types - catalog_types)
+    extra = sorted(catalog_types - registry_types)
+
+    return {
+        "ok": len(missing) == 0,
+        "registry_count": len(registry_types),
+        "catalog_count": len(catalog_types),
+        "missing": missing,
+        "extra": extra,
     }

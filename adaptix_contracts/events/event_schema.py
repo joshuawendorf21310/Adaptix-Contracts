@@ -165,8 +165,7 @@ class BaseEvent(BaseModel):
         if isinstance(v, datetime):
             return v
         if isinstance(v, str):
-            from dateutil import parser
-            return parser.isoparse(v)
+            return datetime.fromisoformat(v)
         return v
 
 

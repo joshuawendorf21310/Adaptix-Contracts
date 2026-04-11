@@ -13,13 +13,13 @@ Every cross-repo integration flows through a type defined here.
 | Module | What It Provides |
 |--------|-----------------|
 | `adaptix_contracts.envelope` | `EventEnvelope` — canonical versioned event transport wrapper |
-| `adaptix_contracts.registry` | `CONTRACT_REGISTRY` — 44-entry catalog of all platform event types |
+| `adaptix_contracts.registry` | `CONTRACT_REGISTRY` — 55-entry catalog of all platform event types, `validate_catalog_against_registry()` |
 | `adaptix_contracts.compat` | `COMPATIBILITY_MATRIX`, `assert_compatible()`, `DownstreamDeclaration` |
 | `adaptix_contracts.version` | `CONTRACT_VERSION` and version constants |
 | `adaptix_contracts.types.enums` | All domain enum types (no SQLAlchemy dependency) |
 | `adaptix_contracts.utils.roles` | `normalize_role_claims()` |
 | `adaptix_contracts.schemas.*` | 33 Pydantic schema files for every domain |
-| `adaptix_contracts.events.*` | Domain event base types and incident/NEMSIS event schemas |
+| `adaptix_contracts.events.*` | Typed `DomainEvent` subclasses for all 55 event types, `EventCatalog`, `import_all_events()` |
 
 ## What This Package Does NOT Own
 
@@ -94,6 +94,17 @@ print(entry.source_repo)     # "adaptix-epcr"
 print(entry.schema_version)  # 1
 print(entry.stability)       # "stable"
 print(entry.payload_fields)  # ("epcr_id", "incident_id", "patient_id", "signed_by", "signed_at")
+```
+
+### Validate catalog completeness at startup
+
+```python
+from adaptix_contracts.events import import_all_events
+from adaptix_contracts.registry import validate_catalog_against_registry
+
+import_all_events()
+result = validate_catalog_against_registry()
+assert result["ok"], f"Missing catalog schemas: {result['missing']}"
 ```
 
 ---
@@ -171,8 +182,8 @@ The following policies are enforced by `tests/test_compat.py` and `tests/test_re
 
 ```bash
 # From the package root
-c:/python314/python.exe -m pytest tests -q --tb=short
-# Expected: 126 passed
+python -m pytest tests -q --tb=short
+# Expected: 400 passed
 ```
 
 ---
@@ -191,7 +202,7 @@ See [BREAKING_CHANGES.md](BREAKING_CHANGES.md) for the breaking change registry.
    and `adaptix_contracts/version.py` `CONTRACT_VERSION`.
 3. If the change is breaking: add an entry to `BREAKING_CHANGES.md` FIRST.
 4. Update `CHANGELOG.md`.
-5. Run tests: `c:/python314/python.exe -m pytest tests -q`.
+5. Run tests: `python -m pytest tests -q`.
 6. Tag `vX.Y.Z` and push.
 7. All affected downstream repos update their `contracts.json` entries.
 8. Update `COMPATIBILITY_MATRIX.json` to reflect new declared support.
