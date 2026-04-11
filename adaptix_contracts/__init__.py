@@ -7,6 +7,7 @@ from adaptix_contracts.registry import (
     lookup as lookup,  # noqa: F401
     lookup_required as lookup_required,  # noqa: F401
     catalog_summary as catalog_summary,  # noqa: F401
+    validate_catalog_against_registry as validate_catalog_against_registry,  # noqa: F401
 )
 from adaptix_contracts.compat import (
     assert_compatible as assert_compatible,  # noqa: F401

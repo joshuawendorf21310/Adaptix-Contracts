@@ -65,7 +65,7 @@ The following items must be verified before releasing 1.0.0:
 | EnvelopeVersion validation in event bus | adaptix-core | Not started |
 | `DomainEvent.version` field migration | All repos reading `.version` | Not started |
 | COMPATIBILITY_MATRIX.json updated to 1.0.x | All consumer repos | Not started |
-| EventCatalog validates against CONTRACT_REGISTRY | adaptix-core | Not started |
+| EventCatalog validates against CONTRACT_REGISTRY | adaptix-contracts | ✅ Done (`validate_catalog_against_registry()`) |
 
 ---
 

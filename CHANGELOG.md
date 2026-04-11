@@ -28,16 +28,28 @@ All 0.1.1 consumers that declared `max_contract_version: "0.2.x"` can upgrade wi
   - `get_declaration(repo)` — lookup by repo slug
 - `adaptix_contracts.registry` — static contract registry:
   - `ContractEntry` — dataclass describing a single event contract
-  - `CONTRACT_REGISTRY` — 44-entry authoritative catalog of all platform event types
+  - `CONTRACT_REGISTRY` — 55-entry authoritative catalog of all platform event types
   - `lookup(event_type)` / `lookup_required(event_type)` — event type resolution
   - `by_source_repo(repo)` / `by_stability(stability)` — filtered views
   - `catalog_summary()` — count summary by stability and repo
+  - `validate_catalog_against_registry()` — validates EventCatalog coverage of all registry entries
+- Typed `DomainEvent` subclasses for all 55 event types across 12 event modules
+  (auth, audit, webhook, cad, mdt, epcr, billing, fire, crewlink, workforce, incident, nemsis)
+- `adaptix_contracts.events.import_all_events()` — one-call function to populate the EventCatalog
+- Sub-package `__init__.py` re-exports for events, types, utils, and schemas
+- 7 NEMSIS export pipeline events added to CONTRACT_REGISTRY (lock → compliance → queue →
+  validate → submit → accept/reject)
 - `COMPATIBILITY_MATRIX.json` — machine-readable compatibility matrix. CI gate enforces updates.
 - `BREAKING_CHANGES.md` — registry of all past and future planned breaking changes.
-- `tests/test_envelope.py` — 30 envelope tests
-- `tests/test_compat.py` — 22 compatibility tests including architecture policy enforcement
-- `tests/test_registry.py` — 28 registry tests including service-line isolation policies
-- `tests/test_enums.py` — 45 enum validation tests
+- `tests/test_envelope.py` — 19 envelope tests
+- `tests/test_compat.py` — 35 compatibility tests including architecture policy enforcement
+- `tests/test_registry.py` — 30 registry tests including service-line isolation policies
+- `tests/test_enums.py` — 42 enum validation tests
+- `tests/test_event_catalog.py` — 10 catalog coverage and schema lookup tests
+- `tests/test_end_to_end.py` — 130+ end-to-end tests (golden path, NEMSIS pipeline, cross-domain
+  integration, parametrized wrap/round-trip for all 55 events, catalog validation)
+- `tests/test_roles.py` — 12 role normalization tests
+- `tests/test_schemas.py` — 67 schema importability and validity tests
 
 ### Changed
 - `pyproject.toml` bumped to v0.2.0.

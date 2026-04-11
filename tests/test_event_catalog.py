@@ -22,6 +22,35 @@ TENANT = uuid.UUID("12345678-1234-5678-1234-567812345678")
 ENTITY = uuid.UUID("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
 
 
+def _minimal_kwargs_for(schema, event_type: str) -> dict:
+    """Build minimal construction kwargs for any DomainEvent subclass."""
+    kwargs: dict = {
+        "event_type": event_type,
+        "tenant_id": TENANT,
+        "entity_type": event_type.split(".")[0],
+        "entity_id": ENTITY,
+    }
+    base_fields = {"event_id", "event_type", "tenant_id", "actor_id", "entity_type",
+                   "entity_id", "payload", "timestamp", "correlation_id", "version"}
+    for name, field_info in schema.model_fields.items():
+        if name in base_fields or name in kwargs:
+            continue
+        if not field_info.is_required():
+            continue
+        ann = field_info.annotation
+        if ann is bool:
+            kwargs[name] = True
+        elif ann is int:
+            kwargs[name] = 0
+        elif ann is float:
+            kwargs[name] = 0.0
+        elif ann is uuid.UUID:
+            kwargs[name] = ENTITY
+        else:
+            kwargs[name] = ""
+    return kwargs
+
+
 @pytest.fixture(autouse=True)
 def _populate_catalog():
     """Ensure all event modules are imported before every test."""
@@ -71,13 +100,8 @@ class TestValidateEvent:
         for entry in CONTRACT_REGISTRY:
             schema = catalog.get_schema(entry.event_type)
             assert schema is not None, f"No schema for {entry.event_type!r}"
-            # Construct with the minimum required DomainEvent fields
-            instance = schema(
-                event_type=entry.event_type,
-                tenant_id=TENANT,
-                entity_type=entry.event_type.split(".")[0],
-                entity_id=ENTITY,
-            )
+            kwargs = _minimal_kwargs_for(schema, entry.event_type)
+            instance = schema(**kwargs)
             assert instance.event_type == entry.event_type
 
     def test_validate_event_helper(self):
