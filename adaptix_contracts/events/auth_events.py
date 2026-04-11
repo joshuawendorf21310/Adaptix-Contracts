@@ -6,6 +6,8 @@ event bus and observability tooling.
 
 from __future__ import annotations
 
+from pydantic import Field
+
 from adaptix_contracts.events.domain_event import DomainEvent
 from adaptix_contracts.events.event_catalog import EventCatalog
 
@@ -19,7 +21,7 @@ class TenantCreatedEvent(DomainEvent):
     entity_type: str = "tenant"
 
     name: str = ""
-    service_lines: list[str] = []
+    service_lines: list[str] = Field(default_factory=list)
 
 
 class TenantSuspendedEvent(DomainEvent):
@@ -35,7 +37,7 @@ class UserCreatedEvent(DomainEvent):
 
     user_id: str = ""
     email: str = ""
-    roles: list[str] = []
+    roles: list[str] = Field(default_factory=list)
 
 
 class UserDeactivatedEvent(DomainEvent):

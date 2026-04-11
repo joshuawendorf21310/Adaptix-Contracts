@@ -6,6 +6,8 @@ event bus and observability tooling.
 
 from __future__ import annotations
 
+from pydantic import Field
+
 from adaptix_contracts.events.domain_event import DomainEvent
 from adaptix_contracts.events.event_catalog import EventCatalog
 
@@ -21,7 +23,7 @@ class CrewlinkAlertCreatedEvent(DomainEvent):
     alert_id: str = ""
     page_type: str = ""
     priority: str = ""
-    recipients: list[str] = []
+    recipients: list[str] = Field(default_factory=list)
 
 
 class CrewlinkAlertAcknowledgedEvent(DomainEvent):
