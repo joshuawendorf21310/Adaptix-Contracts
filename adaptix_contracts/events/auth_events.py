@@ -18,7 +18,6 @@ class TenantCreatedEvent(DomainEvent):
     event_type: str = "tenant.created"
     entity_type: str = "tenant"
 
-    tenant_id_payload: str = ""
     name: str = ""
     service_lines: list[str] = []
 
@@ -27,7 +26,6 @@ class TenantSuspendedEvent(DomainEvent):
     event_type: str = "tenant.suspended"
     entity_type: str = "tenant"
 
-    tenant_id_payload: str = ""
     reason: str = ""
 
 
@@ -36,7 +34,6 @@ class UserCreatedEvent(DomainEvent):
     entity_type: str = "user"
 
     user_id: str = ""
-    tenant_id_payload: str = ""
     email: str = ""
     roles: list[str] = []
 
@@ -46,7 +43,6 @@ class UserDeactivatedEvent(DomainEvent):
     entity_type: str = "user"
 
     user_id: str = ""
-    tenant_id_payload: str = ""
 
 
 class FeatureFlagToggledEvent(DomainEvent):
@@ -55,7 +51,6 @@ class FeatureFlagToggledEvent(DomainEvent):
 
     flag_name: str = ""
     enabled: bool = False
-    tenant_id_payload: str = ""
 
 
 # ---------------------------------------------------------------------------
