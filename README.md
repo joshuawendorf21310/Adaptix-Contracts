@@ -183,7 +183,7 @@ The following policies are enforced by `tests/test_compat.py` and `tests/test_re
 ```bash
 # From the package root
 python -m pytest tests -q --tb=short
-# Expected: 400 passed
+# Expected: 477 passed
 ```
 
 ---
