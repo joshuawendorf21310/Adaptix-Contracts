@@ -1,5 +1,5 @@
 """
-Adaptix Contracts — Version constants  v0.2.0
+Adaptix Contracts — Version constants  v0.2.1
 
 Single source of truth for the package version string.
 Import this instead of reading __version__ from __init__.
@@ -7,7 +7,7 @@ Import this instead of reading __version__ from __init__.
 
 from __future__ import annotations
 
-CONTRACT_VERSION: str = "0.2.0"
+CONTRACT_VERSION: str = "0.2.1"
 
 # Minimum envelope version this package can parse.
 MIN_SUPPORTED_ENVELOPE_VERSION: str = "1.0"

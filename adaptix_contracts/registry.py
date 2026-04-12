@@ -1,5 +1,5 @@
 """
-Adaptix Contracts — Contract Registry  v0.2.0
+Adaptix Contracts — Contract Registry  v0.2.1
 
 A static, auto-discovered catalog of every event type the platform may emit,
 with its canonical source repo, current schema_version, and stability level.

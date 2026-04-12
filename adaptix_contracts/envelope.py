@@ -1,5 +1,5 @@
 """
-Adaptix Contracts — Versioned Event Envelope  v0.2.0
+Adaptix Contracts — Versioned Event Envelope  v0.2.1
 
 Every cross-repo event MUST be wrapped in an EventEnvelope before publication.
 The envelope is the *only* surface downstream repos depend on for routing,
@@ -47,7 +47,7 @@ class EventEnvelope(BaseModel):
             "example": {
                 "envelope_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                 "envelope_version": "1.0",
-                "contract_version": "0.2.0",
+                "contract_version": "0.2.1",
                 "event_type": "incident.created",
                 "schema_version": 1,
                 "source_repo": "adaptix-cad",

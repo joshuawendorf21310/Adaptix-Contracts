@@ -1,7 +1,7 @@
 {
   "$schema": "https://adaptixcore.com/schemas/compatibility_matrix.schema.json",
   "generated_by": "adaptix-contracts",
-  "matrix_version": "0.2.0",
+  "matrix_version": "0.2.1",
   "description": "Machine-readable compatibility declarations for all downstream repos. Each repo MUST keep its entry current. CI rejects PRs that leave a repo incompatible with the current contract version.",
   "policy": {
     "major_bump": "BREAKING — downstream MUST update before consuming new events",

@@ -1,5 +1,5 @@
-"""Adaptix Contracts — versioned shared schema authority v0.2.0"""
-__version__ = "0.2.0"
+"""Adaptix Contracts — versioned shared schema authority v0.2.1"""
+__version__ = "0.2.1"
 
 from adaptix_contracts.version import CONTRACT_VERSION as CONTRACT_VERSION  # noqa: F401
 from adaptix_contracts.envelope import EventEnvelope as EventEnvelope  # noqa: F401

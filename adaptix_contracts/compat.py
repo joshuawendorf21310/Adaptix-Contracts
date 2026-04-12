@@ -1,5 +1,5 @@
 """
-Adaptix Contracts — Compatibility Layer  v0.2.0
+Adaptix Contracts — Compatibility Layer  v0.2.1
 
 Provides:
   - Version comparison helpers (semver subset: MAJOR.MINOR.PATCH)

@@ -1,6 +1,6 @@
 # adaptix-contracts
 
-**Version**: 0.2.0  
+**Version**: 0.2.1  
 **Status**: Stable (0.x stabilisation — no breaking changes without major bump)
 
 The single source of truth for all shared contracts in the Adaptix polyrepo system.
@@ -18,7 +18,7 @@ Every cross-repo integration flows through a type defined here.
 | `adaptix_contracts.version` | `CONTRACT_VERSION` and version constants |
 | `adaptix_contracts.types.enums` | All domain enum types (no SQLAlchemy dependency) |
 | `adaptix_contracts.utils.roles` | `normalize_role_claims()` |
-| `adaptix_contracts.schemas.*` | 33 Pydantic schema files for every domain |
+| `adaptix_contracts.schemas.*` | 37 Pydantic schema files for every domain |
 | `adaptix_contracts.events.*` | Typed `DomainEvent` subclasses for all 55 event types, `EventCatalog`, `import_all_events()` |
 
 ## What This Package Does NOT Own
@@ -183,7 +183,7 @@ The following policies are enforced by `tests/test_compat.py` and `tests/test_re
 ```bash
 # From the package root
 python -m pytest tests -q --tb=short
-# Expected: 400 passed
+# Expected: 483 passed
 ```
 
 ---

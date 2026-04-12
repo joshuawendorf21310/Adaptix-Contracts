@@ -6,6 +6,33 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.2.1] — 2026-04-12
+
+### Added
+- `adaptix_contracts/schemas/personnel.py` — request/response models for personnel lifecycle
+  (PersonnelCreateRequest, PersonnelDeactivateRequest, PersonnelResponse, RosterEntryResponse).
+- `adaptix_contracts/schemas/webhook.py` — request/response models for webhook registration and
+  delivery (WebhookCreateRequest, WebhookResponse, WebhookDeliveryResponse).
+- `adaptix_contracts/schemas/training.py` — request/response models for training courses and
+  completions (TrainingCourseCreateRequest, TrainingCompletionResponse, TrainingComplianceSummary).
+- `adaptix_contracts/schemas/unit.py` — request/response models for unit/apparatus lifecycle
+  (UnitCreateRequest, UnitResponse, UnitStatusChangeRequest, UnitStatusHistoryEntry).
+- End-to-end test coverage for billing denial → dispute flow, payment posted/failed/refunded
+  lifecycle, full billing claim-to-payment chain, CrewLink alert expiration and decline paths,
+  workforce scheduling shift lifecycle, personnel create/deactivate, training completion round-trip,
+  core auth/webhook/audit flows, fire-to-NERIS submission pipeline, and multi-tenant isolation
+  (parametrized across all 55 event types).
+- Expanded `VERSION_COMPATIBILITY_POLICY.md` with implementation guidance, code examples, wildcard
+  matching rules, and enforcement details.
+- Expanded `VERSION_COMPATIBILITY_POLICY_GLOBAL.md` with cross-repo upgrade workflow, breaking
+  change protocol, and matrix enforcement documentation.
+
+### Changed
+- README.md updated to reflect 37 schema files (was 33) and 483 tests (was 400).
+- Total test count: 483 passed.
+
+---
+
 ## [0.2.0] — 2026-04-09
 
 ### BREAKING CHANGES

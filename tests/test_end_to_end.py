@@ -30,6 +30,7 @@ from adaptix_contracts.compat import (
 from adaptix_contracts.envelope import EventEnvelope
 from adaptix_contracts.events import EventCatalog, import_all_events
 from adaptix_contracts.registry import CONTRACT_REGISTRY, all_event_types, lookup_required
+from adaptix_contracts.types.enums import CadUnitStatus
 from adaptix_contracts.version import CONTRACT_VERSION
 
 
@@ -310,7 +311,7 @@ class TestSubPackageImports:
             validate_catalog_against_registry,
         )
 
-        assert CONTRACT_VERSION == "0.2.0"
+        assert CONTRACT_VERSION == "0.2.1"
         assert EventEnvelope is not None
         assert callable(lookup)
         assert callable(lookup_required)
@@ -678,3 +679,723 @@ class TestCrossDomainIntegrationFlows:
         cmd_dec = get_declaration("adaptix-command")
         assert cmd_dec is not None
         assert "fire.incident.status_changed" in cmd_dec.event_types
+
+
+class TestBillingDenialAndRecoveryFlows:
+    """End-to-end flows for billing denial, payment failure, and dispute paths."""
+
+    def test_billing_claim_denial_to_dispute(self):
+        """billing.claim.denied → patient.financial.dispute.created flow."""
+        # 1. Claim is denied
+        denied_env = EventEnvelope.wrap(
+            event_type="billing.claim.denied",
+            source_repo="adaptix-billing",
+            tenant_id=TENANT,
+            payload={
+                "claim_id": "clm-deny-001",
+                "denial_code": "CO-4",
+                "denial_reason": "Procedure code inconsistent with modifier",
+            },
+            correlation_id="corr-denial-001",
+        )
+        assert denied_env.event_type == "billing.claim.denied"
+
+        # 2. Patient opens a financial dispute
+        dispute_env = EventEnvelope.wrap(
+            event_type="patient.financial.dispute.created",
+            source_repo="adaptix-billing",
+            tenant_id=TENANT,
+            payload={
+                "dispute_id": "disp-001",
+                "account_id": "acct-001",
+                "amount_disputed": 2500,
+            },
+            causation_id=denied_env.envelope_id,
+            correlation_id=denied_env.correlation_id,
+        )
+
+        assert dispute_env.causation_id == denied_env.envelope_id
+        assert dispute_env.correlation_id == denied_env.correlation_id
+
+        # AI consumes both events
+        from adaptix_contracts.compat import get_declaration
+
+        ai_dec = get_declaration("adaptix-ai")
+        assert ai_dec is not None
+        assert "billing.claim.denied" in ai_dec.event_types
+        assert "patient.financial.dispute.created" in ai_dec.event_types
+
+    def test_payment_posted_and_failed_lifecycle(self):
+        """payment.posted and payment.failed as alternative outcomes."""
+        # 1. Claim is paid
+        paid_env = EventEnvelope.wrap(
+            event_type="billing.claim.paid",
+            source_repo="adaptix-billing",
+            tenant_id=TENANT,
+            payload={
+                "claim_id": "clm-pay-001",
+                "amount_paid": 1500,
+                "paid_at": "2026-04-11T15:00:00Z",
+            },
+            correlation_id="corr-pay-001",
+        )
+
+        # 2. Payment is posted
+        posted_env = EventEnvelope.wrap(
+            event_type="payment.posted",
+            source_repo="adaptix-billing",
+            tenant_id=TENANT,
+            payload={
+                "payment_id": "pay-001",
+                "account_id": "acct-001",
+                "amount": 1500,
+            },
+            causation_id=paid_env.envelope_id,
+            correlation_id=paid_env.correlation_id,
+        )
+        assert posted_env.causation_id == paid_env.envelope_id
+
+        # Alternative: payment fails
+        failed_env = EventEnvelope.wrap(
+            event_type="payment.failed",
+            source_repo="adaptix-billing",
+            tenant_id=TENANT,
+            payload={
+                "payment_id": "pay-002",
+                "account_id": "acct-001",
+                "error_code": "insufficient_funds",
+            },
+            correlation_id="corr-pay-002",
+        )
+        assert failed_env.event_type == "payment.failed"
+
+        # Round-trip both through JSON
+        for env in [posted_env, failed_env]:
+            raw = json.loads(json.dumps(env.to_bus_dict()))
+            restored = EventEnvelope.from_bus_dict(raw)
+            assert restored.event_type == env.event_type
+
+    def test_payment_refund_flow(self):
+        """payment.posted → payment.refunded chain."""
+        posted_env = EventEnvelope.wrap(
+            event_type="payment.posted",
+            source_repo="adaptix-billing",
+            tenant_id=TENANT,
+            payload={
+                "payment_id": "pay-refund-001",
+                "account_id": "acct-refund-001",
+                "amount": 3000,
+            },
+            correlation_id="corr-refund-001",
+        )
+
+        refund_env = EventEnvelope.wrap(
+            event_type="payment.refunded",
+            source_repo="adaptix-billing",
+            tenant_id=TENANT,
+            payload={
+                "payment_id": "pay-refund-001",
+                "account_id": "acct-refund-001",
+                "refund_amount": 3000,
+            },
+            causation_id=posted_env.envelope_id,
+            correlation_id=posted_env.correlation_id,
+        )
+
+        assert refund_env.causation_id == posted_env.envelope_id
+        assert refund_env.payload["refund_amount"] == 3000
+
+    def test_full_billing_lifecycle_claim_to_payment(self):
+        """epcr.signed → billing.claim.created → submitted → paid → payment.posted."""
+        correlation = "corr-full-billing-001"
+
+        # 1. ePCR signed
+        epcr_env = EventEnvelope.wrap(
+            event_type="epcr.signed",
+            source_repo="adaptix-epcr",
+            tenant_id=TENANT,
+            payload={
+                "epcr_id": "epcr-bl-001",
+                "incident_id": "inc-bl-001",
+                "patient_id": "pat-bl-001",
+                "signed_by": str(ACTOR),
+                "signed_at": "2026-04-10T08:00:00Z",
+            },
+            correlation_id=correlation,
+        )
+
+        # 2. Claim created
+        claim_env = EventEnvelope.wrap(
+            event_type="billing.claim.created",
+            source_repo="adaptix-billing",
+            tenant_id=TENANT,
+            payload={
+                "claim_id": "clm-bl-001",
+                "epcr_id": "epcr-bl-001",
+                "patient_id": "pat-bl-001",
+                "payer": "Medicare",
+            },
+            causation_id=epcr_env.envelope_id,
+            correlation_id=correlation,
+        )
+
+        # 3. Claim submitted
+        submitted_env = EventEnvelope.wrap(
+            event_type="billing.claim.submitted",
+            source_repo="adaptix-billing",
+            tenant_id=TENANT,
+            payload={
+                "claim_id": "clm-bl-001",
+                "payer": "Medicare",
+                "submitted_at": "2026-04-10T09:00:00Z",
+            },
+            causation_id=claim_env.envelope_id,
+            correlation_id=correlation,
+        )
+
+        # 4. Claim paid
+        paid_env = EventEnvelope.wrap(
+            event_type="billing.claim.paid",
+            source_repo="adaptix-billing",
+            tenant_id=TENANT,
+            payload={
+                "claim_id": "clm-bl-001",
+                "amount_paid": 4200,
+                "paid_at": "2026-04-12T10:00:00Z",
+            },
+            causation_id=submitted_env.envelope_id,
+            correlation_id=correlation,
+        )
+
+        # 5. Payment posted
+        payment_env = EventEnvelope.wrap(
+            event_type="payment.posted",
+            source_repo="adaptix-billing",
+            tenant_id=TENANT,
+            payload={
+                "payment_id": "pay-bl-001",
+                "account_id": "acct-bl-001",
+                "amount": 4200,
+            },
+            causation_id=paid_env.envelope_id,
+            correlation_id=correlation,
+        )
+
+        # Verify full causal chain
+        assert claim_env.causation_id == epcr_env.envelope_id
+        assert submitted_env.causation_id == claim_env.envelope_id
+        assert paid_env.causation_id == submitted_env.envelope_id
+        assert payment_env.causation_id == paid_env.envelope_id
+
+        # Correlation preserved throughout
+        for env in [epcr_env, claim_env, submitted_env, paid_env, payment_env]:
+            assert env.correlation_id == correlation
+
+
+class TestCrewLinkAlertLifecycle:
+    """End-to-end flows for CrewLink alert expiration and escalation."""
+
+    def test_alert_expiration_flow(self):
+        """crewlink.alert.created → crewlink.alert.expired (no ack)."""
+        alert_env = EventEnvelope.wrap(
+            event_type="crewlink.alert.created",
+            source_repo="adaptix-crewlink",
+            tenant_id=TENANT,
+            payload={
+                "alert_id": "alert-exp-001",
+                "page_type": "dispatch",
+                "priority": "high",
+                "recipients": ["device-token-001"],
+            },
+            correlation_id="corr-exp-001",
+        )
+
+        # Alert expires (no acknowledgment received)
+        expired_env = EventEnvelope.wrap(
+            event_type="crewlink.alert.expired",
+            source_repo="adaptix-crewlink",
+            tenant_id=TENANT,
+            payload={"alert_id": "alert-exp-001"},
+            causation_id=alert_env.envelope_id,
+            correlation_id=alert_env.correlation_id,
+        )
+
+        assert expired_env.causation_id == alert_env.envelope_id
+        assert expired_env.payload["alert_id"] == alert_env.payload["alert_id"]
+
+    def test_alert_acknowledged_then_assignment_declined(self):
+        """crewlink.alert.created → acknowledged → assignment.declined."""
+        alert_env = EventEnvelope.wrap(
+            event_type="crewlink.alert.created",
+            source_repo="adaptix-crewlink",
+            tenant_id=TENANT,
+            payload={
+                "alert_id": "alert-dec-001",
+                "page_type": "dispatch",
+                "priority": "high",
+                "recipients": ["device-token-002"],
+            },
+            correlation_id="corr-dec-001",
+        )
+
+        ack_env = EventEnvelope.wrap(
+            event_type="crewlink.alert.acknowledged",
+            source_repo="adaptix-crewlink",
+            tenant_id=TENANT,
+            payload={
+                "alert_id": "alert-dec-001",
+                "user_id": str(ACTOR),
+                "device_id": "device-token-002",
+                "acknowledged_at": "2026-04-11T12:30:00Z",
+            },
+            causation_id=alert_env.envelope_id,
+            correlation_id=alert_env.correlation_id,
+        )
+
+        declined_env = EventEnvelope.wrap(
+            event_type="crewlink.assignment.declined",
+            source_repo="adaptix-crewlink",
+            tenant_id=TENANT,
+            payload={
+                "assignment_id": "assign-dec-001",
+                "user_id": str(ACTOR),
+                "reason": "off_duty",
+            },
+            causation_id=ack_env.envelope_id,
+            correlation_id=alert_env.correlation_id,
+        )
+
+        assert ack_env.causation_id == alert_env.envelope_id
+        assert declined_env.causation_id == ack_env.envelope_id
+
+        # All share the same correlation
+        for env in [alert_env, ack_env, declined_env]:
+            assert env.correlation_id == "corr-dec-001"
+
+
+class TestWorkforceSchedulingFlows:
+    """End-to-end flows for workforce scheduling lifecycle."""
+
+    def test_shift_created_filled_missed(self):
+        """scheduling.shift.created → filled → missed lifecycle."""
+        correlation = "corr-shift-001"
+
+        # 1. Shift created
+        created_env = EventEnvelope.wrap(
+            event_type="scheduling.shift.created",
+            source_repo="adaptix-workforce",
+            tenant_id=TENANT,
+            payload={
+                "shift_id": "shift-001",
+                "unit_id": "unit-m1",
+                "start_time": "2026-04-12T06:00:00Z",
+                "end_time": "2026-04-12T18:00:00Z",
+            },
+            correlation_id=correlation,
+        )
+
+        # 2. Shift filled
+        filled_env = EventEnvelope.wrap(
+            event_type="scheduling.shift.filled",
+            source_repo="adaptix-workforce",
+            tenant_id=TENANT,
+            payload={
+                "shift_id": "shift-001",
+                "user_id": str(ACTOR),
+            },
+            causation_id=created_env.envelope_id,
+            correlation_id=correlation,
+        )
+
+        assert filled_env.causation_id == created_env.envelope_id
+
+        # 3. Another shift is missed (no fill)
+        missed_env = EventEnvelope.wrap(
+            event_type="scheduling.shift.missed",
+            source_repo="adaptix-workforce",
+            tenant_id=TENANT,
+            payload={"shift_id": "shift-002"},
+            correlation_id="corr-shift-002",
+        )
+
+        assert missed_env.event_type == "scheduling.shift.missed"
+
+    def test_personnel_create_to_deactivate(self):
+        """personnel.created → personnel.deactivated lifecycle."""
+        created_env = EventEnvelope.wrap(
+            event_type="personnel.created",
+            source_repo="adaptix-workforce",
+            tenant_id=TENANT,
+            payload={
+                "user_id": str(ACTOR),
+                "first_name": "Jane",
+                "last_name": "Doe",
+                "role": "paramedic",
+            },
+            correlation_id="corr-personnel-001",
+        )
+
+        deactivated_env = EventEnvelope.wrap(
+            event_type="personnel.deactivated",
+            source_repo="adaptix-workforce",
+            tenant_id=TENANT,
+            payload={
+                "user_id": str(ACTOR),
+                "reason": "voluntary_resignation",
+            },
+            causation_id=created_env.envelope_id,
+            correlation_id=created_env.correlation_id,
+        )
+
+        assert deactivated_env.causation_id == created_env.envelope_id
+
+    def test_training_completed_round_trip(self):
+        """training.completed event with full serialize/deserialize."""
+        env = EventEnvelope.wrap(
+            event_type="training.completed",
+            source_repo="adaptix-workforce",
+            tenant_id=TENANT,
+            payload={
+                "training_id": "trn-001",
+                "user_id": str(ACTOR),
+                "course_name": "ACLS Recertification",
+                "completed_at": "2026-04-10T16:00:00Z",
+            },
+        )
+
+        raw = json.loads(json.dumps(env.to_bus_dict()))
+        restored = EventEnvelope.from_bus_dict(raw)
+        assert restored.event_type == "training.completed"
+        assert restored.payload["course_name"] == "ACLS Recertification"
+
+
+class TestMultiTenantIsolation:
+    """Verify envelope tenant isolation semantics."""
+
+    TENANT_A = uuid.UUID("aaaa1111-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+    TENANT_B = uuid.UUID("bbbb2222-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+
+    def test_envelopes_carry_distinct_tenant_ids(self):
+        """Two envelopes for the same event type on different tenants stay separate."""
+        env_a = EventEnvelope.wrap(
+            event_type="incident.created",
+            source_repo="adaptix-cad",
+            tenant_id=self.TENANT_A,
+            payload={"incident_id": "inc-a-001", "incident_number": "A-001",
+                      "priority": "alpha", "location": "1 A St", "call_type": "medical"},
+        )
+        env_b = EventEnvelope.wrap(
+            event_type="incident.created",
+            source_repo="adaptix-cad",
+            tenant_id=self.TENANT_B,
+            payload={"incident_id": "inc-b-001", "incident_number": "B-001",
+                      "priority": "bravo", "location": "2 B St", "call_type": "trauma"},
+        )
+
+        assert env_a.tenant_id != env_b.tenant_id
+        assert env_a.envelope_id != env_b.envelope_id
+
+        # Round-trip preserves tenant isolation
+        restored_a = EventEnvelope.from_bus_dict(json.loads(json.dumps(env_a.to_bus_dict())))
+        restored_b = EventEnvelope.from_bus_dict(json.loads(json.dumps(env_b.to_bus_dict())))
+        assert restored_a.tenant_id == self.TENANT_A
+        assert restored_b.tenant_id == self.TENANT_B
+
+    @pytest.mark.parametrize("event_type", all_event_types(), ids=lambda et: et)
+    def test_every_event_preserves_tenant_through_roundtrip(self, event_type: str):
+        """Parametrized: every event type preserves tenant_id through JSON round-trip."""
+        contract = lookup_required(event_type)
+        env = EventEnvelope.wrap(
+            event_type=event_type,
+            source_repo=contract.source_repo,
+            tenant_id=self.TENANT_A,
+            payload={field: "test" for field in contract.payload_fields},
+        )
+
+        raw = json.loads(json.dumps(env.to_bus_dict()))
+        restored = EventEnvelope.from_bus_dict(raw)
+        assert restored.tenant_id == self.TENANT_A
+
+
+class TestCoreAuthWebhookFlows:
+    """End-to-end flows for core auth, audit, and webhook lifecycle."""
+
+    def test_tenant_created_to_user_lifecycle(self):
+        """tenant.created → user.created → user.deactivated."""
+        correlation = "corr-tenant-001"
+
+        tenant_env = EventEnvelope.wrap(
+            event_type="tenant.created",
+            source_repo="adaptix-core",
+            tenant_id=TENANT,
+            payload={
+                "tenant_id": str(TENANT),
+                "name": "Acme EMS",
+                "service_lines": ["ems", "fire"],
+            },
+            correlation_id=correlation,
+        )
+
+        user_env = EventEnvelope.wrap(
+            event_type="user.created",
+            source_repo="adaptix-core",
+            tenant_id=TENANT,
+            payload={
+                "user_id": str(ACTOR),
+                "tenant_id": str(TENANT),
+                "email": "admin@acme-ems.com",
+                "roles": ["admin", "dispatcher"],
+            },
+            causation_id=tenant_env.envelope_id,
+            correlation_id=correlation,
+        )
+
+        deactivated_env = EventEnvelope.wrap(
+            event_type="user.deactivated",
+            source_repo="adaptix-core",
+            tenant_id=TENANT,
+            payload={
+                "user_id": str(ACTOR),
+                "tenant_id": str(TENANT),
+            },
+            causation_id=user_env.envelope_id,
+            correlation_id=correlation,
+        )
+
+        assert user_env.causation_id == tenant_env.envelope_id
+        assert deactivated_env.causation_id == user_env.envelope_id
+
+    def test_webhook_delivered_and_failed_paths(self):
+        """webhook.delivered vs webhook.failed as alternative outcomes."""
+        delivered_env = EventEnvelope.wrap(
+            event_type="webhook.delivered",
+            source_repo="adaptix-core",
+            tenant_id=TENANT,
+            payload={
+                "webhook_id": "wh-001",
+                "endpoint_url": "https://example.com/hook",
+                "http_status": 200,
+            },
+        )
+        assert delivered_env.payload["http_status"] == 200
+
+        failed_env = EventEnvelope.wrap(
+            event_type="webhook.failed",
+            source_repo="adaptix-core",
+            tenant_id=TENANT,
+            payload={
+                "webhook_id": "wh-002",
+                "endpoint_url": "https://example.com/hook",
+                "error": "connection_timeout",
+                "attempt": 3,
+            },
+        )
+        assert failed_env.payload["attempt"] == 3
+
+        # Both round-trip
+        for env in [delivered_env, failed_env]:
+            raw = json.loads(json.dumps(env.to_bus_dict()))
+            restored = EventEnvelope.from_bus_dict(raw)
+            assert restored.event_type == env.event_type
+
+    def test_audit_entry_created_round_trip(self):
+        """audit.entry.created envelope round-trip."""
+        env = EventEnvelope.wrap(
+            event_type="audit.entry.created",
+            source_repo="adaptix-core",
+            tenant_id=TENANT,
+            actor_id=ACTOR,
+            payload={
+                "entry_id": "aud-001",
+                "action": "user.create",
+                "resource_type": "user",
+                "resource_id": str(ACTOR),
+                "actor_id": str(ACTOR),
+            },
+        )
+
+        raw = json.loads(json.dumps(env.to_bus_dict()))
+        restored = EventEnvelope.from_bus_dict(raw)
+        assert restored.actor_id == ACTOR
+        assert restored.payload["action"] == "user.create"
+
+    def test_feature_flag_toggled(self):
+        """feature_flag.toggled event."""
+        env = EventEnvelope.wrap(
+            event_type="feature_flag.toggled",
+            source_repo="adaptix-core",
+            tenant_id=TENANT,
+            payload={
+                "flag_name": "new_billing_ui",
+                "enabled": True,
+                "tenant_id": str(TENANT),
+            },
+        )
+        assert env.payload["enabled"] is True
+
+
+class TestFireNerisSubmissionPipeline:
+    """End-to-end fire incident → NERIS submission pipeline."""
+
+    def test_fire_incident_to_neris_submission(self):
+        """fire.incident.created → status_changed → closed → neris.submission.created → ack/reject."""
+        correlation = "corr-fire-001"
+
+        # 1. Fire incident created
+        created_env = EventEnvelope.wrap(
+            event_type="fire.incident.created",
+            source_repo="adaptix-fire",
+            tenant_id=TENANT,
+            payload={
+                "fire_incident_id": "fire-neris-001",
+                "incident_type": "structure_fire",
+                "address": "789 Elm St",
+            },
+            correlation_id=correlation,
+        )
+
+        # 2. Status change
+        status_env = EventEnvelope.wrap(
+            event_type="fire.incident.status_changed",
+            source_repo="adaptix-fire",
+            tenant_id=TENANT,
+            payload={
+                "fire_incident_id": "fire-neris-001",
+                "previous_status": "dispatched",
+                "new_status": "on_scene",
+            },
+            causation_id=created_env.envelope_id,
+            correlation_id=correlation,
+        )
+
+        # 3. Incident closed
+        closed_env = EventEnvelope.wrap(
+            event_type="fire.incident.closed",
+            source_repo="adaptix-fire",
+            tenant_id=TENANT,
+            payload={
+                "fire_incident_id": "fire-neris-001",
+                "disposition": "extinguished",
+            },
+            causation_id=status_env.envelope_id,
+            correlation_id=correlation,
+        )
+
+        # 4. NERIS submission
+        submission_env = EventEnvelope.wrap(
+            event_type="neris.submission.created",
+            source_repo="adaptix-fire",
+            tenant_id=TENANT,
+            payload={
+                "submission_id": "neris-sub-001",
+                "fire_incident_id": "fire-neris-001",
+                "state_code": "TX",
+            },
+            causation_id=closed_env.envelope_id,
+            correlation_id=correlation,
+        )
+
+        # 5a. Acknowledged
+        ack_env = EventEnvelope.wrap(
+            event_type="neris.submission.acknowledged",
+            source_repo="adaptix-fire",
+            tenant_id=TENANT,
+            payload={
+                "submission_id": "neris-sub-001",
+                "acknowledged_at": "2026-04-12T10:00:00Z",
+            },
+            causation_id=submission_env.envelope_id,
+            correlation_id=correlation,
+        )
+
+        # Verify chain
+        assert status_env.causation_id == created_env.envelope_id
+        assert closed_env.causation_id == status_env.envelope_id
+        assert submission_env.causation_id == closed_env.envelope_id
+        assert ack_env.causation_id == submission_env.envelope_id
+
+    def test_neris_submission_rejection(self):
+        """neris.submission.created → neris.submission.rejected."""
+        submission_env = EventEnvelope.wrap(
+            event_type="neris.submission.created",
+            source_repo="adaptix-fire",
+            tenant_id=TENANT,
+            payload={
+                "submission_id": "neris-rej-001",
+                "fire_incident_id": "fire-rej-001",
+                "state_code": "CA",
+            },
+        )
+
+        rejected_env = EventEnvelope.wrap(
+            event_type="neris.submission.rejected",
+            source_repo="adaptix-fire",
+            tenant_id=TENANT,
+            payload={
+                "submission_id": "neris-rej-001",
+                "rejection_reason": "Missing incident type field",
+            },
+            causation_id=submission_env.envelope_id,
+        )
+
+        assert rejected_env.causation_id == submission_env.envelope_id
+
+
+class TestNewSchemaImports:
+    """Verify the four new schema modules import and validate correctly."""
+
+    def test_personnel_schema(self):
+        from adaptix_contracts.schemas.personnel import (
+            PersonnelCreateRequest,
+            PersonnelDeactivateRequest,
+            PersonnelListResponse,
+            PersonnelResponse,
+        )
+
+        req = PersonnelCreateRequest(
+            first_name="Jane", last_name="Doe", role="paramedic"
+        )
+        assert req.first_name == "Jane"
+        assert req.role == "paramedic"
+
+        deact = PersonnelDeactivateRequest(reason="voluntary_resignation")
+        assert deact.reason == "voluntary_resignation"
+
+    def test_webhook_schema(self):
+        from adaptix_contracts.schemas.webhook import (
+            WebhookCreateRequest,
+            WebhookDeliveryResponse,
+            WebhookResponse,
+        )
+
+        req = WebhookCreateRequest(
+            endpoint_url="https://example.com/hook",
+            event_types=["incident.created", "epcr.signed"],
+        )
+        assert len(req.event_types) == 2
+
+    def test_training_schema(self):
+        from adaptix_contracts.schemas.training import (
+            TrainingCompletionCreateRequest,
+            TrainingCourseCreateRequest,
+            TrainingComplianceSummary,
+        )
+
+        req = TrainingCourseCreateRequest(
+            course_name="ACLS Recertification",
+            training_type="certification",
+        )
+        assert req.course_name == "ACLS Recertification"
+
+    def test_unit_schema(self):
+        from adaptix_contracts.schemas.unit import (
+            UnitCreateRequest,
+            UnitResponse,
+            UnitStatusChangeRequest,
+        )
+
+        req = UnitCreateRequest(unit_identifier="M-1", unit_type="ambulance")
+        assert req.unit_identifier == "M-1"
+
+        status_req = UnitStatusChangeRequest(new_status="assigned")
+        assert status_req.new_status == CadUnitStatus.ASSIGNED
