@@ -27,7 +27,7 @@ class VitalBasePayload(BaseModel):
 
 
 class VitalCreateRequest(VitalBasePayload):
-    pass
+    """Vital signs creation request inherits all base fields with validation."""
 
 
 class VitalUpdateRequest(BaseModel):

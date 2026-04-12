@@ -1,0 +1,9 @@
+{
+  "repo": "adaptix-contracts",
+  "min_contract_version": "0.2.0",
+  "max_contract_version": "0.2.x",
+  "event_types_published": [],
+  "event_types_subscribed": [],
+  "compatibility_assertion": "this repo IS the contract authority — no startup assertion required",
+  "notes": "adaptix-contracts is the canonical source of all shared schemas, DTOs, event envelopes, and compatibility rules. It does not publish or subscribe to events itself."
+}

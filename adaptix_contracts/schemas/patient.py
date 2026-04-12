@@ -23,7 +23,7 @@ class PatientBasePayload(BaseModel):
 
 
 class PatientCreateRequest(PatientBasePayload):
-    pass
+    """Patient creation request inherits all base fields with validation."""
 
 
 class PatientUpdateRequest(PatientBasePayload):
