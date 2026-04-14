@@ -16,7 +16,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class UnitStatusChangedEvent(DomainEvent):
     event_type: str = "unit.status_changed"
     entity_type: str = "unit"
@@ -26,7 +25,6 @@ class UnitStatusChangedEvent(DomainEvent):
     previous_status: str = ""
     new_status: str = ""
 
-
 class CadSyncCompletedEvent(DomainEvent):
     event_type: str = "cad.sync.completed"
     entity_type: str = "cad_sync"
@@ -35,7 +33,6 @@ class CadSyncCompletedEvent(DomainEvent):
     cad_system_type: str = ""
     incident_count: int = 0
 
-
 class CadSyncFailedEvent(DomainEvent):
     event_type: str = "cad.sync.failed"
     entity_type: str = "cad_sync"
@@ -43,7 +40,6 @@ class CadSyncFailedEvent(DomainEvent):
     sync_id: str = ""
     cad_system_type: str = ""
     error: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration
@@ -127,7 +123,7 @@ class DispatchTimelineMilestoneEvent(DomainEvent):
     entity_type: str = "dispatch"
     incident_id: str = ""
     milestone_type: str = ""
-    timestamp: str = ""
+
 class DispatchUnitRecommendedEvent(DomainEvent):
     event_type: str = "dispatch.unit.recommended"
     entity_type: str = "dispatch"

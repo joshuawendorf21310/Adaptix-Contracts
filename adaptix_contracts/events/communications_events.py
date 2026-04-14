@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class CommunicationConsentRecordedEvent(DomainEvent):
     event_type: str = "communication.consent.recorded"
     entity_type: str = "communication"
@@ -22,7 +21,6 @@ class CommunicationConsentRecordedEvent(DomainEvent):
     consent_type: str = ""
     granted: str = ""
     recorded_at: str = ""
-
 
 class CommunicationDeliveryReceiptReceivedEvent(DomainEvent):
     event_type: str = "communication.delivery_receipt.received"
@@ -33,7 +31,6 @@ class CommunicationDeliveryReceiptReceivedEvent(DomainEvent):
     provider_id: str = ""
     received_at: str = ""
 
-
 class CommunicationEscalationTriggeredEvent(DomainEvent):
     event_type: str = "communication.escalation.triggered"
     entity_type: str = "communication"
@@ -42,7 +39,6 @@ class CommunicationEscalationTriggeredEvent(DomainEvent):
     escalation_level: int = 0
     escalated_to: str = ""
     triggered_at: str = ""
-
 
 class CommunicationInboundReceivedEvent(DomainEvent):
     event_type: str = "communication.inbound.received"
@@ -54,7 +50,6 @@ class CommunicationInboundReceivedEvent(DomainEvent):
     content: str = ""
     received_at: str = ""
 
-
 class CommunicationOutboundDeliveredEvent(DomainEvent):
     event_type: str = "communication.outbound.delivered"
     entity_type: str = "communication"
@@ -62,14 +57,12 @@ class CommunicationOutboundDeliveredEvent(DomainEvent):
     message_id: str = ""
     delivered_at: str = ""
 
-
 class CommunicationOutboundFailedEvent(DomainEvent):
     event_type: str = "communication.outbound.failed"
     entity_type: str = "communication"
 
     message_id: str = ""
     failure_reason: str = ""
-
 
 class CommunicationOutboundSentEvent(DomainEvent):
     event_type: str = "communication.outbound.sent"
@@ -81,7 +74,6 @@ class CommunicationOutboundSentEvent(DomainEvent):
     template_id: str = ""
     sent_at: str = ""
 
-
 class CommunicationPreferenceUpdatedEvent(DomainEvent):
     event_type: str = "communication.preference.updated"
     entity_type: str = "communication"
@@ -91,7 +83,6 @@ class CommunicationPreferenceUpdatedEvent(DomainEvent):
     opt_in: str = ""
     updated_at: str = ""
 
-
 class CommunicationTemplateCreatedEvent(DomainEvent):
     event_type: str = "communication.template.created"
     entity_type: str = "communication"
@@ -100,7 +91,6 @@ class CommunicationTemplateCreatedEvent(DomainEvent):
     template_name: str = ""
     channel: str = ""
     created_by: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

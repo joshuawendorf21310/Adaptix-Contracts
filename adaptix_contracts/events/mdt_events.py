@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class MdtLoginEvent(DomainEvent):
     event_type: str = "mdt.login"
     entity_type: str = "mdt"
@@ -22,7 +21,6 @@ class MdtLoginEvent(DomainEvent):
     user_id: str = ""
     device_id: str = ""
 
-
 class MdtLogoutEvent(DomainEvent):
     event_type: str = "mdt.logout"
     entity_type: str = "mdt"
@@ -30,7 +28,6 @@ class MdtLogoutEvent(DomainEvent):
     unit_id: str = ""
     user_id: str = ""
     device_id: str = ""
-
 
 class MdtStatusChangedEvent(DomainEvent):
     event_type: str = "mdt.status_changed"
@@ -41,7 +38,6 @@ class MdtStatusChangedEvent(DomainEvent):
     latitude: float = 0.0
     longitude: float = 0.0
 
-
 class MdtMessageSentEvent(DomainEvent):
     event_type: str = "mdt.message.sent"
     entity_type: str = "mdt_message"
@@ -50,7 +46,6 @@ class MdtMessageSentEvent(DomainEvent):
     unit_id: str = ""
     body: str = ""
     priority: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

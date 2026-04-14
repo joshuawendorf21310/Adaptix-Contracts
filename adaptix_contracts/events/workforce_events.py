@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class SchedulingShiftCreatedEvent(DomainEvent):
     event_type: str = "scheduling.shift.created"
     entity_type: str = "shift"
@@ -23,7 +22,6 @@ class SchedulingShiftCreatedEvent(DomainEvent):
     start_time: str = ""
     end_time: str = ""
 
-
 class SchedulingShiftFilledEvent(DomainEvent):
     event_type: str = "scheduling.shift.filled"
     entity_type: str = "shift"
@@ -31,13 +29,11 @@ class SchedulingShiftFilledEvent(DomainEvent):
     shift_id: str = ""
     user_id: str = ""
 
-
 class SchedulingShiftMissedEvent(DomainEvent):
     event_type: str = "scheduling.shift.missed"
     entity_type: str = "shift"
 
     shift_id: str = ""
-
 
 class PersonnelCreatedEvent(DomainEvent):
     event_type: str = "personnel.created"
@@ -48,14 +44,12 @@ class PersonnelCreatedEvent(DomainEvent):
     last_name: str = ""
     role: str = ""
 
-
 class PersonnelDeactivatedEvent(DomainEvent):
     event_type: str = "personnel.deactivated"
     entity_type: str = "personnel"
 
     user_id: str = ""
     reason: str = ""
-
 
 class TrainingCompletedEvent(DomainEvent):
     event_type: str = "training.completed"
@@ -65,7 +59,6 @@ class TrainingCompletedEvent(DomainEvent):
     user_id: str = ""
     course_name: str = ""
     completed_at: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

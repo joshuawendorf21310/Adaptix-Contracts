@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class InvestorFunnelStageChangedEvent(DomainEvent):
     event_type: str = "investor.funnel.stage_changed"
     entity_type: str = "investor"
@@ -23,7 +22,6 @@ class InvestorFunnelStageChangedEvent(DomainEvent):
     new_stage: str = ""
     changed_at: str = ""
 
-
 class InvestorIntakeApprovedEvent(DomainEvent):
     event_type: str = "investor.intake.approved"
     entity_type: str = "investor"
@@ -31,7 +29,6 @@ class InvestorIntakeApprovedEvent(DomainEvent):
     intake_id: str = ""
     approved_by: str = ""
     approved_at: str = ""
-
 
 class InvestorIntakeRejectedEvent(DomainEvent):
     event_type: str = "investor.intake.rejected"
@@ -41,7 +38,6 @@ class InvestorIntakeRejectedEvent(DomainEvent):
     rejection_reason: str = ""
     rejected_by: str = ""
 
-
 class InvestorIntakeSubmittedEvent(DomainEvent):
     event_type: str = "investor.intake.submitted"
     entity_type: str = "investor"
@@ -50,7 +46,6 @@ class InvestorIntakeSubmittedEvent(DomainEvent):
     company_name: str = ""
     contact_email: str = ""
     submitted_at: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

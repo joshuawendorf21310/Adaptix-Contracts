@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class TransportAssignedEvent(DomainEvent):
     event_type: str = "transport.assigned"
     entity_type: str = "transport"
@@ -23,7 +22,6 @@ class TransportAssignedEvent(DomainEvent):
     crew_ids: str = ""
     assigned_at: str = ""
 
-
 class TransportCompletedEvent(DomainEvent):
     event_type: str = "transport.completed"
     entity_type: str = "transport"
@@ -32,7 +30,6 @@ class TransportCompletedEvent(DomainEvent):
     completed_at: str = ""
     actual_destination: str = ""
 
-
 class TransportEtaUpdatedEvent(DomainEvent):
     event_type: str = "transport.eta.updated"
     entity_type: str = "transport"
@@ -40,7 +37,6 @@ class TransportEtaUpdatedEvent(DomainEvent):
     transport_id: str = ""
     previous_eta: str = ""
     new_eta: str = ""
-
 
 class TransportRequestedEvent(DomainEvent):
     event_type: str = "transport.requested"
@@ -52,7 +48,6 @@ class TransportRequestedEvent(DomainEvent):
     destination: str = ""
     requested_at: str = ""
 
-
 class TransportlinkPatientDeliveredEvent(DomainEvent):
     event_type: str = "transportlink.patient.delivered"
     entity_type: str = "transportlink"
@@ -60,7 +55,6 @@ class TransportlinkPatientDeliveredEvent(DomainEvent):
     request_id: str = ""
     destination_facility: str = ""
     delivered_at: str = ""
-
 
 class TransportlinkPatientLoadedEvent(DomainEvent):
     event_type: str = "transportlink.patient.loaded"
@@ -70,7 +64,6 @@ class TransportlinkPatientLoadedEvent(DomainEvent):
     vehicle_id: str = ""
     loaded_at: str = ""
 
-
 class TransportlinkRequestAcceptedEvent(DomainEvent):
     event_type: str = "transportlink.request.accepted"
     entity_type: str = "transportlink"
@@ -78,7 +71,6 @@ class TransportlinkRequestAcceptedEvent(DomainEvent):
     request_id: str = ""
     provider_id: str = ""
     accepted_at: str = ""
-
 
 class TransportlinkRequestCreatedEvent(DomainEvent):
     event_type: str = "transportlink.request.created"
@@ -90,7 +82,6 @@ class TransportlinkRequestCreatedEvent(DomainEvent):
     patient_acuity: str = ""
     created_at: str = ""
 
-
 class TransportlinkRequestDeclinedEvent(DomainEvent):
     event_type: str = "transportlink.request.declined"
     entity_type: str = "transportlink"
@@ -98,7 +89,6 @@ class TransportlinkRequestDeclinedEvent(DomainEvent):
     request_id: str = ""
     provider_id: str = ""
     decline_reason: str = ""
-
 
 class TransportlinkVehicleEnrouteToPickupEvent(DomainEvent):
     event_type: str = "transportlink.vehicle.enroute_to_pickup"
@@ -108,7 +98,6 @@ class TransportlinkVehicleEnrouteToPickupEvent(DomainEvent):
     vehicle_id: str = ""
     eta: str = ""
     enroute_at: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

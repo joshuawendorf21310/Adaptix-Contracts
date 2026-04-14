@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class AirFlightDepartedEvent(DomainEvent):
     event_type: str = "air.flight.departed"
     entity_type: str = "air"
@@ -22,7 +21,6 @@ class AirFlightDepartedEvent(DomainEvent):
     aircraft_id: str = ""
     departure_location: str = ""
     departed_at: str = ""
-
 
 class AirFlightLandedEvent(DomainEvent):
     event_type: str = "air.flight.landed"
@@ -33,7 +31,6 @@ class AirFlightLandedEvent(DomainEvent):
     landing_location: str = ""
     landed_at: str = ""
 
-
 class AirFuelAddedEvent(DomainEvent):
     event_type: str = "air.fuel.added"
     entity_type: str = "air"
@@ -42,7 +39,6 @@ class AirFuelAddedEvent(DomainEvent):
     fuel_quantity: str = ""
     fuel_type: str = ""
     added_at: str = ""
-
 
 class AirLandingZoneEstablishedEvent(DomainEvent):
     event_type: str = "air.landing_zone.established"
@@ -53,7 +49,6 @@ class AirLandingZoneEstablishedEvent(DomainEvent):
     lz_secure: str = ""
     established_by: str = ""
 
-
 class AirMaintenanceRequiredEvent(DomainEvent):
     event_type: str = "air.maintenance.required"
     entity_type: str = "air"
@@ -62,7 +57,6 @@ class AirMaintenanceRequiredEvent(DomainEvent):
     maintenance_type: str = ""
     hours_remaining: str = ""
     required_by: str = ""
-
 
 class AirMissionAcceptedEvent(DomainEvent):
     event_type: str = "air.mission.accepted"
@@ -73,7 +67,6 @@ class AirMissionAcceptedEvent(DomainEvent):
     pilot_id: str = ""
     accepted_at: str = ""
 
-
 class AirMissionCreatedEvent(DomainEvent):
     event_type: str = "air.mission.created"
     entity_type: str = "air"
@@ -82,14 +75,12 @@ class AirMissionCreatedEvent(DomainEvent):
     mission_type: str = ""
     requested_at: str = ""
 
-
 class AirMissionDeclinedEvent(DomainEvent):
     event_type: str = "air.mission.declined"
     entity_type: str = "air"
 
     mission_id: str = ""
     reason: str = ""
-
 
 class AirPatientHandoffCompletedEvent(DomainEvent):
     event_type: str = "air.patient.handoff_completed"
@@ -100,7 +91,6 @@ class AirPatientHandoffCompletedEvent(DomainEvent):
     destination_facility: str = ""
     handoff_at: str = ""
 
-
 class AirPatientLoadedEvent(DomainEvent):
     event_type: str = "air.patient.loaded"
     entity_type: str = "air"
@@ -108,7 +98,6 @@ class AirPatientLoadedEvent(DomainEvent):
     mission_id: str = ""
     patient_id: str = ""
     loaded_at: str = ""
-
 
 class AirPilotDutyEndedEvent(DomainEvent):
     event_type: str = "air.pilot.duty_ended"
@@ -119,7 +108,6 @@ class AirPilotDutyEndedEvent(DomainEvent):
     duty_end_at: str = ""
     flight_hours: str = ""
 
-
 class AirPilotDutyStartedEvent(DomainEvent):
     event_type: str = "air.pilot.duty_started"
     entity_type: str = "air"
@@ -127,7 +115,6 @@ class AirPilotDutyStartedEvent(DomainEvent):
     pilot_id: str = ""
     aircraft_id: str = ""
     duty_start_at: str = ""
-
 
 class AirPreflightCompletedEvent(DomainEvent):
     event_type: str = "air.preflight.completed"
@@ -137,7 +124,6 @@ class AirPreflightCompletedEvent(DomainEvent):
     pilot_id: str = ""
     checklist_completed: str = ""
     completed_at: str = ""
-
 
 class AirReadinessCheckedEvent(DomainEvent):
     event_type: str = "air.readiness.checked"
@@ -157,7 +143,6 @@ class AirRiskAssessedEvent(DomainEvent):
     risk_factors: str = ""
     assessed_by: str = ""
 
-
 class AirSafetyEventReportedEvent(DomainEvent):
     event_type: str = "air.safety_event.reported"
     entity_type: str = "air"
@@ -166,7 +151,6 @@ class AirSafetyEventReportedEvent(DomainEvent):
     event_type: str = ""
     severity: int = 0
     reported_by: str = ""
-
 
 class AirSceneRequestReceivedEvent(DomainEvent):
     event_type: str = "air.scene_request.received"
@@ -177,7 +161,6 @@ class AirSceneRequestReceivedEvent(DomainEvent):
     patient_condition: str = ""
     requested_by: str = ""
 
-
 class AirWeatherCheckedEvent(DomainEvent):
     event_type: str = "air.weather.checked"
     entity_type: str = "air"
@@ -185,7 +168,6 @@ class AirWeatherCheckedEvent(DomainEvent):
     mission_id: str = ""
     weather_conditions: str = ""
     flight_clearance: str = ""
-
 
 class AirWeightBalanceCalculatedEvent(DomainEvent):
     event_type: str = "air.weight_balance.calculated"
@@ -196,7 +178,6 @@ class AirWeightBalanceCalculatedEvent(DomainEvent):
     total_weight: str = ""
     cg_location: str = ""
     within_limits: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

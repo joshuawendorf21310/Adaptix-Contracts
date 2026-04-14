@@ -15,7 +15,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class CrewlinkAlertCreatedEvent(DomainEvent):
     event_type: str = "crewlink.alert.created"
     entity_type: str = "crewlink_alert"
@@ -24,7 +23,6 @@ class CrewlinkAlertCreatedEvent(DomainEvent):
     page_type: str = ""
     priority: str = ""
     recipients: list[str] = Field(default_factory=list)
-
 
 class CrewlinkAlertAcknowledgedEvent(DomainEvent):
     event_type: str = "crewlink.alert.acknowledged"
@@ -35,13 +33,11 @@ class CrewlinkAlertAcknowledgedEvent(DomainEvent):
     device_id: str = ""
     acknowledged_at: str = ""
 
-
 class CrewlinkAlertExpiredEvent(DomainEvent):
     event_type: str = "crewlink.alert.expired"
     entity_type: str = "crewlink_alert"
 
     alert_id: str = ""
-
 
 class CrewlinkAssignmentAcceptedEvent(DomainEvent):
     event_type: str = "crewlink.assignment.accepted"
@@ -52,7 +48,6 @@ class CrewlinkAssignmentAcceptedEvent(DomainEvent):
     user_id: str = ""
     unit_id: str = ""
 
-
 class CrewlinkAssignmentDeclinedEvent(DomainEvent):
     event_type: str = "crewlink.assignment.declined"
     entity_type: str = "crewlink_assignment"
@@ -60,7 +55,6 @@ class CrewlinkAssignmentDeclinedEvent(DomainEvent):
     assignment_id: str = ""
     user_id: str = ""
     reason: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

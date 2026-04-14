@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class AuditEntryCreatedEvent(DomainEvent):
     event_type: str = "audit.entry.created"
     entity_type: str = "audit_entry"
@@ -22,7 +21,6 @@ class AuditEntryCreatedEvent(DomainEvent):
     action: str = ""
     resource_type: str = ""
     resource_id: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration
@@ -35,7 +33,7 @@ class AuditAccessTrackedEvent(DomainEvent):
     entity_type: str = "audit"
     resource_type: str = ""
     resource_id: str = ""
-    actor_id: str = ""
+
     access_type: str = ""
 class AuditExportCompletedEvent(DomainEvent):
     event_type: str = "audit.export.completed"
@@ -47,21 +45,21 @@ class AuditExportRequestedEvent(DomainEvent):
     event_type: str = "audit.export.requested"
     entity_type: str = "audit"
     export_id: str = ""
-    tenant_id: str = ""
+
     requested_by: str = ""
     date_range: str = ""
 class AuditMutationTrackedEvent(DomainEvent):
     event_type: str = "audit.mutation.tracked"
     entity_type: str = "audit"
     entity_type: str = ""
-    entity_id: str = ""
+
     mutation_type: str = ""
-    actor_id: str = ""
+
     changes: str = ""
 class AuditRetentionEnforcedEvent(DomainEvent):
     event_type: str = "audit.retention.enforced"
     entity_type: str = "audit"
-    tenant_id: str = ""
+
     records_purged: str = ""
     retention_days: str = ""
 class AuditTraceCompletedEvent(DomainEvent):
@@ -74,7 +72,7 @@ class AuditTraceStartedEvent(DomainEvent):
     event_type: str = "audit.trace.started"
     entity_type: str = "audit"
     trace_id: str = ""
-    correlation_id: str = ""
+
     initiating_event: str = ""
 _catalog.register("audit.access.tracked", AuditAccessTrackedEvent)
 _catalog.register("audit.export.completed", AuditExportCompletedEvent)

@@ -15,7 +15,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class TenantCreatedEvent(DomainEvent):
     event_type: str = "tenant.created"
     entity_type: str = "tenant"
@@ -23,13 +22,11 @@ class TenantCreatedEvent(DomainEvent):
     name: str = ""
     service_lines: list[str] = Field(default_factory=list)
 
-
 class TenantSuspendedEvent(DomainEvent):
     event_type: str = "tenant.suspended"
     entity_type: str = "tenant"
 
     reason: str = ""
-
 
 class UserCreatedEvent(DomainEvent):
     event_type: str = "user.created"
@@ -39,13 +36,11 @@ class UserCreatedEvent(DomainEvent):
     email: str = ""
     roles: list[str] = Field(default_factory=list)
 
-
 class UserDeactivatedEvent(DomainEvent):
     event_type: str = "user.deactivated"
     entity_type: str = "user"
 
     user_id: str = ""
-
 
 class FeatureFlagToggledEvent(DomainEvent):
     event_type: str = "feature_flag.toggled"
@@ -53,7 +48,6 @@ class FeatureFlagToggledEvent(DomainEvent):
 
     flag_name: str = ""
     enabled: bool = False
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration
@@ -76,7 +70,7 @@ class ImpersonationStartedEvent(DomainEvent):
     entity_type: str = "impersonation"
     impersonator_id: str = ""
     target_user_id: str = ""
-    tenant_id: str = ""
+
     reason: str = ""
 class LoginFailedEvent(DomainEvent):
     event_type: str = "login.failed"
@@ -88,7 +82,7 @@ class LoginSuccessfulEvent(DomainEvent):
     event_type: str = "login.successful"
     entity_type: str = "login"
     user_id: str = ""
-    tenant_id: str = ""
+
     ip_address: str = ""
     user_agent: str = ""
 class LogoutCompletedEvent(DomainEvent):
@@ -106,12 +100,12 @@ class MfaDisabledEvent(DomainEvent):
     event_type: str = "mfa.disabled"
     entity_type: str = "mfa"
     user_id: str = ""
-    tenant_id: str = ""
+
 class MfaEnabledEvent(DomainEvent):
     event_type: str = "mfa.enabled"
     entity_type: str = "mfa"
     user_id: str = ""
-    tenant_id: str = ""
+
     mfa_method: str = ""
 class MfaFailedEvent(DomainEvent):
     event_type: str = "mfa.failed"
@@ -129,7 +123,7 @@ class PasswordChangedEvent(DomainEvent):
     event_type: str = "password.changed"
     entity_type: str = "password"
     user_id: str = ""
-    tenant_id: str = ""
+
     changed_by: str = ""
 class PasswordResetCompletedEvent(DomainEvent):
     event_type: str = "password.reset_completed"
@@ -146,28 +140,28 @@ class PermissionGrantedEvent(DomainEvent):
     event_type: str = "permission.granted"
     entity_type: str = "permission"
     user_id: str = ""
-    tenant_id: str = ""
+
     permission: str = ""
     resource_id: str = ""
 class PermissionRevokedEvent(DomainEvent):
     event_type: str = "permission.revoked"
     entity_type: str = "permission"
     user_id: str = ""
-    tenant_id: str = ""
+
     permission: str = ""
     resource_id: str = ""
 class RoleAssignedEvent(DomainEvent):
     event_type: str = "role.assigned"
     entity_type: str = "role"
     user_id: str = ""
-    tenant_id: str = ""
+
     role: str = ""
     assigned_by: str = ""
 class RoleRevokedEvent(DomainEvent):
     event_type: str = "role.revoked"
     entity_type: str = "role"
     user_id: str = ""
-    tenant_id: str = ""
+
     role: str = ""
     revoked_by: str = ""
 class SessionCreatedEvent(DomainEvent):
@@ -175,7 +169,7 @@ class SessionCreatedEvent(DomainEvent):
     entity_type: str = "session"
     session_id: str = ""
     user_id: str = ""
-    tenant_id: str = ""
+
     ip_address: str = ""
     user_agent: str = ""
 class SessionExpiredEvent(DomainEvent):
@@ -194,7 +188,7 @@ class TokenIssuedEvent(DomainEvent):
     entity_type: str = "token"
     token_id: str = ""
     user_id: str = ""
-    tenant_id: str = ""
+
     token_type: str = ""
     expires_at: str = ""
 class TokenRefreshedEvent(DomainEvent):

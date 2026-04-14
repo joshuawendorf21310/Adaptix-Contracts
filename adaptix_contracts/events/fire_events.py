@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class FireIncidentCreatedEvent(DomainEvent):
     event_type: str = "fire.incident.created"
     entity_type: str = "fire_incident"
@@ -21,7 +20,6 @@ class FireIncidentCreatedEvent(DomainEvent):
     fire_incident_id: str = ""
     incident_type: str = ""
     address: str = ""
-
 
 class FireIncidentStatusChangedEvent(DomainEvent):
     event_type: str = "fire.incident.status_changed"
@@ -31,14 +29,12 @@ class FireIncidentStatusChangedEvent(DomainEvent):
     previous_status: str = ""
     new_status: str = ""
 
-
 class FireIncidentClosedEvent(DomainEvent):
     event_type: str = "fire.incident.closed"
     entity_type: str = "fire_incident"
 
     fire_incident_id: str = ""
     disposition: str = ""
-
 
 class NerisSubmissionCreatedEvent(DomainEvent):
     event_type: str = "neris.submission.created"
@@ -48,7 +44,6 @@ class NerisSubmissionCreatedEvent(DomainEvent):
     fire_incident_id: str = ""
     state_code: str = ""
 
-
 class NerisSubmissionAcknowledgedEvent(DomainEvent):
     event_type: str = "neris.submission.acknowledged"
     entity_type: str = "neris_submission"
@@ -56,14 +51,12 @@ class NerisSubmissionAcknowledgedEvent(DomainEvent):
     submission_id: str = ""
     acknowledged_at: str = ""
 
-
 class NerisSubmissionRejectedEvent(DomainEvent):
     event_type: str = "neris.submission.rejected"
     entity_type: str = "neris_submission"
 
     submission_id: str = ""
     rejection_reason: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

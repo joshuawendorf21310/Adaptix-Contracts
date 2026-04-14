@@ -73,7 +73,7 @@ class DeviceRegisteredEvent(DomainEvent):
     entity_type: str = "device"
     device_id: str = ""
     user_id: str = ""
-    tenant_id: str = ""
+
     device_type: str = ""
     device_name: str = ""
 class DeviceTrustRevokedEvent(DomainEvent):
@@ -147,7 +147,7 @@ class ReportGeneratedEvent(DomainEvent):
     entity_type: str = "report"
     report_id: str = ""
     report_type: str = ""
-    tenant_id: str = ""
+
     generated_by: str = ""
     generated_at: str = ""
 class ReportScheduledEvent(DomainEvent):
@@ -236,7 +236,7 @@ class SystemDeploymentCompletedEvent(DomainEvent):
     event_type: str = "system.deployment.completed"
     entity_type: str = "system"
     deployment_id: str = ""
-    version: str = ""
+
     completed_at: str = ""
 class SystemDeploymentRolledBackEvent(DomainEvent):
     event_type: str = "system.deployment.rolled_back"
@@ -248,7 +248,7 @@ class SystemDeploymentStartedEvent(DomainEvent):
     event_type: str = "system.deployment.started"
     entity_type: str = "system"
     deployment_id: str = ""
-    version: str = ""
+
     environment: str = ""
     started_at: str = ""
 class SystemHealthCheckedEvent(DomainEvent):
@@ -279,49 +279,49 @@ class SystemMaintenanceStartedEvent(DomainEvent):
 class TenantComplianceCheckCompletedEvent(DomainEvent):
     event_type: str = "tenant.compliance_check.completed"
     entity_type: str = "tenant"
-    tenant_id: str = ""
+
     check_type: str = ""
     is_compliant: bool = False
     findings: str = ""
 class TenantFeatureDisabledEvent(DomainEvent):
     event_type: str = "tenant.feature_disabled"
     entity_type: str = "tenant"
-    tenant_id: str = ""
+
     feature_name: str = ""
 class TenantFeatureEnabledEvent(DomainEvent):
     event_type: str = "tenant.feature_enabled"
     entity_type: str = "tenant"
-    tenant_id: str = ""
+
     feature_name: str = ""
 class TenantIsolationViolatedEvent(DomainEvent):
     event_type: str = "tenant.isolation.violated"
     entity_type: str = "tenant"
-    tenant_id: str = ""
+
     violation_type: str = ""
     source_tenant_id: str = ""
 class TenantMembershipAddedEvent(DomainEvent):
     event_type: str = "tenant.membership.added"
     entity_type: str = "tenant"
-    tenant_id: str = ""
+
     user_id: str = ""
     roles: str = ""
 class TenantMembershipRemovedEvent(DomainEvent):
     event_type: str = "tenant.membership.removed"
     entity_type: str = "tenant"
-    tenant_id: str = ""
+
     user_id: str = ""
     removal_reason: str = ""
 class TenantMembershipRoleChangedEvent(DomainEvent):
     event_type: str = "tenant.membership.role_changed"
     entity_type: str = "tenant"
-    tenant_id: str = ""
+
     user_id: str = ""
     previous_roles: str = ""
     new_roles: str = ""
 class TenantUpdatedEvent(DomainEvent):
     event_type: str = "tenant.updated"
     entity_type: str = "tenant"
-    tenant_id: str = ""
+
     updated_fields: str = ""
 class UserPreferencesUpdatedEvent(DomainEvent):
     event_type: str = "user.preferences.updated"
@@ -333,19 +333,17 @@ class UserProfileUpdatedEvent(DomainEvent):
     event_type: str = "user.profile.updated"
     entity_type: str = "user"
     user_id: str = ""
-    tenant_id: str = ""
-    updated_fields: str = ""
 
+    updated_fields: str = ""
 
 class ApiKeyCreatedEvent(DomainEvent):
     event_type: str = "api.key.created"
     entity_type: str = "api"
 
     key_id: str = ""
-    tenant_id: str = ""
+
     created_by: str = ""
     scopes: str = ""
-
 
 class ApiKeyRevokedEvent(DomainEvent):
     event_type: str = "api.key.revoked"
@@ -355,16 +353,13 @@ class ApiKeyRevokedEvent(DomainEvent):
     revoked_by: str = ""
     revoked_at: str = ""
 
-
 class ApiQuotaExceededEvent(DomainEvent):
     event_type: str = "api.quota.exceeded"
     entity_type: str = "api"
 
-    tenant_id: str = ""
     quota_type: str = ""
     limit: int = 0
     usage: int = 0
-
 
 class ComplianceAttestationRequiredEvent(DomainEvent):
     event_type: str = "compliance.attestation.required"
@@ -374,7 +369,6 @@ class ComplianceAttestationRequiredEvent(DomainEvent):
     attestation_type: str = ""
     required_by: str = ""
 
-
 class ComplianceAttestationCompletedEvent(DomainEvent):
     event_type: str = "compliance.attestation.completed"
     entity_type: str = "compliance"
@@ -382,7 +376,6 @@ class ComplianceAttestationCompletedEvent(DomainEvent):
     user_id: str = ""
     attestation_type: str = ""
     completed_at: str = ""
-
 
 class ComplianceHipaaBreachDetectedEvent(DomainEvent):
     event_type: str = "compliance.hipaa.breach.detected"
@@ -393,7 +386,6 @@ class ComplianceHipaaBreachDetectedEvent(DomainEvent):
     affected_records: str = ""
     detected_at: str = ""
 
-
 class ComplianceHipaaBreachReportedEvent(DomainEvent):
     event_type: str = "compliance.hipaa.breach.reported"
     entity_type: str = "compliance"
@@ -402,7 +394,6 @@ class ComplianceHipaaBreachReportedEvent(DomainEvent):
     reported_to: str = ""
     reported_by: str = ""
     reported_at: str = ""
-
 
 class CompliancePolicyAcknowledgedEvent(DomainEvent):
     event_type: str = "compliance.policy.acknowledged"
@@ -413,7 +404,6 @@ class CompliancePolicyAcknowledgedEvent(DomainEvent):
     policy_version: str = ""
     acknowledged_at: str = ""
 
-
 class ComplianceViolationDetectedEvent(DomainEvent):
     event_type: str = "compliance.violation.detected"
     entity_type: str = "compliance"
@@ -423,7 +413,6 @@ class ComplianceViolationDetectedEvent(DomainEvent):
     severity: int = 0
     detected_at: str = ""
 
-
 class ComplianceViolationResolvedEvent(DomainEvent):
     event_type: str = "compliance.violation.resolved"
     entity_type: str = "compliance"
@@ -432,7 +421,6 @@ class ComplianceViolationResolvedEvent(DomainEvent):
     resolution: str = ""
     resolved_by: str = ""
     resolved_at: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

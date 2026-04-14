@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class EquipmentInspectedEvent(DomainEvent):
     event_type: str = "equipment.inspected"
     entity_type: str = "equipment"
@@ -23,7 +22,6 @@ class EquipmentInspectedEvent(DomainEvent):
     inspection_result: str = ""
     inspected_by: str = ""
     inspected_at: str = ""
-
 
 class EquipmentMaintenanceCompletedEvent(DomainEvent):
     event_type: str = "equipment.maintenance.completed"
@@ -35,7 +33,6 @@ class EquipmentMaintenanceCompletedEvent(DomainEvent):
     completed_by: str = ""
     completed_at: str = ""
 
-
 class EquipmentMaintenanceScheduledEvent(DomainEvent):
     event_type: str = "equipment.maintenance.scheduled"
     entity_type: str = "equipment"
@@ -44,7 +41,6 @@ class EquipmentMaintenanceScheduledEvent(DomainEvent):
     maintenance_type: str = ""
     scheduled_date: str = ""
     scheduled_by: str = ""
-
 
 class InventoryItemAddedEvent(DomainEvent):
     event_type: str = "inventory.item.added"
@@ -55,7 +51,6 @@ class InventoryItemAddedEvent(DomainEvent):
     quantity: str = ""
     location_id: str = ""
 
-
 class InventoryItemRemovedEvent(DomainEvent):
     event_type: str = "inventory.item.removed"
     entity_type: str = "inventory"
@@ -65,7 +60,6 @@ class InventoryItemRemovedEvent(DomainEvent):
     reason: str = ""
     removed_by: str = ""
 
-
 class InventoryLotExpiredEvent(DomainEvent):
     event_type: str = "inventory.lot.expired"
     entity_type: str = "inventory"
@@ -74,7 +68,6 @@ class InventoryLotExpiredEvent(DomainEvent):
     item_id: str = ""
     quantity: str = ""
     expired_at: str = ""
-
 
 class InventoryLotReceivedEvent(DomainEvent):
     event_type: str = "inventory.lot.received"
@@ -86,7 +79,6 @@ class InventoryLotReceivedEvent(DomainEvent):
     expiration_date: str = ""
     received_at: str = ""
 
-
 class InventoryOrderPlacedEvent(DomainEvent):
     event_type: str = "inventory.order.placed"
     entity_type: str = "inventory"
@@ -97,7 +89,6 @@ class InventoryOrderPlacedEvent(DomainEvent):
     total_cost: str = ""
     placed_at: str = ""
 
-
 class InventoryOrderReceivedEvent(DomainEvent):
     event_type: str = "inventory.order.received"
     entity_type: str = "inventory"
@@ -106,7 +97,6 @@ class InventoryOrderReceivedEvent(DomainEvent):
     received_by: str = ""
     discrepancies: str = ""
     received_at: str = ""
-
 
 class InventoryParLevelUpdatedEvent(DomainEvent):
     event_type: str = "inventory.par_level.updated"
@@ -118,7 +108,6 @@ class InventoryParLevelUpdatedEvent(DomainEvent):
     new_par: str = ""
     updated_by: str = ""
 
-
 class InventoryRecallInitiatedEvent(DomainEvent):
     event_type: str = "inventory.recall.initiated"
     entity_type: str = "inventory"
@@ -128,7 +117,6 @@ class InventoryRecallInitiatedEvent(DomainEvent):
     lot_numbers: str = ""
     reason: str = ""
     initiated_at: str = ""
-
 
 class InventoryRecallItemRemovedEvent(DomainEvent):
     event_type: str = "inventory.recall.item_removed"
@@ -140,7 +128,6 @@ class InventoryRecallItemRemovedEvent(DomainEvent):
     quantity: str = ""
     removed_by: str = ""
 
-
 class InventoryReorderTriggeredEvent(DomainEvent):
     event_type: str = "inventory.reorder.triggered"
     entity_type: str = "inventory"
@@ -150,7 +137,6 @@ class InventoryReorderTriggeredEvent(DomainEvent):
     reorder_point: str = ""
     triggered_at: str = ""
 
-
 class InventoryTransactionRecordedEvent(DomainEvent):
     event_type: str = "inventory.transaction.recorded"
     entity_type: str = "inventory"
@@ -159,8 +145,6 @@ class InventoryTransactionRecordedEvent(DomainEvent):
     item_id: str = ""
     quantity: str = ""
     transaction_type: str = ""
-    actor_id: str = ""
-
 
 class NarcoticAdministeredEvent(DomainEvent):
     event_type: str = "narcotic.administered"
@@ -174,7 +158,6 @@ class NarcoticAdministeredEvent(DomainEvent):
     witness_id: str = ""
     administered_at: str = ""
 
-
 class NarcoticAuditCompletedEvent(DomainEvent):
     event_type: str = "narcotic.audit.completed"
     entity_type: str = "narcotic"
@@ -182,7 +165,6 @@ class NarcoticAuditCompletedEvent(DomainEvent):
     audit_id: str = ""
     discrepancies_found: str = ""
     completed_at: str = ""
-
 
 class NarcoticAuditInitiatedEvent(DomainEvent):
     event_type: str = "narcotic.audit.initiated"
@@ -193,7 +175,6 @@ class NarcoticAuditInitiatedEvent(DomainEvent):
     initiated_by: str = ""
     initiated_at: str = ""
 
-
 class NarcoticChainOfCustodyTransferredEvent(DomainEvent):
     event_type: str = "narcotic.chain_of_custody.transferred"
     entity_type: str = "narcotic"
@@ -202,7 +183,6 @@ class NarcoticChainOfCustodyTransferredEvent(DomainEvent):
     from_custodian_id: str = ""
     to_custodian_id: str = ""
     transferred_at: str = ""
-
 
 class NarcoticCountCompletedEvent(DomainEvent):
     event_type: str = "narcotic.count.completed"
@@ -215,7 +195,6 @@ class NarcoticCountCompletedEvent(DomainEvent):
     counted_by: str = ""
     witness_id: str = ""
 
-
 class NarcoticCountDiscrepancyEvent(DomainEvent):
     event_type: str = "narcotic.count.discrepancy"
     entity_type: str = "narcotic"
@@ -225,7 +204,6 @@ class NarcoticCountDiscrepancyEvent(DomainEvent):
     expected: str = ""
     actual: str = ""
     variance: str = ""
-
 
 class NarcoticDiversionSuspectedEvent(DomainEvent):
     event_type: str = "narcotic.diversion.suspected"
@@ -237,7 +215,6 @@ class NarcoticDiversionSuspectedEvent(DomainEvent):
     evidence: str = ""
     detected_at: str = ""
 
-
 class NarcoticVaultClosedEvent(DomainEvent):
     event_type: str = "narcotic.vault.closed"
     entity_type: str = "narcotic"
@@ -247,7 +224,6 @@ class NarcoticVaultClosedEvent(DomainEvent):
     witness_id: str = ""
     closed_at: str = ""
 
-
 class NarcoticVaultOpenedEvent(DomainEvent):
     event_type: str = "narcotic.vault.opened"
     entity_type: str = "narcotic"
@@ -256,7 +232,6 @@ class NarcoticVaultOpenedEvent(DomainEvent):
     opened_by: str = ""
     witness_id: str = ""
     opened_at: str = ""
-
 
 class NarcoticWastedEvent(DomainEvent):
     event_type: str = "narcotic.wasted"
@@ -269,7 +244,6 @@ class NarcoticWastedEvent(DomainEvent):
     witness_id: str = ""
     wasted_at: str = ""
 
-
 class SupplyDistributionCompletedEvent(DomainEvent):
     event_type: str = "supply.distribution.completed"
     entity_type: str = "supply"
@@ -277,7 +251,6 @@ class SupplyDistributionCompletedEvent(DomainEvent):
     distribution_id: str = ""
     items_transferred: str = ""
     completed_at: str = ""
-
 
 class SupplyDistributionScheduledEvent(DomainEvent):
     event_type: str = "supply.distribution.scheduled"
@@ -288,7 +261,6 @@ class SupplyDistributionScheduledEvent(DomainEvent):
     destination_location: str = ""
     scheduled_date: str = ""
 
-
 class SupplyLowStockAlertedEvent(DomainEvent):
     event_type: str = "supply.low_stock.alerted"
     entity_type: str = "supply"
@@ -298,7 +270,6 @@ class SupplyLowStockAlertedEvent(DomainEvent):
     minimum_quantity: str = ""
     alerted_at: str = ""
 
-
 class SupplyOutOfStockEvent(DomainEvent):
     event_type: str = "supply.out_of_stock"
     entity_type: str = "supply"
@@ -306,7 +277,6 @@ class SupplyOutOfStockEvent(DomainEvent):
     item_id: str = ""
     location_id: str = ""
     reported_at: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

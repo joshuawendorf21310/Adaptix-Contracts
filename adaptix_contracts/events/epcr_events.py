@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class EpcrCreatedEvent(DomainEvent):
     event_type: str = "epcr.created"
     entity_type: str = "epcr"
@@ -21,7 +20,6 @@ class EpcrCreatedEvent(DomainEvent):
     epcr_id: str = ""
     incident_id: str = ""
     patient_id: str = ""
-
 
 class EpcrSignedEvent(DomainEvent):
     event_type: str = "epcr.signed"
@@ -33,14 +31,12 @@ class EpcrSignedEvent(DomainEvent):
     signed_by: str = ""
     signed_at: str = ""
 
-
 class EpcrLockedEvent(DomainEvent):
     event_type: str = "epcr.locked"
     entity_type: str = "epcr"
 
     epcr_id: str = ""
     incident_id: str = ""
-
 
 class EpcrNemsisExportedEvent(DomainEvent):
     event_type: str = "epcr.nemsis.exported"
@@ -50,7 +46,6 @@ class EpcrNemsisExportedEvent(DomainEvent):
     epcr_id: str = ""
     state_code: str = ""
     export_status: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration
@@ -186,7 +181,7 @@ class EpcrTimeRecordedEvent(DomainEvent):
     entity_type: str = "epcr"
     epcr_id: str = ""
     time_type: str = ""
-    timestamp: str = ""
+
     recorded_by: str = ""
 class EpcrTransferOfCareDocumentedEvent(DomainEvent):
     event_type: str = "epcr.transfer_of_care.documented"
@@ -401,7 +396,7 @@ class QaCaseFlaggedEvent(DomainEvent):
     entity_type: str = "qa"
     case_id: str = ""
     entity_type: str = ""
-    entity_id: str = ""
+
     flag_reason: str = ""
     flagged_by: str = ""
 class QaCaseReviewedEvent(DomainEvent):
@@ -452,10 +447,9 @@ class QualityReviewInitiatedEvent(DomainEvent):
     entity_type: str = "quality"
     review_id: str = ""
     entity_type: str = ""
-    entity_id: str = ""
+
     review_type: str = ""
     initiated_by: str = ""
-
 
 class ComplianceNemsisExportGeneratedEvent(DomainEvent):
     event_type: str = "compliance.nemsis.export.generated"
@@ -465,7 +459,6 @@ class ComplianceNemsisExportGeneratedEvent(DomainEvent):
     record_count: int = 0
     generated_at: str = ""
 
-
 class ComplianceNemsisExportSubmittedEvent(DomainEvent):
     event_type: str = "compliance.nemsis.export.submitted"
     entity_type: str = "compliance"
@@ -474,7 +467,6 @@ class ComplianceNemsisExportSubmittedEvent(DomainEvent):
     state_agency: str = ""
     submitted_at: str = ""
 
-
 class ComplianceNemsisExportValidatedEvent(DomainEvent):
     event_type: str = "compliance.nemsis.export.validated"
     entity_type: str = "compliance"
@@ -482,7 +474,6 @@ class ComplianceNemsisExportValidatedEvent(DomainEvent):
     is_valid: bool = False
     error_count: int = 0
     validated_at: str = ""
-
 
 _catalog.register("epcr.addendum_added", EpcrAddendumAddedEvent)
 _catalog.register("epcr.assessment.recorded", EpcrAssessmentRecordedEvent)

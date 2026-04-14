@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class AiAnalysisCompletedEvent(DomainEvent):
     event_type: str = "ai.analysis.completed"
     entity_type: str = "ai"
@@ -22,7 +21,6 @@ class AiAnalysisCompletedEvent(DomainEvent):
     findings: str = ""
     confidence_score: float = 0.0
     completed_at: str = ""
-
 
 class AiAnalysisRequestedEvent(DomainEvent):
     event_type: str = "ai.analysis.requested"
@@ -34,7 +32,6 @@ class AiAnalysisRequestedEvent(DomainEvent):
     analysis_type: str = ""
     requested_at: str = ""
 
-
 class AiExplanationGeneratedEvent(DomainEvent):
     event_type: str = "ai.explanation.generated"
     entity_type: str = "ai"
@@ -43,7 +40,6 @@ class AiExplanationGeneratedEvent(DomainEvent):
     explanation_text: str = ""
     factors: str = ""
     generated_at: str = ""
-
 
 class AiHallucinationDetectedEvent(DomainEvent):
     event_type: str = "ai.hallucination.detected"
@@ -54,7 +50,6 @@ class AiHallucinationDetectedEvent(DomainEvent):
     confidence: str = ""
     detected_at: str = ""
 
-
 class AiNarrativeGeneratedEvent(DomainEvent):
     event_type: str = "ai.narrative.generated"
     entity_type: str = "ai"
@@ -64,17 +59,15 @@ class AiNarrativeGeneratedEvent(DomainEvent):
     confidence_score: float = 0.0
     generated_at: str = ""
 
-
 class AiScoringCompletedEvent(DomainEvent):
     event_type: str = "ai.scoring.completed"
     entity_type: str = "ai"
 
     score_id: str = ""
-    entity_id: str = ""
+
     score_type: float = 0.0
     score_value: float = 0.0
     factors: str = ""
-
 
 class AiSummaryGeneratedEvent(DomainEvent):
     event_type: str = "ai.summary.generated"
@@ -84,7 +77,6 @@ class AiSummaryGeneratedEvent(DomainEvent):
     summary_text: str = ""
     key_points: str = ""
     generated_at: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

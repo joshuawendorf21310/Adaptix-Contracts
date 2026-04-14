@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class DashboardAlertAcknowledgedEvent(DomainEvent):
     event_type: str = "dashboard.alert.acknowledged"
     entity_type: str = "dashboard"
@@ -22,7 +21,6 @@ class DashboardAlertAcknowledgedEvent(DomainEvent):
     acknowledged_by: str = ""
     acknowledged_at: str = ""
 
-
 class DashboardAlertResolvedEvent(DomainEvent):
     event_type: str = "dashboard.alert.resolved"
     entity_type: str = "dashboard"
@@ -30,7 +28,6 @@ class DashboardAlertResolvedEvent(DomainEvent):
     alert_id: str = ""
     resolved_by: str = ""
     resolved_at: str = ""
-
 
 class DashboardAlertTriggeredEvent(DomainEvent):
     event_type: str = "dashboard.alert.triggered"
@@ -41,7 +38,6 @@ class DashboardAlertTriggeredEvent(DomainEvent):
     description: str = ""
     triggered_at: str = ""
 
-
 class DashboardKpiCalculatedEvent(DomainEvent):
     event_type: str = "dashboard.kpi.calculated"
     entity_type: str = "dashboard"
@@ -50,7 +46,6 @@ class DashboardKpiCalculatedEvent(DomainEvent):
     value: str = ""
     trend: str = ""
     calculated_at: str = ""
-
 
 class DashboardWidgetCustomizedEvent(DomainEvent):
     event_type: str = "dashboard.widget.customized"
@@ -61,7 +56,6 @@ class DashboardWidgetCustomizedEvent(DomainEvent):
     configuration: str = ""
     customized_at: str = ""
 
-
 class KpiResponseTimeCalculatedEvent(DomainEvent):
     event_type: str = "kpi.response_time.calculated"
     entity_type: str = "kpi"
@@ -70,7 +64,6 @@ class KpiResponseTimeCalculatedEvent(DomainEvent):
     response_time_seconds: str = ""
     calculated_at: str = ""
 
-
 class KpiTurnaroundTimeCalculatedEvent(DomainEvent):
     event_type: str = "kpi.turnaround_time.calculated"
     entity_type: str = "kpi"
@@ -78,7 +71,6 @@ class KpiTurnaroundTimeCalculatedEvent(DomainEvent):
     incident_id: str = ""
     turnaround_time_seconds: str = ""
     calculated_at: str = ""
-
 
 class KpiUnitHourUtilizationCalculatedEvent(DomainEvent):
     event_type: str = "kpi.unit_hour_utilization.calculated"
@@ -89,7 +81,6 @@ class KpiUnitHourUtilizationCalculatedEvent(DomainEvent):
     utilization_percent: float = 0.0
     calculated_at: str = ""
 
-
 class MetricsOnSceneTimeRecordedEvent(DomainEvent):
     event_type: str = "metrics.on_scene_time.recorded"
     entity_type: str = "metrics"
@@ -98,7 +89,6 @@ class MetricsOnSceneTimeRecordedEvent(DomainEvent):
     unit_id: str = ""
     on_scene_time_seconds: str = ""
     recorded_at: str = ""
-
 
 class MetricsResponseTimeRecordedEvent(DomainEvent):
     event_type: str = "metrics.response_time.recorded"
@@ -109,7 +99,6 @@ class MetricsResponseTimeRecordedEvent(DomainEvent):
     response_time_seconds: str = ""
     recorded_at: str = ""
 
-
 class MetricsTransportTimeRecordedEvent(DomainEvent):
     event_type: str = "metrics.transport_time.recorded"
     entity_type: str = "metrics"
@@ -118,7 +107,6 @@ class MetricsTransportTimeRecordedEvent(DomainEvent):
     unit_id: str = ""
     transport_time_seconds: str = ""
     recorded_at: str = ""
-
 
 class MetricsTurnaroundTimeRecordedEvent(DomainEvent):
     event_type: str = "metrics.turnaround_time.recorded"
@@ -129,7 +117,6 @@ class MetricsTurnaroundTimeRecordedEvent(DomainEvent):
     turnaround_time_seconds: str = ""
     recorded_at: str = ""
 
-
 class MetricsUtilizationCalculatedEvent(DomainEvent):
     event_type: str = "metrics.utilization.calculated"
     entity_type: str = "metrics"
@@ -138,7 +125,6 @@ class MetricsUtilizationCalculatedEvent(DomainEvent):
     date: str = ""
     utilization_percent: float = 0.0
     calculated_at: str = ""
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration

@@ -13,7 +13,6 @@ from adaptix_contracts.events.event_catalog import EventCatalog
 # Event classes
 # ---------------------------------------------------------------------------
 
-
 class WebhookDeliveredEvent(DomainEvent):
     event_type: str = "webhook.delivered"
     entity_type: str = "webhook"
@@ -21,7 +20,6 @@ class WebhookDeliveredEvent(DomainEvent):
     webhook_id: str = ""
     endpoint_url: str = ""
     http_status: int = 0
-
 
 class WebhookFailedEvent(DomainEvent):
     event_type: str = "webhook.failed"
@@ -31,7 +29,6 @@ class WebhookFailedEvent(DomainEvent):
     endpoint_url: str = ""
     error: str = ""
     attempt: int = 0
-
 
 # ---------------------------------------------------------------------------
 # Catalog registration
