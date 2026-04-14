@@ -13,13 +13,13 @@ Every cross-repo integration flows through a type defined here.
 | Module | What It Provides |
 |--------|-----------------|
 | `adaptix_contracts.envelope` | `EventEnvelope` — canonical versioned event transport wrapper |
-| `adaptix_contracts.registry` | `CONTRACT_REGISTRY` — 55-entry catalog of all platform event types, `validate_catalog_against_registry()` |
-| `adaptix_contracts.compat` | `COMPATIBILITY_MATRIX`, `assert_compatible()`, `DownstreamDeclaration` |
+| `adaptix_contracts.registry` | `CONTRACT_REGISTRY` — 489-entry catalog of all platform event types, `validate_catalog_against_registry()` |
+| `adaptix_contracts.compat` | `COMPATIBILITY_MATRIX` (18 repos), `assert_compatible()`, `DownstreamDeclaration` |
 | `adaptix_contracts.version` | `CONTRACT_VERSION` and version constants |
 | `adaptix_contracts.types.enums` | All domain enum types (no SQLAlchemy dependency) |
 | `adaptix_contracts.utils.roles` | `normalize_role_claims()` |
 | `adaptix_contracts.schemas.*` | 33 Pydantic schema files for every domain |
-| `adaptix_contracts.events.*` | Typed `DomainEvent` subclasses for all 55 event types, `EventCatalog`, `import_all_events()` |
+| `adaptix_contracts.events.*` | Typed `DomainEvent` subclasses for all 489 event types across 20 modules, `EventCatalog`, `import_all_events()` |
 
 ## What This Package Does NOT Own
 
@@ -183,7 +183,7 @@ The following policies are enforced by `tests/test_compat.py` and `tests/test_re
 ```bash
 # From the package root
 python -m pytest tests -q --tb=short
-# Expected: 400 passed
+# Expected: 1713 passed
 ```
 
 ---
