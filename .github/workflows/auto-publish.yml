@@ -25,6 +25,7 @@ jobs:
         run: pytest
 
       - name: Deploy
+        if: ${{ secrets.DEPLOY_WEBHOOK_URL != '' }}
         env:
           DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
         run: |
