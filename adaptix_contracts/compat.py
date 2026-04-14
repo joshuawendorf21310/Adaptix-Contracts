@@ -318,6 +318,71 @@ COMPATIBILITY_MATRIX: list[DownstreamDeclaration] = [
         event_types=["*"],
         notes="Insight aggregates all events for founder intelligence and analytics.",
     ),
+    DownstreamDeclaration(
+        repo="adaptix-air",
+        min_contract_version="0.1.1",
+        max_contract_version="0.2.x",
+        event_types=[
+            "air.mission.created",
+            "air.mission.accepted",
+            "air.flight.departed",
+            "air.flight.landed",
+            "air.patient.loaded",
+            "incident.created",
+        ],
+        notes="Air medical/HEMS operations — produces air.* events, consumes incident events.",
+    ),
+    DownstreamDeclaration(
+        repo="adaptix-transport",
+        min_contract_version="0.1.1",
+        max_contract_version="0.2.x",
+        event_types=[
+            "transport.requested",
+            "transport.scheduled",
+            "transport.completed",
+            "incident.created",
+            "billing.claim.created",
+        ],
+        notes="TransportLink — non-emergency transport scheduling, produces transport.* events.",
+    ),
+    DownstreamDeclaration(
+        repo="adaptix-inventory",
+        min_contract_version="0.1.1",
+        max_contract_version="0.2.x",
+        event_types=[
+            "inventory.item.added",
+            "inventory.item.depleted",
+            "inventory.low_stock",
+            "narcotic.discrepancy.detected",
+            "unit.restocked",
+        ],
+        notes="Inventory management — supply chain, narcotics tracking, equipment management.",
+    ),
+    DownstreamDeclaration(
+        repo="adaptix-communications",
+        min_contract_version="0.1.1",
+        max_contract_version="0.2.x",
+        event_types=[
+            "communication.inbound.received",
+            "communication.outbound.sent",
+            "incident.created",
+            "crewlink.alert.created",
+        ],
+        notes="Communications hub — unified messaging, escalation workflows, template management.",
+    ),
+    DownstreamDeclaration(
+        repo="adaptix-mdt",
+        min_contract_version="0.1.1",
+        max_contract_version="0.2.x",
+        event_types=[
+            "mdt.status_changed",
+            "mdt.location.updated",
+            "mdt.form.submitted",
+            "incident.created",
+            "incident.status_changed",
+        ],
+        notes="MDT/Mobile Data Terminal — field device integration, unit status, location tracking.",
+    ),
 ]
 
 
