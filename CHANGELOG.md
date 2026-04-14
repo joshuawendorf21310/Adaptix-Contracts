@@ -6,6 +6,34 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Registry expansion**: CONTRACT_REGISTRY expanded from 55 to 489 unique event types (+434 events)
+- **8 new event modules**: ai_events, air_events, inventory_events, communications_events,
+  interop_events, transport_events, command_events, admin_events
+- **Core platform events**: New core_events module with 59 events for tenancy, security, compliance,
+  API management, notifications, reports, system operations
+- **Expanded existing modules**: Added 269 events across auth, audit, cad, crewlink, epcr, fire,
+  incident, mdt, nemsis, webhook, workforce modules
+- **Compatibility matrix expansion**: Added 5 new repos (adaptix-air, adaptix-transport,
+  adaptix-inventory, adaptix-communications, adaptix-mdt) to COMPATIBILITY_MATRIX (now 18 repos)
+- **Architecture policy tests**: Added 11 new governance tests for new domains
+- **100% catalog coverage**: All 489 events now have typed DomainEvent classes registered in EventCatalog
+
+### Changed
+- EventCatalog now tracks 489 schemas (was 55)
+- Test suite expanded from ~400 to 1713 tests (94% code coverage)
+- All event classes properly inherit from DomainEvent without conflicting base field declarations
+
+### Fixed
+- Removed 11 duplicate event type registrations from CONTRACT_REGISTRY
+- Fixed MDT ownership policy test to allow both adaptix-field and adaptix-mdt repos
+- Updated test configuration VALID_REPOS to include adaptix-transport, adaptix-mdt, adaptix-communications
+- Removed conflicting base class field declarations (entity_id, tenant_id, etc.) from event classes
+
+---
+
 ## [0.2.0] — 2026-04-09
 
 ### BREAKING CHANGES
