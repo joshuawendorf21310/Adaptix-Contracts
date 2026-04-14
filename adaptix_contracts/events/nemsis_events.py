@@ -108,3 +108,62 @@ _catalog.register("nemsis.export.validated", ExportValidatedEvent)
 _catalog.register("nemsis.export.submitted", ExportSubmittedEvent)
 _catalog.register("nemsis.export.accepted", ExportAcceptedEvent)
 _catalog.register("nemsis.export.rejected", ExportRejectedEvent)
+class NemsisElementRequiredMissingEvent(DomainEvent):
+    event_type: str = "nemsis.element.required_missing"
+    entity_type: str = "nemsis"
+    epcr_id: str = ""
+    element_name: str = ""
+    element_path: str = ""
+class NemsisSchemaValidatedEvent(DomainEvent):
+    event_type: str = "nemsis.schema.validated"
+    entity_type: str = "nemsis"
+    epcr_id: str = ""
+    schema_version: str = ""
+    validation_passed: bool = False
+    error_count: int = 0
+class NemsisStateResponseReceivedEvent(DomainEvent):
+    event_type: str = "nemsis.state_response.received"
+    entity_type: str = "nemsis"
+    submission_id: str = ""
+    response_status: str = ""
+    response_message: str = ""
+    received_at: str = ""
+class NemsisStateSubmissionPreparedEvent(DomainEvent):
+    event_type: str = "nemsis.state_submission.prepared"
+    entity_type: str = "nemsis"
+    submission_id: str = ""
+    state_code: str = ""
+    record_count: int = 0
+    prepared_at: str = ""
+class NemsisStateSubmissionSentEvent(DomainEvent):
+    event_type: str = "nemsis.state_submission.sent"
+    entity_type: str = "nemsis"
+    submission_id: str = ""
+    state_code: str = ""
+    sent_at: str = ""
+class NerisRetryScheduledEvent(DomainEvent):
+    event_type: str = "neris.retry.scheduled"
+    entity_type: str = "neris"
+    submission_id: str = ""
+    retry_attempt: str = ""
+    scheduled_at: str = ""
+class NerisValidationCompletedEvent(DomainEvent):
+    event_type: str = "neris.validation.completed"
+    entity_type: str = "neris"
+    submission_id: str = ""
+    validation_passed: bool = False
+    error_count: int = 0
+    warning_count: int = 0
+class NerisValidationStartedEvent(DomainEvent):
+    event_type: str = "neris.validation.started"
+    entity_type: str = "neris"
+    submission_id: str = ""
+    validator_version: str = ""
+_catalog.register("nemsis.element.required_missing", NemsisElementRequiredMissingEvent)
+_catalog.register("nemsis.schema.validated", NemsisSchemaValidatedEvent)
+_catalog.register("nemsis.state_response.received", NemsisStateResponseReceivedEvent)
+_catalog.register("nemsis.state_submission.prepared", NemsisStateSubmissionPreparedEvent)
+_catalog.register("nemsis.state_submission.sent", NemsisStateSubmissionSentEvent)
+_catalog.register("neris.retry.scheduled", NerisRetryScheduledEvent)
+_catalog.register("neris.validation.completed", NerisValidationCompletedEvent)
+_catalog.register("neris.validation.started", NerisValidationStartedEvent)

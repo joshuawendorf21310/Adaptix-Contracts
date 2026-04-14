@@ -16,16 +16,25 @@ def import_all_events() -> None:
     Call this once at application startup if you need catalog completeness.
     """
     from adaptix_contracts.events import (  # noqa: F401
+        admin_events,
+        ai_events,
+        air_events,
         audit_events,
         auth_events,
         billing_events,
         cad_events,
+        command_events,
+        communications_events,
+        core_events,
         crewlink_events,
         epcr_events,
         fire_events,
         incident_events,
+        interop_events,
+        inventory_events,
         mdt_events,
         nemsis_events,
+        transport_events,
         webhook_events,
         workforce_events,
     )
