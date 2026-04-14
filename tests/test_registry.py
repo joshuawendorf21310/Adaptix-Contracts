@@ -40,6 +40,7 @@ VALID_REPOS = frozenset(
         "adaptix-air",
         "adaptix-crewlink",
         "adaptix-transportlink",
+        "adaptix-transport",  # Added
         "adaptix-workforce",
         "adaptix-command",
         "adaptix-flow",
@@ -48,6 +49,8 @@ VALID_REPOS = frozenset(
         "adaptix-insight",
         "adaptix-ai",
         "adaptix-admin",
+        "adaptix-mdt",  # Added
+        "adaptix-communications",  # Added
     }
 )
 
@@ -186,10 +189,14 @@ class TestArchitecturePolicies:
         billing_events = [e for e in CONTRACT_REGISTRY if e.event_type.startswith("billing.")]
         assert all(e.source_repo == "adaptix-billing" for e in billing_events)
 
-    def test_mdt_events_owned_by_adaptix_field(self):
+    def test_mdt_events_owned_by_adaptix_field_or_mdt(self):
+        """MDT events can be owned by adaptix-field (device-level) or adaptix-mdt (MDT-specific)."""
         mdt_events = [e for e in CONTRACT_REGISTRY if e.event_type.startswith("mdt.")]
         assert len(mdt_events) > 0
-        assert all(e.source_repo == "adaptix-field" for e in mdt_events)
+        allowed_repos = {"adaptix-field", "adaptix-mdt"}
+        assert all(e.source_repo in allowed_repos for e in mdt_events), (
+            f"MDT events must be in adaptix-field or adaptix-mdt repos"
+        )
 
     def test_no_telnyx_billing_sms_event_in_operational_domain(self):
         """Telnyx is billing-only. No SMS/voice events should be in operational domains."""

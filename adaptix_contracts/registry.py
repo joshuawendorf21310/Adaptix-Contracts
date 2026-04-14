@@ -3117,13 +3117,6 @@ CONTRACT_REGISTRY: tuple[ContractEntry, ...] = (
         stability="beta",
         payload_fields=("device_id", "destination", "eta", "distance_remaining"),
     ),
-    ContractEntry(
-        event_type="mdt.form.submitted",
-        source_repo="adaptix-mdt",
-        schema_version=1,
-        stability="stable",
-        payload_fields=("form_id", "form_type", "submitted_by", "submitted_at"),
-    ),
     # ── Extended Patient Lifecycle ────────────────────────────────────────
     ContractEntry(
         event_type="patient.encounter.created",
@@ -3159,13 +3152,6 @@ CONTRACT_REGISTRY: tuple[ContractEntry, ...] = (
         schema_version=1,
         stability="stable",
         payload_fields=("patient_id", "consent_type", "obtained_by", "obtained_at"),
-    ),
-    ContractEntry(
-        event_type="patient.consent.revoked",
-        source_repo="adaptix-epcr",
-        schema_version=1,
-        stability="stable",
-        payload_fields=("patient_id", "consent_type", "revoked_by", "revoked_at"),
     ),
     ContractEntry(
         event_type="patient.advance_directive.recorded",
@@ -3308,13 +3294,6 @@ CONTRACT_REGISTRY: tuple[ContractEntry, ...] = (
         payload_fields=("charge_id", "encounter_id", "charge_code", "amount", "posted_at"),
     ),
     ContractEntry(
-        event_type="billing.charge.adjusted",
-        source_repo="adaptix-billing",
-        schema_version=1,
-        stability="stable",
-        payload_fields=("charge_id", "adjustment_type", "adjustment_amount", "adjusted_by"),
-    ),
-    ContractEntry(
         event_type="billing.charge.reversed",
         source_repo="adaptix-billing",
         schema_version=1,
@@ -3334,20 +3313,6 @@ CONTRACT_REGISTRY: tuple[ContractEntry, ...] = (
         schema_version=1,
         stability="stable",
         payload_fields=("payment_id", "refund_amount", "refund_reason", "refunded_at"),
-    ),
-    ContractEntry(
-        event_type="billing.statement.generated",
-        source_repo="adaptix-billing",
-        schema_version=1,
-        stability="stable",
-        payload_fields=("statement_id", "account_id", "statement_date", "balance"),
-    ),
-    ContractEntry(
-        event_type="billing.statement.sent",
-        source_repo="adaptix-billing",
-        schema_version=1,
-        stability="stable",
-        payload_fields=("statement_id", "delivery_method", "sent_at"),
     ),
     ContractEntry(
         event_type="billing.account.flagged",
@@ -3400,20 +3365,6 @@ CONTRACT_REGISTRY: tuple[ContractEntry, ...] = (
         payload_fields=("user_id", "course_id", "module_id", "completed_at"),
     ),
     ContractEntry(
-        event_type="training.assessment.passed",
-        source_repo="adaptix-workforce",
-        schema_version=1,
-        stability="beta",
-        payload_fields=("user_id", "assessment_id", "score", "passed_at"),
-    ),
-    ContractEntry(
-        event_type="training.assessment.failed",
-        source_repo="adaptix-workforce",
-        schema_version=1,
-        stability="beta",
-        payload_fields=("user_id", "assessment_id", "score", "failed_at"),
-    ),
-    ContractEntry(
         event_type="training.skill.verified",
         source_repo="adaptix-workforce",
         schema_version=1,
@@ -3448,13 +3399,6 @@ CONTRACT_REGISTRY: tuple[ContractEntry, ...] = (
         schema_version=1,
         stability="stable",
         payload_fields=("incident_id", "turnaround_time_seconds", "calculated_at"),
-    ),
-    ContractEntry(
-        event_type="dashboard.alert.triggered",
-        source_repo="adaptix-command",
-        schema_version=1,
-        stability="stable",
-        payload_fields=("alert_id", "alert_type", "threshold_exceeded", "triggered_at"),
     ),
     ContractEntry(
         event_type="dashboard.alert.acknowledged",
@@ -3574,27 +3518,6 @@ CONTRACT_REGISTRY: tuple[ContractEntry, ...] = (
         payload_fields=("incident_id", "declared_by", "location", "declared_at"),
     ),
     # ── Additional Cross-Domain Platform Contracts ───────────────────────
-    ContractEntry(
-        event_type="system.maintenance.scheduled",
-        source_repo="adaptix-core",
-        schema_version=1,
-        stability="stable",
-        payload_fields=("maintenance_id", "scheduled_start", "scheduled_end", "affected_services"),
-    ),
-    ContractEntry(
-        event_type="system.maintenance.started",
-        source_repo="adaptix-core",
-        schema_version=1,
-        stability="stable",
-        payload_fields=("maintenance_id", "started_at"),
-    ),
-    ContractEntry(
-        event_type="system.maintenance.completed",
-        source_repo="adaptix-core",
-        schema_version=1,
-        stability="stable",
-        payload_fields=("maintenance_id", "completed_at", "outcome"),
-    ),
     ContractEntry(
         event_type="integration.webhook.invoked",
         source_repo="adaptix-core",
