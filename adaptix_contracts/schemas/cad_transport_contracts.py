@@ -1,3 +1,5 @@
+File: contracts/cad_transport_contracts.py
+
 """CAD transport lane contract schemas for cross-domain communication.
 
 Defines all typed contracts for CAD's visibility into scheduled transports:
@@ -24,70 +26,70 @@ class CadTransportLaneStatus(str, Enum):
 
 
 class ScheduledTransportLaneItem(BaseModel):
-    """Read contract for a single trip in the CAD scheduled transport lane.
-
-    Displayed in the upcoming transport lane. Not a noisy popup.
-    Provides dispatcher with full context without interrupting active operations.
-    """
+    """Read contract for a single trip in the CAD scheduled transport lane."""
 
     trip_id: str
     request_id: str
     tenant_id: str
+
     patient_name: str
     transport_type: str
     level_of_care: str
+
     pickup_facility_name: str
     destination_facility_name: str
+
     scheduled_pickup_at: datetime
-    scheduled_dropoff_at: Optional[datetime]
-    unit_id: Optional[str]
+    scheduled_dropoff_at: Optional[datetime] = None
+
+    unit_id: Optional[str] = None
     crew_ids: list[str]
+
     readiness_state: str
     documents_ready: bool
     signature_complete: bool
-    authorization_status: Optional[str]
+    authorization_status: Optional[str] = None
+
     lane_status: CadTransportLaneStatus
-    minutes_until_pickup: Optional[int]
+    minutes_until_pickup: Optional[int] = None
 
 
 class DispatchReadyItem(BaseModel):
-    """Read contract for a trip that has met all readiness gates.
-
-    Only appears in dispatch-ready queue when all gates pass:
-    - documents ready
-    - signatures complete
-    - authorization resolved
-    - unit available
-    """
+    """Read contract for a trip that has met all readiness gates."""
 
     trip_id: str
     request_id: str
     tenant_id: str
+
     patient_name: str
     transport_type: str
     level_of_care: str
+
     pickup_facility_name: str
     destination_facility_name: str
+
     scheduled_pickup_at: datetime
-    unit_id: Optional[str]
+
+    unit_id: Optional[str] = None
     crew_ids: list[str]
+
     readiness_confirmed_at: datetime
     minutes_until_pickup: int
 
 
 class CadTransportException(BaseModel):
-    """Read contract for a transport trip with unresolved blockers.
-
-    Appears in the exception queue requiring dispatcher attention.
-    """
+    """Read contract for a transport trip with unresolved blockers."""
 
     trip_id: str
     request_id: str
     tenant_id: str
+
     patient_name: str
     scheduled_pickup_at: datetime
+
     exception_type: str
     exception_reason: str
+
     flagged_at: datetime
     blocking_gates: list[str]
 
@@ -98,31 +100,27 @@ class CadTransportActivateRequest(BaseModel):
     trip_id: str
     assigned_unit_id: Optional[str] = None
     assigned_crew_ids: list[str] = Field(default_factory=list)
-    operator_note: Optional[str] = Field(None, max_length=500)
+    operator_note: Optional[str] = Field(default=None, max_length=500)
 
 
 class CadTransportActivateResponse(BaseModel):
     """Response contract for transport activation in CAD."""
 
     trip_id: str
-    cad_case_id: Optional[str]
+    cad_case_id: Optional[str] = None
     activated_at: datetime
     status: str
 
 
 class CadTransportSyncPayload(BaseModel):
-    """Contract for CAD pushing a status update back to TransportLink.
-
-    Sent when CAD changes trip status during active operations.
-    TransportLink must reflect this in the transport timeline.
-    """
+    """Contract for CAD pushing a status update back to TransportLink."""
 
     trip_id: str
     tenant_id: str
     new_status: str
-    unit_id: Optional[str]
+    unit_id: Optional[str] = None
     synced_at: datetime
-    operator_note: Optional[str]
+    operator_note: Optional[str] = None
 
 
 class CadTransportSyncResponse(BaseModel):
@@ -130,7 +128,7 @@ class CadTransportSyncResponse(BaseModel):
 
     trip_id: str
     transport_status_updated: bool
-    timeline_event_id: Optional[str]
+    timeline_event_id: Optional[str] = None
     accepted_at: datetime
 
 
@@ -138,10 +136,12 @@ class TransportActivatedEvent(BaseModel):
     """Published when CAD activates a transport into operational state."""
 
     event_type: str = "cad.transport.activated"
+
     trip_id: str
     request_id: str
     tenant_id: str
-    cad_case_id: Optional[str]
+    cad_case_id: Optional[str] = None
+
     activated_at: datetime
 
 
@@ -149,8 +149,10 @@ class TransportStatusSyncedEvent(BaseModel):
     """Published when CAD syncs a transport status change back to TransportLink."""
 
     event_type: str = "cad.transport.status_synced"
+
     trip_id: str
     request_id: str
     tenant_id: str
     new_status: str
+
     synced_at: datetime
