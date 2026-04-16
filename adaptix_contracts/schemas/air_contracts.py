@@ -1,8 +1,9 @@
 """Air (HEMS) domain contract schemas for cross-domain communication."""
 from __future__ import annotations
-from pydantic import BaseModel, Field
-from typing import Optional
+
 from datetime import datetime
+
+from pydantic import BaseModel
 
 
 class AirMissionCreatedEvent(BaseModel):
