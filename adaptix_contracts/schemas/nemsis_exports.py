@@ -1,10 +1,12 @@
+File: contracts/nemsis_exports.py
+
 """NEMSIS 3.5.1 export lifecycle contracts.
 
 Defines the complete, typed export attempt lifecycle with state, failure classification,
-and readiness snapshots. Used across all backend services and frontend consumers.
-
-Supports generation, persistence, history, inspection, retry, and future submission flows.
+and readiness snapshots.
 """
+from __future__ import annotations
+
 from datetime import datetime
 from enum import Enum
 
@@ -12,7 +14,6 @@ from pydantic import BaseModel, Field
 
 
 class ExportLifecycleStatus(str, Enum):
-    """Export attempt lifecycle state."""
     BLOCKED = "blocked"
     GENERATION_REQUESTED = "generation_requested"
     GENERATION_IN_PROGRESS = "generation_in_progress"
@@ -21,7 +22,6 @@ class ExportLifecycleStatus(str, Enum):
 
 
 class ExportFailureType(str, Enum):
-    """Failure classification for export attempts."""
     NONE = "none"
     READINESS_BLOCKED = "readiness_blocked"
     VALIDATION_ERROR = "validation_error"
@@ -32,7 +32,6 @@ class ExportFailureType(str, Enum):
 
 
 class ExportTriggerSource(str, Enum):
-    """How an export attempt was initiated."""
     CHART = "chart"
     READINESS_PAGE = "readiness_page"
     OPERATOR_PANEL = "operator_panel"
@@ -42,16 +41,15 @@ class ExportTriggerSource(str, Enum):
 
 
 class ExportReadinessSnapshot(BaseModel):
-    """Readiness state at time of export attempt (immutable record)."""
     ready_for_export: bool
     blocker_count: int
     warning_count: int
+
     compliance_percentage: float | None = None
     missing_mandatory_fields: list[str] = Field(default_factory=list)
 
 
 class ExportArtifactMetadata(BaseModel):
-    """Metadata about generated artifact (XML, etc)."""
     file_name: str | None = None
     mime_type: str | None = None
     size_bytes: int | None = None
@@ -60,42 +58,50 @@ class ExportArtifactMetadata(BaseModel):
 
 
 class ExportAttemptSummary(BaseModel):
-    """Summary row for export history list."""
     export_id: int
     chart_id: str
+
     status: ExportLifecycleStatus
     failure_type: ExportFailureType = ExportFailureType.NONE
+
     message: str
     trigger_source: ExportTriggerSource
+
     retry_count: int = 0
+
     created_at: datetime
     updated_at: datetime
 
 
 class ExportAttemptDetail(BaseModel):
-    """Complete detail for export inspection."""
     export_id: int
     chart_id: str
     tenant_id: str
+
     status: ExportLifecycleStatus
     failure_type: ExportFailureType = ExportFailureType.NONE
+
     message: str
     failure_reason: str | None = None
+
     trigger_source: ExportTriggerSource
     retry_count: int = 0
+
     supersedes_export_id: int | None = None
     superseded_by_export_id: int | None = None
+
     readiness_snapshot: ExportReadinessSnapshot
     artifact: ExportArtifactMetadata | None = None
+
     created_at: datetime
     updated_at: datetime
+
     requested_at: datetime | None = None
     started_at: datetime | None = None
     completed_at: datetime | None = None
 
 
 class GenerateExportRequest(BaseModel):
-    """Request to generate export."""
     chart_id: str
     state_dataset: str | None = None
     trigger_source: ExportTriggerSource = ExportTriggerSource.CHART
@@ -103,52 +109,60 @@ class GenerateExportRequest(BaseModel):
 
 
 class GenerateExportResponse(BaseModel):
-    """Response from export generation."""
     export_id: int
     chart_id: str
+
     success: bool
     blocked: bool
+
     status: ExportLifecycleStatus
     failure_type: ExportFailureType = ExportFailureType.NONE
+
     message: str
     failure_reason: str | None = None
+
     retry_count: int = 0
+
     readiness_snapshot: ExportReadinessSnapshot
     artifact: ExportArtifactMetadata | None = None
+
     created_at: datetime
     updated_at: datetime
 
 
 class ExportHistoryResponse(BaseModel):
-    """Paginated export history for a chart."""
     chart_id: str
     total_count: int
     limit: int
     offset: int
+
     exports: list[ExportAttemptSummary]
 
 
 class ExportDetailResponse(BaseModel):
-    """Response for export detail endpoint."""
     export: ExportAttemptDetail
 
 
 class RetryExportRequest(BaseModel):
-    """Request to retry failed export."""
     trigger_source: ExportTriggerSource = ExportTriggerSource.MANUAL_RETRY
 
 
 class RetryExportResponse(BaseModel):
-    """Response from export retry."""
     original_export_id: int
     new_export_id: int
+
     success: bool
     blocked: bool
+
     status: ExportLifecycleStatus
     failure_type: ExportFailureType = ExportFailureType.NONE
+
     message: str
     failure_reason: str | None = None
+
     retry_count: int
+
     readiness_snapshot: ExportReadinessSnapshot
+
     created_at: datetime
     updated_at: datetime
