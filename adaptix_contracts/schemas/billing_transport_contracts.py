@@ -1,3 +1,5 @@
+File: contracts/billing_transport_contracts.py
+
 """Billing transport readiness contract schemas for cross-domain communication.
 
 Defines all typed contracts for the billing domain's transport readiness
@@ -36,7 +38,7 @@ class BillingReadinessGate(BaseModel):
 
     gate: str
     status: TransportReadinessGateStatus
-    detail: Optional[str]
+    detail: Optional[str] = None
 
 
 class TransportReadinessResponse(BaseModel):
@@ -88,7 +90,7 @@ class BillingTransportLinkEvent(BaseModel):
     event_type: str = "billing.transport.linked"
     transport_request_id: str
     tenant_id: str
-    claim_id: Optional[str]
+    claim_id: Optional[str] = None
     linked_at: datetime
 
 
@@ -97,6 +99,6 @@ class ClaimReadinessResolvedEvent(BaseModel):
 
     event_type: str = "billing.transport.claim_ready"
     transport_request_id: str
-    claim_id: Optional[str]
+    claim_id: Optional[str] = None
     tenant_id: str
     resolved_at: datetime
