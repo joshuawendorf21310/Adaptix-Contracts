@@ -1,11 +1,13 @@
-File: adaptix-contracts/adaptix_contracts/schemas/billing_portal_contracts.py
+"""Billing domain core contracts for cross-domain communication.
 
-"""Adaptix Third-Party Billing public commercial contracts.
+Defines foundational billing entities, claim lifecycle, remittance,
+payments, denials, clearinghouse interaction events, payer references,
+and claim line-level billing details.
 
-Defines all typed request and response schemas for the public billing
-commercial entry experience: ROI estimation, proposal generation,
-onboarding activation, and migration intake.
+These contracts are the authoritative source for all billing domain
+data exchanged across Adaptix services.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -15,132 +17,289 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-class BillingAudienceType(str, Enum):
-    """Audience segment for the public billing entry surface."""
+# ---------------------------------------------------------------------------
+# Enums
+# ---------------------------------------------------------------------------
 
-    AGENCY = "agency"
-    BILLING_OPERATOR = "billing_operator"
-    MIGRATION_PROSPECT = "migration_prospect"
+class ClaimStatus(str, Enum):
+    """Lifecycle status of a billing claim."""
 
-
-class BillingEntrySummary(BaseModel):
-    """Summary contract for the public billing entry hub (/billing)."""
-
-    service_available: bool
-    audience_types: list[BillingAudienceType]
-    capability_areas: list[str]
-    unavailable_reason: Optional[str] = None
-
-
-class BillingROIRequest(BaseModel):
-    """Inputs required for backend ROI estimation."""
-
-    monthly_claim_volume: int = Field(..., gt=0)
-    average_reimbursement_cents: int = Field(..., gt=0)
-    current_vendor_fee_pct: float = Field(..., ge=0.0, le=100.0)
-    denial_rate_pct: float = Field(..., ge=0.0, le=100.0)
-    ar_over_90_days_cents: int = Field(..., ge=0)
-    monthly_write_off_cents: int = Field(..., ge=0)
-    has_legacy_ar_to_import: bool
-    current_system_name: Optional[str] = Field(None, max_length=200)
+    DRAFT = "draft"
+    READY = "ready"
+    SUBMITTED = "submitted"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+    DENIED = "denied"
+    PARTIALLY_PAID = "partially_paid"
+    PAID = "paid"
+    CLOSED = "closed"
 
 
-class BillingROIRangeValue(BaseModel):
-    """Directional value range from ROI estimation."""
+class DenialStatus(str, Enum):
+    """Lifecycle status of a denial."""
 
-    low_cents: int
-    mid_cents: int
-    high_cents: int
-    basis: str
-
-
-class BillingROIResponse(BaseModel):
-    """Backend-computed ROI estimation result."""
-
-    estimation_id: str
-    vendor_fee_delta_annual_cents: BillingROIRangeValue
-    denial_recovery_opportunity_annual_cents: BillingROIRangeValue
-    ar_recovery_opportunity_cents: BillingROIRangeValue
-    total_opportunity_annual_cents: BillingROIRangeValue
-    assumptions: list[str]
-    limitations: list[str]
-    computed_at: datetime
-    next_step_options: list[str]
+    OPEN = "open"
+    IN_APPEAL = "in_appeal"
+    RESOLVED = "resolved"
+    WRITTEN_OFF = "written_off"
 
 
-class BillingProposalRequest(BaseModel):
-    """Request for a structured commercial proposal."""
+class PaymentStatus(str, Enum):
+    """Lifecycle status of a payment."""
 
-    organization_name: str = Field(..., min_length=1, max_length=200)
-    contact_name: str = Field(..., min_length=1, max_length=200)
-    contact_email: str = Field(..., min_length=5, max_length=200)
-    audience_type: BillingAudienceType
-    monthly_claim_volume: int = Field(..., gt=0)
-    roi_estimation_id: Optional[str] = None
-    migration_intent: bool
-    notes: Optional[str] = Field(None, max_length=2000)
+    POSTED = "posted"
+    PENDING = "pending"
+    FAILED = "failed"
 
 
-class BillingProposalResponse(BaseModel):
-    """Outcome of a proposal request submission."""
+class ClearinghouseStatus(str, Enum):
+    """Claim submission state at the clearinghouse layer."""
 
-    proposal_id: str
-    status: str = Field(..., description="submitted | processing | error")
-    estimated_response_hours: Optional[int] = None
-    message: str
+    QUEUED = "queued"
+    SUBMITTED = "submitted"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+    ERROR = "error"
+
+
+class ClearinghouseProvider(str, Enum):
+    """Supported clearinghouse providers."""
+
+    OFFICE_ALLY = "office_ally"
+    CHANGE_HEALTHCARE = "change_healthcare"
+    AVAILITY = "availity"
+    WAYSTAR = "waystar"
+    OTHER = "other"
+
+
+class PayerType(str, Enum):
+    """Classification of payer entities."""
+
+    MEDICARE = "medicare"
+    MEDICAID = "medicaid"
+    COMMERCIAL = "commercial"
+    SELF_PAY = "self_pay"
+    OTHER = "other"
+
+
+# ---------------------------------------------------------------------------
+# Core Contracts
+# ---------------------------------------------------------------------------
+
+class ClaimLineItem(BaseModel):
+    """A single billable service line on a claim."""
+
+    line_id: str
+    procedure_code: str
+    modifier_codes: list[str] = Field(default_factory=list)
+    diagnosis_codes: list[str] = Field(default_factory=list)
+
+    units: int = Field(..., gt=0)
+    charge_cents: int = Field(..., ge=0)
+
+    description: Optional[str] = None
+
+
+class AdjustmentContract(BaseModel):
+    """Financial adjustment applied to a claim."""
+
+    adjustment_id: str
+    claim_id: str
+    tenant_id: str
+
+    adjustment_type: str
+    amount_cents: int = Field(..., ge=0)
+
+    reason_code: Optional[str] = None
+    applied_at: datetime
+
+
+class PayerContract(BaseModel):
+    """Read-only payer reference contract."""
+
+    payer_id: str
+    payer_name: str
+    payer_type: PayerType
+
+    electronic_claims_supported: bool
+    electronic_remittance_supported: bool
+
+    contact_phone: Optional[str] = None
+    contact_email: Optional[str] = None
+
+
+class ClaimContract(BaseModel):
+    """Canonical claim record for cross-domain consumption."""
+
+    claim_id: str
+    tenant_id: str
+    patient_id: str
+
+    encounter_id: Optional[str] = None
+    transport_request_id: Optional[str] = None
+
+    payer_id: Optional[str] = None
+    payer_name: Optional[str] = None
+
+    status: ClaimStatus
+
+    total_charge_cents: int = Field(..., ge=0)
+    total_paid_cents: int = Field(0, ge=0)
+    total_adjustment_cents: int = Field(0, ge=0)
+    balance_cents: int = Field(..., ge=0)
+
+    line_items: list[ClaimLineItem] = Field(default_factory=list)
+
+    created_at: datetime
+    updated_at: datetime
+    submitted_at: Optional[datetime] = None
+    closed_at: Optional[datetime] = None
+
+
+class DenialContract(BaseModel):
+    """Denial record tied to a claim."""
+
+    denial_id: str
+    claim_id: str
+    tenant_id: str
+
+    reason_code: str
+    reason_description: str
+
+    denied_amount_cents: int = Field(..., ge=0)
+    status: DenialStatus
+
+    received_at: datetime
+    updated_at: datetime
+
+
+class PaymentContract(BaseModel):
+    """Payment record applied to a claim."""
+
+    payment_id: str
+    claim_id: str
+    tenant_id: str
+
+    amount_cents: int = Field(..., ge=0)
+    payer_name: Optional[str] = None
+
+    status: PaymentStatus
+    posted_at: datetime
+
+
+class RemittanceContract(BaseModel):
+    """Remittance (ERA/EOB) summary contract."""
+
+    remit_id: str
+    tenant_id: str
+    payer_name: str
+
+    total_paid_cents: int = Field(..., ge=0)
+    total_adjusted_cents: int = Field(..., ge=0)
+
+    received_at: datetime
+
+
+class ClearinghouseSubmission(BaseModel):
+    """Claim submission tracking via clearinghouse."""
+
+    submission_id: str
+    claim_id: str
+    tenant_id: str
+
+    provider: ClearinghouseProvider
+    status: ClearinghouseStatus
+
+    submitted_at: Optional[datetime] = None
+    response_received_at: Optional[datetime] = None
+    error_message: Optional[str] = None
+
+
+# ---------------------------------------------------------------------------
+# Events
+# ---------------------------------------------------------------------------
+
+class ClaimCreatedEvent(BaseModel):
+    """Published when a claim is created."""
+
+    event_type: str = "billing.claim.created"
+
+    claim_id: str
+    tenant_id: str
+    patient_id: str
+
+    created_at: datetime
+
+
+class ClaimSubmittedEvent(BaseModel):
+    """Published when a claim is submitted."""
+
+    event_type: str = "billing.claim.submitted"
+
+    claim_id: str
+    tenant_id: str
+    submission_id: str
+    provider: ClearinghouseProvider
     submitted_at: datetime
 
 
-class BillingOnboardingRequest(BaseModel):
-    """Tenant activation and provisioning request."""
+class ClaimStatusUpdatedEvent(BaseModel):
+    """Published when a claim status changes."""
 
-    organization_name: str = Field(..., min_length=1, max_length=200)
-    contact_email: str = Field(..., min_length=5, max_length=200)
-    contact_name: str = Field(..., min_length=1, max_length=200)
-    audience_type: BillingAudienceType
-    service_region: str = Field(..., min_length=1, max_length=100)
-    monthly_claim_volume: int = Field(..., gt=0)
-    has_existing_clearinghouse: bool
-    clearinghouse_name: Optional[str] = Field(None, max_length=200)
-    migration_intent: bool
-    proposal_id: Optional[str] = None
-    terms_accepted: bool
+    event_type: str = "billing.claim.status_updated"
+
+    claim_id: str
+    tenant_id: str
+    old_status: ClaimStatus
+    new_status: ClaimStatus
+    updated_at: datetime
 
 
-class BillingOnboardingResponse(BaseModel):
-    """Result of an onboarding submission."""
+class DenialCreatedEvent(BaseModel):
+    """Published when a denial is created."""
 
-    onboarding_id: str
-    status: str = Field(..., description="submitted | provisioning | requires_review | error")
-    next_steps: list[str]
-    estimated_activation_hours: Optional[int] = None
-    message: str
-    submitted_at: datetime
+    event_type: str = "billing.denial.created"
 
-
-class BillingMigrationIntakeRequest(BaseModel):
-    """Legacy billing migration intake."""
-
-    organization_name: str = Field(..., min_length=1, max_length=200)
-    contact_email: str = Field(..., min_length=5, max_length=200)
-    current_vendor_name: str = Field(..., min_length=1, max_length=200)
-    has_exportable_ar: bool
-    has_exportable_denial_history: bool
-    has_exportable_remit_history: bool
-    has_exportable_patient_balance_history: bool
-    has_exportable_workqueue: bool
-    ar_oldest_date: Optional[str] = None
-    ar_total_outstanding_cents: Optional[int] = Field(None, ge=0)
-    blocking_issues: Optional[str] = Field(None, max_length=2000)
-    onboarding_id: Optional[str] = None
+    denial_id: str
+    claim_id: str
+    tenant_id: str
+    created_at: datetime
 
 
-class BillingMigrationIntakeResponse(BaseModel):
-    """Result of migration intake submission."""
+class PaymentPostedEvent(BaseModel):
+    """Published when a payment is applied to a claim."""
 
-    migration_id: str
-    status: str = Field(..., description="received | review_required | blocked | error")
-    readiness_summary: str
-    identified_blockers: list[str]
-    next_steps: list[str]
-    submitted_at: datetime
+    event_type: str = "billing.payment.posted"
+
+    payment_id: str
+    claim_id: str
+    tenant_id: str
+    amount_cents: int = Field(..., ge=0)
+    payer_id: Optional[str] = None
+    posted_at: datetime
+
+
+class RemittanceReceivedEvent(BaseModel):
+    """Published when a remittance is received."""
+
+    event_type: str = "billing.remittance.received"
+
+    remit_id: str
+    tenant_id: str
+    received_at: datetime
+
+
+class ClearinghouseAckReceivedEvent(BaseModel):
+    """Published when a clearinghouse acknowledgement is received."""
+
+    event_type: str = "billing.clearinghouse.ack_received"
+
+    submission_id: str
+    claim_id: str
+    tenant_id: str
+
+    provider: ClearinghouseProvider
+    ack_code: str
+    ack_message: Optional[str] = None
+
+    received_at: datetime
