@@ -1,5 +1,3 @@
-File: contracts/cad_transport_contracts.py
-
 """CAD transport lane contract schemas for cross-domain communication.
 
 Defines all typed contracts for CAD's visibility into scheduled transports:

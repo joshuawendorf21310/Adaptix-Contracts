@@ -45,8 +45,8 @@ class AckType(str, Enum):
     """Type of clearinghouse acknowledgement."""
 
     TA1 = "ta1"  # interchange acknowledgment
-    999 = "999"  # functional acknowledgment
-    277CA = "277ca"  # claim acknowledgment
+    ACK_999 = "999"  # functional acknowledgment
+    ACK_277CA = "277ca"  # claim acknowledgment
     UNKNOWN = "unknown"
 
 

@@ -1,5 +1,3 @@
-File: contracts/ocr_contracts.py
-
 """OCR extraction contract schemas for cross-domain communication.
 
 Defines all typed contracts for the OCR job lifecycle: submission,

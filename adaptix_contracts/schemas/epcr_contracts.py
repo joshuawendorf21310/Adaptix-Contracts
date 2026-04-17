@@ -1,5 +1,3 @@
-File: contracts/epcr_contracts.py
-
 """ePCR domain contract schemas for cross-domain communication."""
 from __future__ import annotations
 

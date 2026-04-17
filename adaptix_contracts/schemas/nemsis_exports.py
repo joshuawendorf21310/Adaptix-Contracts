@@ -1,5 +1,3 @@
-File: contracts/nemsis_exports.py
-
 """NEMSIS 3.5.1 export lifecycle contracts.
 
 Defines the complete, typed export attempt lifecycle with state, failure classification,
