@@ -16,20 +16,13 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+# Import shared enums from core billing contracts
+from .billing_contracts import ClearinghouseProvider
+
 
 # ---------------------------------------------------------------------------
 # Enums
 # ---------------------------------------------------------------------------
-
-class ClearinghouseProvider(str, Enum):
-    """Supported clearinghouse providers."""
-
-    OFFICE_ALLY = "office_ally"
-    CHANGE_HEALTHCARE = "change_healthcare"
-    AVAILITY = "availity"
-    WAYSTAR = "waystar"
-    OTHER = "other"
-
 
 class SubmissionStatus(str, Enum):
     """Submission lifecycle at clearinghouse."""
