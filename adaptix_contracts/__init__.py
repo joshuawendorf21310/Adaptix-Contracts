@@ -15,9 +15,12 @@ Import patterns:
     )
 """
 
-from adaptix_contracts.schemas import __all__
+from adaptix_contracts import schemas as _schemas
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
-# Re-export all schema symbols at package level for convenience
-__all__ = __all__
+# Re-export all schema symbols at package level for convenience.
+__all__ = list(_schemas.__all__)
+globals().update({name: getattr(_schemas, name) for name in __all__})
+
+del _schemas

@@ -4,11 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "adaptix-contracts"
-version = "1.0.0"
+version = "1.0.1"
 description = "Shared cross-domain schemas and contracts for the Adaptix platform"
 requires-python = ">=3.11"
 dependencies = [
     "pydantic>=2.6.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.5",
+    "pytest-cov==6.1.1"
 ]
 
 [tool.setuptools]
@@ -18,3 +24,8 @@ package-dir = {"" = "."}
 where = ["."]
 include = ["adaptix_contracts*"]
 exclude = ["tests*", "examples*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+asyncio_default_fixture_loop_scope = "function"

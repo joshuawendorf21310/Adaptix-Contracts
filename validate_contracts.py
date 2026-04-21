@@ -11,8 +11,7 @@ This script validates:
 
 import sys
 from datetime import datetime
-from typing import get_args, get_origin
-from collections import defaultdict
+from pathlib import Path
 
 
 def validate_imports():
@@ -101,6 +100,9 @@ def validate_sample_instantiation():
             # Core
             DomainEvent,
             UserAuthContext,
+            # Narcotic
+            VaultCreateRequest,
+            NarcoticVaultType,
             # Billing
             ClaimContract,
             ClaimStatus,
@@ -176,6 +178,13 @@ def validate_sample_instantiation():
         )
         print(f"✓ WorkflowExecution instantiated: {workflow.workflow_id}")
 
+        narcotic_vault = VaultCreateRequest(
+            vault_name="Station 1 Main Vault",
+            location="Station 1 / Medication Room",
+            vault_type=NarcoticVaultType.STATION,
+        )
+        print(f"✓ VaultCreateRequest instantiated: {narcotic_vault.vault_name}")
+
         print("\n✓ All sample model instantiations successful")
         return True
 
@@ -196,16 +205,16 @@ def validate_domain_coverage():
         'air', 'air_pilot', 'audit', 'billing', 'billing_auth',
         'billing_clearinghouse', 'billing_eligibility', 'billing_portal',
         'billing_transport', 'cad', 'cad_transport', 'communications',
-        'core', 'crewlink', 'epcr', 'feature_flag', 'field', 'fire',
+        'clinical_visual', 'core', 'crewlink', 'epcr', 'feature_flag', 'field', 'fire',
+        'inventory', 'narcotic',
         'metrics', 'nemsis', 'ocr', 'patient_portal', 'search',
         'transport', 'voice', 'workflow'
     }
 
-    from pathlib import Path
-
-    schema_dir = Path('adaptix_contracts/schemas')
+    repo_root = Path(__file__).resolve().parent
+    schema_dir = repo_root / 'adaptix_contracts' / 'schemas'
     contract_files = [f.stem for f in schema_dir.glob('*_contracts.py')]
-    contract_files.extend(['nemsis_exports'])  # Special case
+    contract_files.extend(['nemsis_exports', 'narcotic'])  # Special cases
 
     # Normalize names
     actual_domains = set()
@@ -213,7 +222,8 @@ def validate_domain_coverage():
         domain = f.replace('_contracts', '').replace('_exports', '')
         actual_domains.add(domain)
 
-    print(f"\nExpected domains: {len(expected_domains)}")
+    print(f"\nSchema directory: {schema_dir}")
+    print(f"Expected domains: {len(expected_domains)}")
     print(f"Actual domains: {len(actual_domains)}")
 
     missing = expected_domains - actual_domains

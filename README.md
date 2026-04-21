@@ -1,6 +1,6 @@
 # Adaptix Contracts
 
-**Version:** 1.0.0
+**Version:** 1.0.1
 
 Canonical shared cross-domain schema definitions for the Adaptix polyrepo platform.
 
@@ -44,7 +44,7 @@ adaptix_contracts/
 
 ## Domain Coverage
 
-This package provides complete schema coverage for **26 domains**:
+This package provides complete schema coverage for **28 domains**:
 
 ### Core Infrastructure
 - **core** - Base event contracts and auth context
@@ -65,6 +65,7 @@ This package provides complete schema coverage for **26 domains**:
 
 ### Clinical & Operations
 - **epcr** - Electronic patient care reports
+- **clinical_visual** - AR-assisted clinical overlays and structured findings
 - **nemsis** - NEMSIS export lifecycle
 - **ocr** - Document OCR processing
 - **patient_portal** - Patient-facing portal
@@ -74,6 +75,7 @@ This package provides complete schema coverage for **26 domains**:
 - **cad_transport** - CAD-transport integration
 - **fire** - Fire incident management
 - **field** - Field unit status and telemetry
+- **inventory** - Inventory, replenishment, readiness, and cycle count contracts
 
 ### Air Operations
 - **air** - Air mission contracts
@@ -210,8 +212,16 @@ This validates:
 - All 242 exports are importable
 - All 197 models are Pydantic v2 compatible
 - All 45 enums are properly defined
-- All 26 domains are covered
+- All 28 domains are covered
 - Sample models can be instantiated
+
+Run the automated regression suite for export integrity, schema serialization,
+and representative validation failures:
+
+```bash
+pip install -e .[dev]
+python -m pytest
+```
 
 ## Versioning
 
@@ -220,6 +230,15 @@ This package follows semantic versioning:
 - **Major version** - Breaking changes to contracts
 - **Minor version** - New contracts or backward-compatible additions
 - **Patch version** - Bug fixes, documentation updates
+
+Release governance artifacts:
+
+- [`CHANGELOG.md`](CHANGELOG.md) — authoritative release history
+- [`DEPRECATION_POLICY.md`](DEPRECATION_POLICY.md) — backward-compatibility and retirement rules
+
+Contract changes are not considered releasable until the changelog is updated,
+deprecation impact is documented for public surface changes, and the validation
+script plus pytest suite both pass.
 
 ## Contributing
 

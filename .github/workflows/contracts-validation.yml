@@ -1,0 +1,45 @@
+name: contracts-validation
+
+on:
+  push:
+    paths:
+      - "adaptix_contracts/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "validate_contracts.py"
+      - ".github/workflows/contracts-validation.yml"
+  pull_request:
+    paths:
+      - "adaptix_contracts/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "validate_contracts.py"
+      - ".github/workflows/contracts-validation.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+
+      - name: Run contract validation script
+        run: python validate_contracts.py
+
+      - name: Run pytest regression suite
+        run: python -m pytest --cov=adaptix_contracts --cov-report=term-missing
