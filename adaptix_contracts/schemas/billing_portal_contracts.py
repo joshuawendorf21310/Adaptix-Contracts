@@ -1,5 +1,3 @@
-File: contracts/billing_portal_contracts.py
-
 """Adaptix Third-Party Billing portal home and operational contracts.
 
 Defines typed shapes for the authenticated billing command portal:

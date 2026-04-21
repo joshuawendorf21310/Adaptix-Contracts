@@ -1,5 +1,3 @@
-File: contracts/patient_portal_contracts.py
-
 """Patient portal contract schemas for cross-domain communication.
 
 Defines all typed request and response contracts for the patient-facing

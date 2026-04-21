@@ -1,5 +1,3 @@
-File: contracts/billing_transport_contracts.py
-
 """Billing transport readiness contract schemas for cross-domain communication.
 
 Defines all typed contracts for the billing domain's transport readiness

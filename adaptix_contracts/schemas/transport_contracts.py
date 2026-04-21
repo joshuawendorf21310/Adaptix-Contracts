@@ -1,5 +1,3 @@
-File: contracts/transport_contracts.py
-
 """TransportLink domain contract schemas for cross-domain communication."""
 
 from __future__ import annotations
