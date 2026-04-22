@@ -55,6 +55,14 @@ class ExportArtifactMetadata(BaseModel):
     checksum_sha256: str | None = None
 
 
+class ExportValidationMetadata(BaseModel):
+    xsd_valid: bool | None = None
+    schematron_valid: bool | None = None
+    errors: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    validator_asset_version: str | None = None
+
+
 class ExportAttemptSummary(BaseModel):
     export_id: int
     chart_id: str
@@ -90,6 +98,7 @@ class ExportAttemptDetail(BaseModel):
 
     readiness_snapshot: ExportReadinessSnapshot
     artifact: ExportArtifactMetadata | None = None
+    validation: ExportValidationMetadata | None = None
 
     created_at: datetime
     updated_at: datetime
@@ -123,6 +132,7 @@ class GenerateExportResponse(BaseModel):
 
     readiness_snapshot: ExportReadinessSnapshot
     artifact: ExportArtifactMetadata | None = None
+    validation: ExportValidationMetadata | None = None
 
     created_at: datetime
     updated_at: datetime
