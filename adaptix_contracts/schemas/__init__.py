@@ -17,6 +17,19 @@ from .air_pilot_contracts import (
     PilotReadinessStatus,
 )
 
+# Duty Auth
+from .duty_auth_contracts import (
+    FieldLoginRequest,
+    FieldLoginResolved,
+    CreateDutySessionRequest,
+    DutySessionResponse,
+    EndDutySessionRequest,
+    EndDutySessionResponse,
+    RevokeBadgeRequest,
+    RevokeBadgeResponse,
+    AuthAuditEvent,
+)
+
 # Audit
 from .audit_contracts import (
     AuditActorType,
@@ -163,6 +176,16 @@ from .communications_contracts import (
     NotificationRequest,
     NotificationDeliveredEvent,
     NotificationFailedEvent,
+)
+
+# Continuity
+from .continuity_contracts import (
+    ClientDeviceIdentity,
+    ContinuityAuditAction,
+    ContinuityAuditEvent,
+    ContinuityLockSnapshot,
+    LockState,
+    OperationEnvelope,
 )
 
 # Clinical Visual
@@ -631,6 +654,13 @@ __all__ = [
     "NotificationRequest",
     "NotificationDeliveredEvent",
     "NotificationFailedEvent",
+    # Continuity
+    "ClientDeviceIdentity",
+    "ContinuityAuditAction",
+    "ContinuityAuditEvent",
+    "ContinuityLockSnapshot",
+    "LockState",
+    "OperationEnvelope",
     # Clinical Visual
     "PatientModelVariant",
     "AnatomicalView",

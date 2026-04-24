@@ -35,12 +35,69 @@ class SyncState(str, Enum):
     PENDING = "pending"
 
 
+class LockState(str, Enum):
+    """Truthful lock state for shared continuity workspaces."""
+
+    HELD = "held"
+    TAKEOVER_AVAILABLE = "takeover_available"
+    UNLOCKED = "unlocked"
+
+
+class ContinuityAuditAction(str, Enum):
+    """Canonical audit actions emitted by continuity workflows."""
+
+    LOCK_ACQUIRED = "lock_acquired"
+    LOCK_RENEWED = "lock_renewed"
+    LOCK_TAKEN_OVER = "lock_taken_over"
+    LOCK_RELEASED = "lock_released"
+    OPERATION_RECORDED = "operation_recorded"
+
+
 class ClientDeviceIdentity(BaseModel):
     device_id: str
     device_type: str
     platform: str
     app_version: str | None = None
     session_token: str | None = None
+
+
+class ContinuityLockSnapshot(BaseModel):
+    """Current lock state for a shared mutable workspace."""
+
+    state: LockState
+    locked_by_user_id: str | None = None
+    locked_by_device_id: str | None = None
+    locked_at: datetime | None = None
+    expires_at: datetime | None = None
+    takeover_available: bool = False
+
+
+class OperationEnvelope(BaseModel):
+    """Canonical device-originated write envelope for continuity replay."""
+
+    operation_id: str
+    operation_type: str
+    domain: str
+    object_type: str
+    object_id: str
+    base_sync_version: int = Field(ge=0)
+    payload: dict[str, Any] = Field(default_factory=dict)
+    device: ClientDeviceIdentity
+    client_created_at: datetime | None = None
+    client_sequence: int | None = Field(default=None, ge=0)
+
+
+class ContinuityAuditEvent(BaseModel):
+    """Structured audit payload for continuity activity."""
+
+    workspace: dict[str, Any]
+    action: ContinuityAuditAction
+    status: str
+    actor_user_id: str | None = None
+    device: ClientDeviceIdentity | None = None
+    sync_version: int | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    occurred_at: datetime
 
 
 class AttachmentSyncStatus(BaseModel):
