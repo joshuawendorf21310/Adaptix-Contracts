@@ -100,6 +100,16 @@ class ContinuityAuditEvent(BaseModel):
     occurred_at: datetime
 
 
+class WorkspaceIdentity(BaseModel):
+    """Typed workspace identity for authoritative continuity responses."""
+
+    tenant_id: str
+    domain: str
+    object_type: str
+    object_id: str
+    workspace_id: str
+
+
 class AttachmentSyncStatus(BaseModel):
     attachment_id: str
     file_name: str
@@ -112,7 +122,7 @@ class AttachmentSyncStatus(BaseModel):
 
 
 class ResumeStateResponse(BaseModel):
-    workspace: dict[str, Any]
+    workspace: WorkspaceIdentity
     resume_state: ResumeState
     draft_status: DraftStatus
     sync_state: SyncState

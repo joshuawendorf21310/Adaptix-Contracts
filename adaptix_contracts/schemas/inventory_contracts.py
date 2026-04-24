@@ -567,6 +567,187 @@ class InventoryCycleCountResponse(BaseModel):
     started_by: uuid.UUID
     started_at: datetime
     completed_by: uuid.UUID | None
+
+
+# ---------------------------------------------------------------------------
+# Status enums
+# ---------------------------------------------------------------------------
+
+class InventoryItemStatus(str):
+    """Valid status values for an inventory item."""
+
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    LOW_STOCK = "low_stock"
+    OUT_OF_STOCK = "out_of_stock"
+    DISCONTINUED = "discontinued"
+
+
+class EquipmentAssetStatus(str):
+    """Valid status values for an equipment asset."""
+
+    ACTIVE = "active"
+    IN_MAINTENANCE = "in_maintenance"
+    RETIRED = "retired"
+    LOST = "lost"
+
+
+class PurchaseOrderStatus(str):
+    """Valid status values for a purchase order."""
+
+    DRAFT = "draft"
+    SUBMITTED = "submitted"
+    APPROVED = "approved"
+    PARTIALLY_RECEIVED = "partially_received"
+    RECEIVED = "received"
+    CANCELLED = "cancelled"
+
+
+class CycleCountStatus(str):
+    """Valid status values for a cycle count."""
+
+    OPEN = "open"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    RECONCILED = "reconciled"
+    CANCELLED = "cancelled"
+
+
+# ---------------------------------------------------------------------------
+# Domain events
+# ---------------------------------------------------------------------------
+
+class InventorySupplyItemCreatedEvent(BaseModel):
+    """Published when a new supply item is added to the catalog."""
+
+    event_type: str = "inventory.supply_item.created"
+
+    tenant_id: uuid.UUID
+    item_id: uuid.UUID
+    item_code: str
+    item_name: str
+    unit_of_measure: str
+    par_level: int
+    reorder_point: int
+    actor_user_id: uuid.UUID
+    occurred_at: datetime
+
+
+class InventoryStockCountRecordedEvent(BaseModel):
+    """Published when a stock count snapshot is persisted."""
+
+    event_type: str = "inventory.stock.count_recorded"
+
+    tenant_id: uuid.UUID
+    count_id: uuid.UUID
+    item_id: uuid.UUID
+    quantity_on_hand: int
+    previous_quantity: int | None = None
+    counted_at: datetime
+    actor_user_id: uuid.UUID
+    occurred_at: datetime
+
+
+class InventoryReorderThresholdCrossedEvent(BaseModel):
+    """Published when stock drops below the reorder point on a count record."""
+
+    event_type: str = "inventory.stock.reorder_threshold_crossed"
+
+    tenant_id: uuid.UUID
+    item_id: uuid.UUID
+    item_name: str
+    sku: str
+    quantity_on_hand: int
+    reorder_point: int
+    par_level: int
+    location_id: uuid.UUID | None = None
+    actor_user_id: uuid.UUID
+    occurred_at: datetime
+
+
+class InventoryStockUsageRecordedEvent(BaseModel):
+    """Published when items are consumed against an incident."""
+
+    event_type: str = "inventory.stock.usage_recorded"
+
+    tenant_id: uuid.UUID
+    incident_id: uuid.UUID
+    total_cost: float
+    actor_user_id: uuid.UUID
+    occurred_at: datetime
+
+
+class InventoryStockTransferCompletedEvent(BaseModel):
+    """Published when stock is moved between locations."""
+
+    event_type: str = "inventory.stock.transfer_completed"
+
+    tenant_id: uuid.UUID
+    transaction_id: uuid.UUID
+    item_id: uuid.UUID
+    quantity: int
+    from_location_id: uuid.UUID
+    to_location_id: uuid.UUID
+    unit_cost: float | None = None
+    actor_user_id: uuid.UUID
+    occurred_at: datetime
+
+
+class InventoryPurchaseOrderReceivedEvent(BaseModel):
+    """Published when a purchase order is received and stock levels updated."""
+
+    event_type: str = "inventory.purchase_order.received"
+
+    tenant_id: uuid.UUID
+    po_id: uuid.UUID
+    po_number: str
+    supplier_id: uuid.UUID
+    has_variance: bool
+    total_cost: float
+    actor_user_id: uuid.UUID
+    occurred_at: datetime
+
+
+class InventoryCycleCountCompletedEvent(BaseModel):
+    """Published when a cycle count is closed."""
+
+    event_type: str = "inventory.cycle_count.completed"
+
+    tenant_id: uuid.UUID
+    cycle_count_id: uuid.UUID
+    count_name: str
+    location_id: uuid.UUID | None = None
+    total_items: int
+    counted_items: int
+    discrepancy_count: int
+    auto_reconciled: bool
+    is_controlled_substance: bool
+    witness_user_id: uuid.UUID | None = None
+    completed_by: uuid.UUID
+    completed_at: datetime
+    occurred_at: datetime
+
+
+class InventoryDiscrepancyFlaggedEvent(BaseModel):
+    """Published when a variance or narcotic discrepancy is detected."""
+
+    event_type: str = "inventory.discrepancy.flagged"
+
+    tenant_id: uuid.UUID
+    discrepancy_id: uuid.UUID
+    item_id: uuid.UUID
+    item_name: str
+    sku: str
+    cycle_count_id: uuid.UUID | None = None
+    expected_quantity: int
+    actual_quantity: int
+    variance_quantity: int
+    is_controlled_substance: bool
+    unit_id: uuid.UUID | None = None
+    actor_user_id: uuid.UUID
+    severity: str
+    occurred_at: datetime
+
     completed_at: datetime | None
     total_items: int
     counted_items: int

@@ -287,19 +287,3 @@ class RemittanceReceivedEvent(BaseModel):
     remit_id: str
     tenant_id: str
     received_at: datetime
-
-
-class ClearinghouseAckReceivedEvent(BaseModel):
-    """Published when a clearinghouse acknowledgement is received."""
-
-    event_type: str = "billing.clearinghouse.ack_received"
-
-    submission_id: str
-    claim_id: str
-    tenant_id: str
-
-    provider: ClearinghouseProvider
-    ack_code: str
-    ack_message: Optional[str] = None
-
-    received_at: datetime

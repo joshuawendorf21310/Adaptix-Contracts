@@ -163,7 +163,11 @@ class ClaimSubmittedToClearinghouseEvent(BaseModel):
 
 
 class ClearinghouseAckReceivedEvent(BaseModel):
-    """Published when an acknowledgement is received."""
+    """Published when an acknowledgement is received from the clearinghouse.
+
+    Merges fields from both clearinghouse and billing acknowledgement contexts.
+    Canonical source for billing.clearinghouse.ack_received event consumers.
+    """
 
     event_type: str = "billing.clearinghouse.ack_received"
 
@@ -174,6 +178,8 @@ class ClearinghouseAckReceivedEvent(BaseModel):
     provider: ClearinghouseProvider
     ack_type: AckType
     accepted: bool
+    ack_code: Optional[str] = None
+    ack_message: Optional[str] = None
 
     received_at: datetime
 
