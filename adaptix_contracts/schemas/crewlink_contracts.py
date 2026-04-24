@@ -47,6 +47,26 @@ class CrewMemberContract(BaseModel):
     is_active: bool
 
 
+class CrewPageEscalatedEvent(BaseModel):
+    """Published when a paged crew member escalates to active response.
+
+    CAD consumes this event to update the corresponding unit status to
+    ``assigned`` when a crew member escalates their page acknowledgement
+    to active dispatch.
+    """
+
+    event_type: str = "crewlink.cad.page_escalated"
+
+    page_id: str
+    tenant_id: str
+    crew_member_id: str
+
+    reason: str
+    destination: Optional[str] = None
+
+    escalated_at: datetime
+
+
 class CrewRosterSyncContract(BaseModel):
     """Roster synchronization payload for cross-domain sync."""
 
