@@ -6,11 +6,71 @@ partner, relationship, growth, and opportunity management schemas.
 
 from __future__ import annotations
 
+import enum
 from datetime import date, datetime
 from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
+
+
+# ---------------------------------------------------------------------------
+# CRM Enums
+# ---------------------------------------------------------------------------
+
+
+class RelationshipStage(str, enum.Enum):
+    PROSPECT = "prospect"
+    NEGOTIATION = "negotiation"
+    ACTIVE = "active"
+    CLOSED = "closed"
+    CHURNED = "churned"
+
+
+class InvestorType(str, enum.Enum):
+    ANGEL = "angel"
+    VC = "vc"
+    STRATEGIC = "strategic"
+    FAMILY_OFFICE = "family_office"
+    DEBT = "debt"
+
+
+class CommitmentStatus(str, enum.Enum):
+    PLEDGED = "pledged"
+    COMMITTED = "committed"
+    FUNDED = "funded"
+    WITHDRAWN = "withdrawn"
+
+
+class PartnerType(str, enum.Enum):
+    TECHNOLOGY = "technology"
+    DISTRIBUTION = "distribution"
+    INTEGRATION = "integration"
+    RESELLER = "reseller"
+    REFERRAL = "referral"
+
+
+class PartnerStatus(str, enum.Enum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    PENDING = "pending"
+
+
+class OpportunityType(str, enum.Enum):
+    PARTNERSHIP = "partnership"
+    INVESTMENT = "investment"
+    ACQUISITION = "acquisition"
+    STRATEGIC = "strategic"
+    OTHER = "other"
+
+
+class OpportunityStatus(str, enum.Enum):
+    DISCOVERED = "discovered"
+    EVALUATING = "evaluating"
+    PURSUING = "pursuing"
+    WON = "won"
+    LOST = "lost"
+    STALLED = "stalled"
 
 
 # ---------------------------------------------------------------------------
@@ -21,17 +81,16 @@ from pydantic import BaseModel, EmailStr, Field
 class RelationshipCreateRequest(BaseModel):
     """Create a new CRM relationship."""
 
-    name: str = Field(..., min_length=1, description="Relationship display name.")
-    company: Optional[str] = Field(None, description="Company or organisation name.")
-    contact_person: Optional[str] = Field(None, description="Primary contact person.")
-    contact_email: Optional[str] = Field(None, description="Primary contact email.")
-    stage: str = Field(
-        default="prospect",
-        description="Initial stage: prospect | negotiation | active | closed | churned.",
+    company_name: str = Field(..., min_length=1, description="Company or organisation name.")
+    contact_person: str = Field(..., description="Primary contact person.")
+    contact_email: str = Field(..., description="Primary contact email.")
+    contact_phone: Optional[str] = Field(None, description="Primary contact phone.")
+    stage: RelationshipStage = Field(
+        default=RelationshipStage.PROSPECT,
+        description="Initial stage.",
     )
-    source: Optional[str] = Field(None, description="How this relationship was sourced.")
+    estimated_value: Optional[int] = Field(None, description="Estimated value in USD.")
     notes: Optional[str] = Field(None, description="Free-text notes.")
-    metadata_json: dict = Field(default_factory=dict)
 
 
 class RelationshipResponse(BaseModel):
@@ -39,14 +98,14 @@ class RelationshipResponse(BaseModel):
 
     id: UUID
     tenant_id: UUID
-    name: str
-    company: Optional[str] = None
-    contact_person: Optional[str] = None
-    contact_email: Optional[str] = None
+    company_name: str
+    contact_person: str
+    contact_email: str
+    contact_phone: Optional[str] = None
     stage: str
-    source: Optional[str] = None
+    estimated_value: Optional[int] = None
+    last_contact_date: Optional[datetime] = None
     notes: Optional[str] = None
-    metadata_json: dict = Field(default_factory=dict)
     created_at: datetime
     updated_at: datetime
 
@@ -54,20 +113,18 @@ class RelationshipResponse(BaseModel):
 class RelationshipListResponse(BaseModel):
     """Paginated CRM relationship list."""
 
-    items: List[RelationshipResponse]
     total: int
-    limit: int
-    offset: int
+    relationships: List[RelationshipResponse]
 
 
 class RelationshipStageTransitionRequest(BaseModel):
     """Request to transition a relationship to a new stage."""
 
-    new_stage: str = Field(
+    new_stage: RelationshipStage = Field(
         ...,
-        description="Target stage: prospect | negotiation | active | closed | churned.",
+        description="Target stage.",
     )
-    reason: Optional[str] = Field(None, description="Optional reason for the transition.")
+    notes: Optional[str] = Field(None, description="Optional notes for the transition.")
 
 
 # ---------------------------------------------------------------------------
@@ -79,9 +136,9 @@ class InvestorCreateRequest(BaseModel):
     """Create a new investor record."""
 
     name: str = Field(..., min_length=1, description="Investor name.")
-    investor_type: str = Field(
+    investor_type: InvestorType = Field(
         ...,
-        description="Investor type: angel | vc | strategic | family_office | debt.",
+        description="Investor type.",
     )
     contact_person: Optional[str] = Field(None, description="Primary contact person.")
     contact_email: Optional[str] = Field(None, description="Primary contact email.")
@@ -137,7 +194,10 @@ class InvestorCommitmentCreateRequest(BaseModel):
     investor_id: UUID = Field(..., description="UUID of the committing investor.")
     round_id: UUID = Field(..., description="UUID of the funding round.")
     committed_amount: float = Field(..., gt=0, description="Committed amount in USD.")
-    commitment_date: Optional[date] = Field(None, description="Date of commitment.")
+    status: CommitmentStatus = Field(
+        default=CommitmentStatus.PLEDGED,
+        description="Commitment status.",
+    )
     notes: Optional[str] = Field(None, description="Free-text notes.")
 
 
@@ -149,8 +209,8 @@ class InvestorCommitmentResponse(BaseModel):
     investor_id: UUID
     round_id: UUID
     committed_amount: float
-    commitment_date: Optional[date] = None
-    notes: Optional[str] = None
+    funded_amount: float = 0.0
+    status: str = "pledged"
     created_at: datetime
     updated_at: datetime
 
@@ -160,9 +220,9 @@ class InvestorRoundSummaryResponse(BaseModel):
 
     round: InvestorRoundResponse
     commitments: List[InvestorCommitmentResponse]
-    total_committed: float
-    commitment_count: int
-    percent_funded: float
+    total_pledged: float
+    total_funded: float
+    funding_percentage: float
 
 
 # ---------------------------------------------------------------------------
@@ -174,13 +234,13 @@ class PartnerCreateRequest(BaseModel):
     """Create a new partner record."""
 
     name: str = Field(..., min_length=1, description="Partner name.")
-    partner_type: str = Field(
+    partner_type: PartnerType = Field(
         ...,
-        description="Partner type: technology | distribution | integration | reseller | referral.",
+        description="Partner type.",
     )
-    status: str = Field(
-        default="active",
-        description="Partner status: active | inactive | pending.",
+    status: PartnerStatus = Field(
+        default=PartnerStatus.ACTIVE,
+        description="Partner status.",
     )
     contact_person: Optional[str] = Field(None, description="Primary contact person.")
     contact_email: Optional[str] = Field(None, description="Primary contact email.")
@@ -233,10 +293,9 @@ class PartnerPerformanceCreateRequest(BaseModel):
 
     partner_id: UUID = Field(..., description="UUID of the partner.")
     period: str = Field(..., description="Period label, e.g. 2026-Q1.")
-    referrals_sent: int = Field(default=0, ge=0)
+    monthly_recurring_revenue: int = Field(default=0, ge=0, description="MRR in cents.")
     deals_closed: int = Field(default=0, ge=0)
-    revenue_attributed: float = Field(default=0.0, ge=0)
-    notes: Optional[str] = Field(None, description="Free-text notes.")
+    churn_rate: float = Field(default=0.0, ge=0, description="Churn rate percentage.")
 
 
 class PartnerPerformanceResponse(BaseModel):
@@ -246,12 +305,10 @@ class PartnerPerformanceResponse(BaseModel):
     tenant_id: UUID
     partner_id: UUID
     period: str
-    referrals_sent: int
+    monthly_recurring_revenue: int
     deals_closed: int
-    revenue_attributed: float
-    notes: Optional[str] = None
+    churn_rate: float
     created_at: datetime
-    updated_at: datetime
 
 
 class PartnerDashboardResponse(BaseModel):
@@ -272,13 +329,11 @@ class GrowthMetricCreateRequest(BaseModel):
     """Record calculated growth metrics for a period."""
 
     period: str = Field(..., description="Period label, e.g. 2026-04.")
-    arr: Optional[float] = Field(None, ge=0, description="Annual Recurring Revenue in USD.")
-    mrr: Optional[float] = Field(None, ge=0, description="Monthly Recurring Revenue in USD.")
-    new_customers: Optional[int] = Field(None, ge=0)
-    churned_customers: Optional[int] = Field(None, ge=0)
-    active_customers: Optional[int] = Field(None, ge=0)
-    net_revenue_retention: Optional[float] = Field(None, description="NRR as a decimal, e.g. 1.10.")
-    notes: Optional[str] = Field(None, description="Free-text notes.")
+    monthly_recurring_revenue: int = Field(..., ge=0, description="MRR in cents.")
+    churn_rate: float = Field(..., ge=0, description="Churn rate percentage.")
+    lifetime_value: int = Field(..., ge=0, description="LTV in cents.")
+    customer_acquisition_cost: int = Field(..., ge=0, description="CAC in cents.")
+    net_retention_rate: float = Field(..., description="NRR as percentage, e.g. 115.0.")
 
 
 class GrowthMetricResponse(BaseModel):
@@ -287,15 +342,13 @@ class GrowthMetricResponse(BaseModel):
     id: UUID
     tenant_id: UUID
     period: str
-    arr: Optional[float] = None
-    mrr: Optional[float] = None
-    new_customers: Optional[int] = None
-    churned_customers: Optional[int] = None
-    active_customers: Optional[int] = None
-    net_revenue_retention: Optional[float] = None
-    notes: Optional[str] = None
+    monthly_recurring_revenue: int
+    churn_rate: float
+    lifetime_value: int
+    customer_acquisition_cost: int
+    net_retention_rate: float
+    growth_rate: Optional[float] = None
     created_at: datetime
-    updated_at: datetime
 
 
 class GrowthDashboardResponse(BaseModel):
@@ -303,37 +356,37 @@ class GrowthDashboardResponse(BaseModel):
 
     current_period: Optional[GrowthMetricResponse] = None
     prior_period: Optional[GrowthMetricResponse] = None
-    arr_growth_pct: Optional[float] = None
     mrr_growth_pct: Optional[float] = None
-    net_new_customers: Optional[int] = None
+    churn_delta: Optional[float] = None
 
 
 class GrowthTrendResponse(BaseModel):
     """Growth trend analysis over multiple periods."""
 
-    periods: List[GrowthMetricResponse] = Field(default_factory=list)
-    arr_trend: Optional[str] = Field(
-        None,
-        description="Trend direction: growing | declining | stable.",
-    )
-    mrr_trend: Optional[str] = Field(None)
-    customer_trend: Optional[str] = Field(None)
-    period_count: int = Field(default=0)
+    periods: List[str] = Field(default_factory=list)
+    mrr_trend: List[int] = Field(default_factory=list)
+    churn_trend: List[float] = Field(default_factory=list)
+    ltv_trend: List[int] = Field(default_factory=list)
+    cac_trend: List[int] = Field(default_factory=list)
+    nrr_trend: List[float] = Field(default_factory=list)
+    growth_rates: List[float] = Field(default_factory=list)
 
 
 class GrowthForecastRequest(BaseModel):
     """Request a growth forecast."""
 
-    lookback_periods: int = Field(default=3, ge=1, le=24, description="Number of historical periods to use.")
-    forecast_periods: int = Field(default=3, ge=1, le=12, description="Number of periods to forecast.")
+    months_ahead: int = Field(default=12, ge=1, le=60, description="Number of months to forecast.")
+    growth_model: str = Field(default="linear", description="Forecast model: linear | conservative.")
 
 
 class GrowthForecastResponse(BaseModel):
     """Growth forecast response."""
 
-    forecasted_periods: List[dict] = Field(default_factory=list)
-    methodology: str = Field(default="linear_regression")
-    confidence: Optional[float] = Field(None, description="Confidence score 0-1.")
+    forecast_periods: List[str] = Field(default_factory=list)
+    forecasted_mrr: List[int] = Field(default_factory=list)
+    forecasted_churn: List[float] = Field(default_factory=list)
+    forecasted_ltv: List[int] = Field(default_factory=list)
+    forecasted_cac: List[int] = Field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -345,31 +398,31 @@ class FounderOpportunityCreateRequest(BaseModel):
     """Create a founder-level opportunity."""
 
     title: str = Field(..., min_length=1, description="Opportunity title.")
-    opportunity_type: str = Field(
+    opportunity_type: OpportunityType = Field(
         ...,
         description="Type: partnership | investment | acquisition | strategic | other.",
     )
     description: Optional[str] = Field(None, description="Opportunity description.")
-    estimated_value: Optional[float] = Field(None, ge=0, description="Estimated value in USD.")
-    probability: Optional[float] = Field(None, ge=0.0, le=1.0, description="Win probability 0-1.")
-    target_close_date: Optional[date] = Field(None, description="Target close date.")
-    contact_person: Optional[str] = Field(None)
-    contact_email: Optional[str] = Field(None)
+    status: OpportunityStatus = Field(
+        default=OpportunityStatus.DISCOVERED,
+        description="Initial status.",
+    )
+    estimated_value: Optional[int] = Field(None, ge=0, description="Estimated value in USD.")
+    likelihood_percentage: Optional[float] = Field(None, ge=0.0, le=100.0, description="Win probability 0-100.")
+    target_date: Optional[date] = Field(None, description="Target close date.")
     notes: Optional[str] = Field(None, description="Free-text notes.")
-    metadata_json: dict = Field(default_factory=dict)
 
 
 class FounderOpportunityUpdateRequest(BaseModel):
     """Update a founder opportunity."""
 
     title: Optional[str] = Field(None, min_length=1)
-    status: Optional[str] = Field(None, description="open | won | lost | stalled.")
+    status: Optional[OpportunityStatus] = Field(None, description="discovered | evaluating | pursuing | won | lost | stalled.")
     description: Optional[str] = None
-    estimated_value: Optional[float] = Field(None, ge=0)
-    probability: Optional[float] = Field(None, ge=0.0, le=1.0)
-    target_close_date: Optional[date] = None
+    estimated_value: Optional[int] = Field(None, ge=0)
+    likelihood_percentage: Optional[float] = Field(None, ge=0.0, le=100.0)
+    target_date: Optional[date] = None
     notes: Optional[str] = None
-    metadata_json: Optional[dict] = None
 
 
 class FounderOpportunityResponse(BaseModel):
@@ -381,21 +434,18 @@ class FounderOpportunityResponse(BaseModel):
     opportunity_type: str
     status: str
     description: Optional[str] = None
-    estimated_value: Optional[float] = None
-    probability: Optional[float] = None
-    target_close_date: Optional[date] = None
-    contact_person: Optional[str] = None
-    contact_email: Optional[str] = None
-    notes: Optional[str] = None
-    metadata_json: dict = Field(default_factory=dict)
+    estimated_value: Optional[int] = None
+    likelihood_percentage: Optional[float] = None
+    target_date: Optional[datetime] = None
+    closed_at: Optional[datetime] = None
+    outcome_notes: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
 
 class FounderOpportunityListResponse(BaseModel):
-    """Paginated founder opportunity list."""
+    """Founder opportunity list."""
 
-    items: List[FounderOpportunityResponse]
     total: int
-    limit: int
-    offset: int
+    opportunities: List[FounderOpportunityResponse]
+    total_potential_value: int = 0
