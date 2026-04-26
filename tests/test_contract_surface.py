@@ -77,3 +77,21 @@ def test_all_exported_enums_have_unique_values() -> None:
         if isinstance(symbol, type) and issubclass(symbol, Enum):
             values = [member.value for member in symbol]
             assert len(values) == len(set(values)), f"Duplicate enum values in {symbol_name}"
+
+
+def test_contract_onboarding_surface_is_exported() -> None:
+    """Adaptix Contracts must expose contract onboarding lifecycle schemas."""
+    required = {
+        "ContractLifecycleStatus",
+        "ContractIntakeRequest",
+        "ContractRecord",
+        "DropboxSignExecutionRequest",
+        "DropboxSignExecutionResponse",
+        "DropboxSignCallbackEvent",
+        "ContractActivationRequest",
+        "ContractActivationResponse",
+        "ContractStatusChangedEvent",
+    }
+    for name in required:
+        assert name in schemas.__all__
+        assert hasattr(schemas, name)

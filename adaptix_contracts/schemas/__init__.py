@@ -178,6 +178,24 @@ from .communications_contracts import (
     NotificationFailedEvent,
 )
 
+# Contract onboarding
+from .contract_onboarding_contracts import (
+    ContractLifecycleStatus,
+    ContractServiceScope,
+    ContractPayerMix,
+    ContractPricingTerms,
+    ContractBillingRules,
+    ContractModuleTerms,
+    ContractIntakeRequest,
+    ContractRecord,
+    DropboxSignExecutionRequest,
+    DropboxSignExecutionResponse,
+    DropboxSignCallbackEvent,
+    ContractActivationRequest,
+    ContractActivationResponse,
+    ContractStatusChangedEvent,
+)
+
 # Continuity
 from .continuity_contracts import (
     ClientDeviceIdentity,
@@ -844,6 +862,21 @@ __all__ = [
     "NotificationRequest",
     "NotificationDeliveredEvent",
     "NotificationFailedEvent",
+    # Contract onboarding
+    "ContractLifecycleStatus",
+    "ContractServiceScope",
+    "ContractPayerMix",
+    "ContractPricingTerms",
+    "ContractBillingRules",
+    "ContractModuleTerms",
+    "ContractIntakeRequest",
+    "ContractRecord",
+    "DropboxSignExecutionRequest",
+    "DropboxSignExecutionResponse",
+    "DropboxSignCallbackEvent",
+    "ContractActivationRequest",
+    "ContractActivationResponse",
+    "ContractStatusChangedEvent",
     # Continuity
     "ClientDeviceIdentity",
     "ContinuityAuditAction",
