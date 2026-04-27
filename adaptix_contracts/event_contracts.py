@@ -1,234 +1,232 @@
-"""Adaptix platform event bus contracts.
+"""Event contracts for the Adaptix platform.
 
-Provides the canonical ``LocalEventConsumerRegistry`` for domain services
-to register event handlers, and the ``EventBusPublisherClient`` for
-querying and updating event delivery state via the Core event bus.
-
-These contracts are consumed by domain event processing workers such as
-``cad_app.background_worker``.
+Contains event schemas, validators, and registry for cross-service events.
 """
 from __future__ import annotations
+from dataclasses import dataclass, field
+import json
+import os
+from typing import Any, Callable, Dict, List, Optional, Set, Union
 
-import logging
-from collections import defaultdict
-from datetime import UTC, datetime
-from typing import Any, Callable, Coroutine
-from uuid import UUID
-
-from sqlalchemy import DateTime, Integer, JSON, String, Text, Uuid
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
-
-logger = logging.getLogger(__name__)
-
-# Type alias for async event handler callables
-EventHandler = Callable[[dict, AsyncSession], Coroutine[Any, Any, bool]]
+import httpx
 
 
-class _EventBusBase(DeclarativeBase):
-    """Isolated declarative base for event bus models."""
-
-    pass
-
-
-class DomainEventRecord(_EventBusBase):
-    """Pending cross-domain event record in the Core event bus.
-
-    Written by publishing domains; consumed and marked delivered/failed
-    by subscribing domain workers.
-
-    Attributes:
-        id: UUID primary key.
-        tenant_id: Tenant context for the event.
-        event_type: Dot-namespaced event type e.g. ``cad.case.created``.
-        payload: JSON event payload.
-        status: ``pending``, ``delivered``, or ``failed``.
-        retry_count: Number of failed delivery attempts.
-        error_message: Last failure message if status is ``failed``.
-        created_at: UTC timestamp of event creation.
-        delivered_at: UTC timestamp of successful delivery.
+class EventMetadata:
+    """Metadata for an event.
+    
+    Contains information about the event source, timing, and context.
     """
+    
+    def __init__(
+        self,
+        tenant_id: str,
+        timestamp: str,
+        source_service: str,
+        correlation_id: Optional[str] = None,
+        trace_id: Optional[str] = None,
+    ) -> None:
+        self.tenant_id = tenant_id
+        self.timestamp = timestamp
+        self.source_service = source_service
+        self.correlation_id = correlation_id
+        self.trace_id = trace_id
+    
+    def dict(self) -> Dict[str, Any]:
+        """Convert the metadata to a dictionary.
+        
+        Returns:
+            A dictionary representation of the metadata.
+        """
+        return {
+            "tenant_id": self.tenant_id,
+            "timestamp": self.timestamp,
+            "source_service": self.source_service,
+            "correlation_id": self.correlation_id,
+            "trace_id": self.trace_id,
+        }
 
-    __tablename__ = "domain_event_records"
 
-    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
-    tenant_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
-    event_type: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
-    payload: Mapped[dict] = mapped_column(JSON, nullable=False)
-    status: Mapped[str] = mapped_column(
-        String(20), nullable=False, default="pending", index=True
-    )
-    retry_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC)
-    )
-    delivered_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+class EventSchema:
+    """Schema for an event.
+    
+    Contains the event type, metadata, and payload.
+    """
+    
+    def __init__(
+        self,
+        event_type: str,
+        metadata: EventMetadata,
+        payload: Dict[str, Any],
+    ) -> None:
+        self.event_type = event_type
+        self.metadata = metadata
+        self.payload = payload
+    
+    def dict(self) -> Dict[str, Any]:
+        """Convert the event to a dictionary.
+        
+        Returns:
+            A dictionary representation of the event.
+        """
+        return {
+            "event_type": self.event_type,
+            "metadata": self.metadata.dict(),
+            "payload": self.payload,
+        }
 
-    def __repr__(self) -> str:
-        return f"<DomainEventRecord {self.id} ({self.event_type} - {self.status})>"
+
+class EventValidator:
+    """Validator for event schemas.
+    
+    Ensures that events conform to the expected schema.
+    """
+    
+    def validate_event(self, event: EventSchema) -> None:
+        """Validate an event schema.
+        
+        Args:
+            event: The event to validate.
+            
+        Raises:
+            ValueError: If the event is invalid.
+        """
+        if not event.event_type:
+            raise ValueError("Event type is required")
+        
+        if not event.metadata:
+            raise ValueError("Metadata is required")
+        
+        if not event.metadata.tenant_id:
+            raise ValueError("Tenant ID is required in metadata")
+        
+        if not event.metadata.timestamp:
+            raise ValueError("Timestamp is required in metadata")
+        
+        if not event.metadata.source_service:
+            raise ValueError("Source service is required in metadata")
+        
+        # Payload validation is type-specific and done by consumers
 
 
 class LocalEventConsumerRegistry:
-    """Registry mapping event types to async handler functions.
-
-    Domain workers register handlers at startup; the background worker
-    uses ``get_handlers`` to dispatch events to the correct handlers.
-
-    Usage::
-
-        registry = LocalEventConsumerRegistry()
-        registry.register("crewlink.page.acknowledged", handler_fn)
-        handlers = registry.get_handlers("crewlink.page.acknowledged")
+    """Registry for local event consumers.
+    
+    Used for in-process event handling during development or testing.
     """
-
+    
     def __init__(self) -> None:
-        """Initialize an empty handler registry."""
-        self._handlers: dict[str, list[EventHandler]] = defaultdict(list)
-
-    def register(self, event_type: str, handler: EventHandler) -> None:
-        """Register an async handler for the given event type.
-
+        self._handlers: Dict[str, Set[Callable[[EventSchema], Any]]] = {}
+    
+    def register(self, event_type: str, handler: Callable[[EventSchema], Any]) -> None:
+        """Register a handler for a specific event type.
+        
         Args:
-            event_type: Dot-namespaced event type string.
-            handler: Async callable accepting (event_dict, session) and
-                returning bool. True = success; False = soft failure.
-
-        Raises:
-            ValueError: If event_type is empty or handler is not callable.
+            event_type: The type of event to handle.
+            handler: The function to call when an event of this type is received.
         """
-        if not event_type:
-            raise ValueError("event_type must be a non-empty string")
-        if not callable(handler):
-            raise ValueError("handler must be callable")
-        self._handlers[event_type].append(handler)
-        logger.debug(
-            "event_registry: registered handler=%s for event_type=%s",
-            handler.__qualname__,
-            event_type,
-        )
-
-    def get_handlers(self, event_type: str) -> list[EventHandler]:
-        """Return all handlers registered for the given event type.
-
+        if event_type not in self._handlers:
+            self._handlers[event_type] = set()
+        
+        self._handlers[event_type].add(handler)
+    
+    def unregister(self, event_type: str, handler: Callable[[EventSchema], Any]) -> None:
+        """Unregister a handler for a specific event type.
+        
         Args:
-            event_type: Dot-namespaced event type string.
-
-        Returns:
-            List of async handler callables. Empty list if none registered.
+            event_type: The type of event to stop handling.
+            handler: The handler to unregister.
         """
-        return list(self._handlers.get(event_type, []))
-
-    def registered_event_types(self) -> list[str]:
-        """Return all event types with at least one registered handler.
-
-        Returns:
-            Sorted list of registered event type strings.
+        if event_type in self._handlers and handler in self._handlers[event_type]:
+            self._handlers[event_type].remove(handler)
+            
+            if not self._handlers[event_type]:
+                del self._handlers[event_type]
+    
+    async def process_event(self, event: EventSchema) -> None:
+        """Process an event by calling all registered handlers.
+        
+        Args:
+            event: The event to process.
         """
-        return sorted(self._handlers.keys())
+        if event.event_type in self._handlers:
+            for handler in self._handlers[event.event_type]:
+                await handler(event)
+
+    def get_handlers(self, event_type: str) -> list[Callable[[EventSchema], Any]]:
+        """Return registered handlers for an event type."""
+        return list(self._handlers.get(event_type, set()))
+
+    def list_registrations(self) -> dict[str, list[str]]:
+        """Return event registrations for operational diagnostics."""
+        return {
+            event_type: [getattr(handler, "__qualname__", repr(handler)) for handler in handlers]
+            for event_type, handlers in self._handlers.items()
+        }
 
 
 class EventBusPublisherClient:
-    """Client for querying and updating Core event bus state.
+    """Contract-safe HTTP client for Core durable event bus operations.
 
-    Domain background workers use this client to retrieve pending events
-    and update their delivery status. All operations use the caller's
-    active async session.
+    Domain workers use this client instead of importing Core internals or
+    connecting to the Core database. Missing Core configuration is a hard
+    runtime failure so delivery cannot be silently simulated.
     """
 
     @staticmethod
-    async def get_pending_events_unfiltered(
-        session: AsyncSession,
-        limit: int = 10,
-    ) -> list[dict]:
-        """Retrieve pending events from the Core event bus (all tenants).
-
-        Returns events with status ``pending``, ordered by creation time,
-        up to ``limit`` records.
-
-        Args:
-            session: Active async session connected to the Core database.
-            limit: Maximum number of events to retrieve (default 10).
-
-        Returns:
-            List of event dicts with keys: id, event_type, tenant_id,
-            payload, status, retry_count.
-        """
-        from sqlalchemy import select
-
-        stmt = (
-            select(DomainEventRecord)
-            .where(DomainEventRecord.status == "pending")
-            .order_by(DomainEventRecord.created_at)
-            .limit(limit)
-        )
-        result = await session.execute(stmt)
-        records = result.scalars().all()
-        return [
-            {
-                "id": str(r.id),
-                "event_type": r.event_type,
-                "tenant_id": r.tenant_id,
-                "payload": r.payload,
-                "status": r.status,
-                "retry_count": r.retry_count,
-            }
-            for r in records
-        ]
-
-    @staticmethod
-    async def mark_delivered(session: AsyncSession, event_id: UUID) -> None:
-        """Mark a pending event as successfully delivered.
-
-        Args:
-            session: Active async session connected to the Core database.
-            event_id: UUID of the event to mark as delivered.
-        """
-        from sqlalchemy import update
-
-        await session.execute(
-            update(DomainEventRecord)
-            .where(DomainEventRecord.id == event_id)
-            .values(status="delivered", delivered_at=datetime.now(UTC))
-        )
-        await session.flush()
-        logger.info("event_bus: marked delivered event_id=%s", event_id)
-
-    @staticmethod
-    async def mark_failed(
-        session: AsyncSession,
-        event_id: UUID,
-        error_message: str,
-    ) -> None:
-        """Mark a pending event as permanently failed.
-
-        Args:
-            session: Active async session connected to the Core database.
-            event_id: UUID of the event to mark as failed.
-            error_message: Human-readable failure reason (truncated to 500 chars).
-        """
-        from sqlalchemy import update
-
-        await session.execute(
-            update(DomainEventRecord)
-            .where(DomainEventRecord.id == event_id)
-            .values(
-                status="failed",
-                error_message=error_message[:500],
-                retry_count=DomainEventRecord.retry_count + 1,
+    def _configuration() -> tuple[str, str, float]:
+        core_url = os.getenv("CORE_EVENT_BUS_URL", "").rstrip("/")
+        token = os.getenv("CORE_EVENT_BUS_TOKEN", "") or os.getenv("CORE_PROVISIONING_TOKEN", "")
+        timeout = float(os.getenv("CORE_EVENT_BUS_TIMEOUT_SECONDS", "5"))
+        if not core_url or not token:
+            raise RuntimeError(
+                "CORE_EVENT_BUS_URL and CORE_EVENT_BUS_TOKEN must be configured for Core event bus delivery"
             )
+        return core_url, token, timeout
+
+    @staticmethod
+    async def _request(method: str, path: str, **kwargs: Any) -> Any:
+        core_url, token, timeout = EventBusPublisherClient._configuration()
+        headers = dict(kwargs.pop("headers", {}) or {})
+        headers["Authorization"] = f"Bearer {token}"
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            response = await client.request(method, f"{core_url}{path}", headers=headers, **kwargs)
+        response.raise_for_status()
+        if not response.content:
+            return None
+        return response.json()
+
+    @staticmethod
+    async def get_pending_events_unfiltered(_session: Any = None, limit: int = 100) -> list[dict[str, Any]]:
+        """Retrieve pending events from Core through the service-authenticated API."""
+        data = await EventBusPublisherClient._request(
+            "GET",
+            "/api/core/internal/events/pending",
+            params={"limit": limit},
         )
-        await session.flush()
-        logger.error(
-            "event_bus: marked failed event_id=%s reason=%s", event_id, error_message[:200]
+        return list(data.get("items", []))
+
+    @staticmethod
+    async def mark_delivered(_session: Any, event_id: Any) -> None:
+        """Mark an event delivered through Core's service-authenticated API."""
+        await EventBusPublisherClient._request(
+            "POST",
+            f"/api/core/internal/events/{event_id}/delivered",
+        )
+
+    @staticmethod
+    async def mark_failed(_session: Any, event_id: Any, error: str) -> None:
+        """Mark an event failed through Core's service-authenticated API."""
+        await EventBusPublisherClient._request(
+            "POST",
+            f"/api/core/internal/events/{event_id}/failed",
+            json={"error": error},
         )
 
 
 __all__ = [
-    "LocalEventConsumerRegistry",
     "EventBusPublisherClient",
-    "DomainEventRecord",
-    "EventHandler",
+    "EventMetadata",
+    "EventSchema",
+    "EventValidator",
+    "LocalEventConsumerRegistry",
 ]

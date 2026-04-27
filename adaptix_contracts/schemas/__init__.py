@@ -3,6 +3,13 @@
 All Pydantic models for events and read-only contracts used across domain boundaries.
 """
 
+from adaptix_contracts.event_contracts import (
+    EventSchema,
+    EventMetadata,
+    EventValidator,
+    LocalEventConsumerRegistry,
+)
+
 # Air
 from .air_contracts import (
     AirMissionCreatedEvent,
@@ -194,6 +201,16 @@ from .contract_onboarding_contracts import (
     ContractActivationRequest,
     ContractActivationResponse,
     ContractStatusChangedEvent,
+)
+
+# Legal execution
+from .legal_execution_contracts import (
+    ContractType,
+    ContractStatus,
+    TenantContractStatusMap,
+    ContractSignatureEvent,
+    ContractAccessCheckRequest,
+    ContractAccessCheckResponse,
 )
 
 # Continuity
@@ -736,6 +753,11 @@ from .crm_contracts import (
 
 # Explicit public surface
 __all__ = [
+    # Event infrastructure contracts
+    "EventSchema",
+    "EventMetadata",
+    "EventValidator",
+    "LocalEventConsumerRegistry",
     # Air
     "AirMissionCreatedEvent",
     "AirMissionStatusUpdatedEvent",
@@ -877,6 +899,13 @@ __all__ = [
     "ContractActivationRequest",
     "ContractActivationResponse",
     "ContractStatusChangedEvent",
+    # Legal execution
+    "ContractType",
+    "ContractStatus",
+    "TenantContractStatusMap",
+    "ContractSignatureEvent",
+    "ContractAccessCheckRequest",
+    "ContractAccessCheckResponse",
     # Continuity
     "ClientDeviceIdentity",
     "ContinuityAuditAction",

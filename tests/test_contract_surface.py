@@ -95,3 +95,19 @@ def test_contract_onboarding_surface_is_exported() -> None:
     for name in required:
         assert name in schemas.__all__
         assert hasattr(schemas, name)
+
+
+def test_legal_execution_surface_is_exported() -> None:
+    """Legal execution enums must be available from adaptix_contracts.schemas."""
+    required = {
+        "ContractType",
+        "ContractStatus",
+        "TenantContractStatusMap",
+        "ContractSignatureEvent",
+        "ContractAccessCheckRequest",
+        "ContractAccessCheckResponse",
+    }
+    for name in required:
+        assert name in schemas.__all__
+        assert hasattr(schemas, name)
+        assert getattr(adaptix_contracts, name) is getattr(schemas, name)
