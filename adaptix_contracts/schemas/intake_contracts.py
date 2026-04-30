@@ -1,0 +1,480 @@
+"""Public-intake, onboarding, growth, and founder-action event contracts.
+
+Defines the 23 cross-service event payload schemas that flow from the
+public access page (``/access``) through CRM, tenant provisioning, BAA
+gating, sandbox, go-live readiness, and the Growth Post Engine.
+
+Every event carries a stable ``event_type`` literal and uses Pydantic v2
+for runtime validation. These models are intentionally narrow: they
+describe what crosses a service boundary, not internal storage shape.
+
+Statuses, segments, and channel enums are defined alongside the events
+so consumers (Adaptix-Core-Service intake_service, billing readiness
+gates, growth post engine, founder dashboard) speak the exact same
+vocabulary.
+"""
+
+from __future__ import annotations
+
+import enum
+from datetime import datetime
+from typing import Any, Dict, List, Literal, Optional
+from uuid import UUID
+
+from pydantic import BaseModel, EmailStr, Field
+
+
+# ---------------------------------------------------------------------------
+# Enumerations
+# ---------------------------------------------------------------------------
+
+
+class IntakeSegment(str, enum.Enum):
+    EMS_AGENCY = "ems_agency"
+    FIRE_AGENCY = "fire_agency"
+    BILLING_COMPANY = "billing_company"
+    INVESTOR = "investor"
+    DEVELOPER = "developer"
+    PARTNER = "partner"
+    GOVERNMENT_PUBLIC_SAFETY = "government_public_safety"
+
+
+class LeadTemperature(str, enum.Enum):
+    HOT = "hot"
+    WARM = "warm"
+    COOL = "cool"
+    COLD = "cold"
+
+
+class OnboardingStepStatus(str, enum.Enum):
+    NOT_STARTED = "not_started"
+    IN_PROGRESS = "in_progress"
+    BLOCKED = "blocked"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+class ContractSignatureState(str, enum.Enum):
+    NOT_REQUIRED = "not_required"
+    PENDING = "pending"
+    SENT = "sent"
+    VIEWED = "viewed"
+    SIGNED = "signed"
+    DECLINED = "declined"
+    EXPIRED = "expired"
+
+
+class BillingReadinessState(str, enum.Enum):
+    BILLING_NOT_STARTED = "billing_not_started"
+    BILLING_PROFILE_STARTED = "billing_profile_started"
+    BILLING_PROFILE_COMPLETE = "billing_profile_complete"
+    CLEARINGHOUSE_PENDING = "clearinghouse_pending"
+    MIGRATION_PENDING = "migration_pending"
+    READY_FOR_TEST_CLAIM = "ready_for_test_claim"
+    READY_FOR_PRODUCTION_CLAIMS = "ready_for_production_claims"
+    BLOCKED = "blocked"
+
+
+class GrowthPostStatus(str, enum.Enum):
+    DRAFT = "draft"
+    APPROVED = "approved"
+    SCHEDULED = "scheduled"
+    PUBLISHED = "published"
+    FAILED = "failed"
+    REJECTED = "rejected"
+
+
+class GrowthPostChannel(str, enum.Enum):
+    FOUNDER_INTERNAL = "founder_internal"
+    LINKEDIN = "linkedin"
+    X = "x"
+    EMAIL_UPDATE = "email_update"
+    INVESTOR_UPDATE = "investor_update"
+    CAMPAIGN_UPDATE = "campaign_update"
+
+
+class AdaptixModule(str, enum.Enum):
+    CAD = "Adaptix CAD"
+    FIELD = "Adaptix Field"
+    CARE = "Adaptix Care"
+    CREWLINK = "Adaptix CrewLink"
+    TRANSPORTLINK = "Adaptix TransportLink"
+    BILLING = "Adaptix Billing"
+    FIRE = "Adaptix Fire"
+    AIR = "Adaptix Air"
+    AIR_PILOT = "Adaptix Air Pilot"
+    WORKFORCE = "Adaptix Workforce"
+
+
+# ---------------------------------------------------------------------------
+# Shared event envelope
+# ---------------------------------------------------------------------------
+
+
+class _EventBase(BaseModel):
+    """Shared envelope fields enforced on every cross-service event."""
+
+    event_id: UUID
+    event_type: str
+    event_version: int = Field(default=1, ge=1)
+    tenant_id: Optional[UUID] = Field(
+        default=None,
+        description="Null only for pre-tenant intake events (visitor stage).",
+    )
+    organization_id: Optional[UUID] = None
+    actor_id: Optional[UUID] = Field(
+        default=None,
+        description="System actor for unauthenticated public submissions.",
+    )
+    actor_type: str = Field(
+        default="system",
+        description="One of: visitor | agency_admin | agency_user | founder | system | copilot",
+    )
+    correlation_id: UUID
+    idempotency_key: Optional[str] = None
+    occurred_at: datetime
+    payload: Dict[str, Any] = Field(default_factory=dict)
+
+
+# ---------------------------------------------------------------------------
+# Intake / CRM events (1-4)
+# ---------------------------------------------------------------------------
+
+
+class IntakeSubmittedEvent(_EventBase):
+    event_type: Literal["IntakeSubmitted"] = "IntakeSubmitted"
+
+
+class IntakeClassifiedEvent(_EventBase):
+    event_type: Literal["IntakeClassified"] = "IntakeClassified"
+
+
+class LeadScoredEvent(_EventBase):
+    event_type: Literal["LeadScored"] = "LeadScored"
+
+
+class CrmContactCreatedEvent(_EventBase):
+    event_type: Literal["CrmContactCreated"] = "CrmContactCreated"
+
+
+# ---------------------------------------------------------------------------
+# Onboarding events (5-8)
+# ---------------------------------------------------------------------------
+
+
+class OnboardingSessionCreatedEvent(_EventBase):
+    event_type: Literal["OnboardingSessionCreated"] = "OnboardingSessionCreated"
+
+
+class OnboardingStepStartedEvent(_EventBase):
+    event_type: Literal["OnboardingStepStarted"] = "OnboardingStepStarted"
+
+
+class OnboardingStepCompletedEvent(_EventBase):
+    event_type: Literal["OnboardingStepCompleted"] = "OnboardingStepCompleted"
+
+
+class OnboardingStepBlockedEvent(_EventBase):
+    event_type: Literal["OnboardingStepBlocked"] = "OnboardingStepBlocked"
+
+
+# ---------------------------------------------------------------------------
+# Contract / signature events (9-10)
+# ---------------------------------------------------------------------------
+
+
+class ContractSignaturePacketCreatedEvent(_EventBase):
+    event_type: Literal["ContractSignaturePacketCreated"] = "ContractSignaturePacketCreated"
+
+
+class ContractSignatureCompletedEvent(_EventBase):
+    event_type: Literal["ContractSignatureCompleted"] = "ContractSignatureCompleted"
+
+
+# ---------------------------------------------------------------------------
+# Provisioning + agency lifecycle events (11-15)
+# ---------------------------------------------------------------------------
+
+
+class TenantProvisionedEvent(_EventBase):
+    event_type: Literal["TenantProvisioned"] = "TenantProvisioned"
+
+
+class AgencyModuleSelectionUpdatedEvent(_EventBase):
+    event_type: Literal["AgencyModuleSelectionUpdated"] = "AgencyModuleSelectionUpdated"
+
+
+class AgencyUnitCreatedEvent(_EventBase):
+    event_type: Literal["AgencyUnitCreated"] = "AgencyUnitCreated"
+
+
+class AgencyUserInvitedEvent(_EventBase):
+    event_type: Literal["AgencyUserInvited"] = "AgencyUserInvited"
+
+
+class BillingProfileCompletedEvent(_EventBase):
+    event_type: Literal["BillingProfileCompleted"] = "BillingProfileCompleted"
+
+
+# ---------------------------------------------------------------------------
+# Training / sandbox / go-live events (16-19)
+# ---------------------------------------------------------------------------
+
+
+class TrainingBookedEvent(_EventBase):
+    event_type: Literal["TrainingBooked"] = "TrainingBooked"
+
+
+class SandboxLaunchedEvent(_EventBase):
+    event_type: Literal["SandboxLaunched"] = "SandboxLaunched"
+
+
+class GoLiveReadinessCalculatedEvent(_EventBase):
+    event_type: Literal["GoLiveReadinessCalculated"] = "GoLiveReadinessCalculated"
+
+
+class GoLiveRequestedEvent(_EventBase):
+    event_type: Literal["GoLiveRequested"] = "GoLiveRequested"
+
+
+# ---------------------------------------------------------------------------
+# Growth Post Engine events (20-22)
+# ---------------------------------------------------------------------------
+
+
+class GrowthPostDraftedEvent(_EventBase):
+    event_type: Literal["GrowthPostDrafted"] = "GrowthPostDrafted"
+
+
+class GrowthPostApprovedEvent(_EventBase):
+    event_type: Literal["GrowthPostApproved"] = "GrowthPostApproved"
+
+
+class GrowthPostPublishedEvent(_EventBase):
+    event_type: Literal["GrowthPostPublished"] = "GrowthPostPublished"
+
+
+# ---------------------------------------------------------------------------
+# Founder action event (23)
+# ---------------------------------------------------------------------------
+
+
+class FounderNextActionCreatedEvent(_EventBase):
+    event_type: Literal["FounderNextActionCreated"] = "FounderNextActionCreated"
+
+
+# ---------------------------------------------------------------------------
+# Public-API DTOs (intake initialize)
+# ---------------------------------------------------------------------------
+
+
+class ConditionalEmsFireFields(BaseModel):
+    number_of_units: Optional[int] = Field(default=None, ge=0)
+    current_epcr_system: Optional[str] = None
+    current_dispatch_system: Optional[str] = None
+    billing_model: Optional[str] = None
+    billing_vendor: Optional[str] = None
+    go_live_timeline: Optional[str] = None
+    needs_baa: Optional[bool] = None
+    requested_modules: List[AdaptixModule] = Field(default_factory=list)
+
+
+class ConditionalBillingCompanyFields(BaseModel):
+    monthly_claim_volume: Optional[int] = Field(default=None, ge=0)
+    current_clearinghouse: Optional[str] = None
+    current_billing_system: Optional[str] = None
+    number_of_clients: Optional[int] = Field(default=None, ge=0)
+    migration_needed: Optional[bool] = None
+    office_ally_status: Optional[str] = None
+
+
+class ConditionalInvestorFields(BaseModel):
+    investor_type: Optional[str] = None
+    check_size_range: Optional[str] = None
+    interest_area: Optional[str] = None
+    funding_timeline: Optional[str] = None
+    wants_demo: Optional[bool] = None
+
+
+class ConditionalDeveloperFields(BaseModel):
+    integration_type: Optional[str] = None
+    technical_stack: Optional[str] = None
+    expected_api_use: Optional[str] = None
+    sandbox_needed: Optional[bool] = None
+
+
+class IntakeInitializeRequest(BaseModel):
+    """Request body for ``POST /api/v1/intake/initialize``."""
+
+    email: EmailStr
+    full_name: str = Field(min_length=1, max_length=255)
+    organization_name: str = Field(min_length=1, max_length=255)
+    role_title: str = Field(min_length=1, max_length=255)
+    organization_type: IntakeSegment
+    state_region: str = Field(min_length=1, max_length=128)
+    monthly_volume: Optional[int] = Field(default=None, ge=0)
+    primary_goal: str = Field(min_length=1, max_length=2048)
+    phone_optional: Optional[str] = Field(default=None, max_length=50)
+    website_optional: Optional[str] = Field(default=None, max_length=512)
+    terms_accepted: bool
+
+    ems_fire: Optional[ConditionalEmsFireFields] = None
+    billing_company: Optional[ConditionalBillingCompanyFields] = None
+    investor: Optional[ConditionalInvestorFields] = None
+    developer: Optional[ConditionalDeveloperFields] = None
+
+
+class IntakeInitializeResponse(BaseModel):
+    """Response body for ``POST /api/v1/intake/initialize``."""
+
+    intake_id: UUID
+    organization_id: UUID
+    contact_id: UUID
+    tenant_id: Optional[UUID] = None
+    onboarding_session_id: Optional[UUID] = None
+    segment: IntakeSegment
+    lead_score: int = Field(ge=0, le=100)
+    lead_temperature: LeadTemperature
+    redirect_url: str
+    provisioned: bool
+    required_next_step: Optional[str] = None
+    founder_action_required: bool
+
+
+# ---------------------------------------------------------------------------
+# Billing defaults DTOs (Slice 2)
+# ---------------------------------------------------------------------------
+
+
+class ClearinghouseProvider(str, enum.Enum):
+    OFFICE_ALLY = "office_ally"
+    WAYSTAR = "waystar"
+    CHANGE_HEALTHCARE = "change_healthcare"
+    AVAILITY = "availity"
+    OTHER = "other"
+    NONE_YET = "none_yet"
+
+
+class BillingModelChoice(str, enum.Enum):
+    IN_HOUSE = "in_house"
+    OUTSOURCED = "outsourced"
+    HYBRID = "hybrid"
+    NOT_YET_DECIDED = "not_yet_decided"
+
+
+class PayerType(str, enum.Enum):
+    MEDICARE = "medicare"
+    MEDICAID = "medicaid"
+    TRICARE = "tricare"
+    COMMERCIAL = "commercial"
+    SELF_PAY = "self_pay"
+    WORKERS_COMP = "workers_comp"
+
+
+class BillingDefaultsRequest(BaseModel):
+    """Request body for ``POST /api/v1/intake/{intake_id}/billing-defaults``.
+
+    All operational fields are optional so a partial save is valid.  The
+    endpoint is idempotent: re-posting overwrites the stored record.
+    """
+
+    npi: Optional[str] = Field(
+        default=None,
+        pattern=r"^\d{10}$",
+        description="10-digit National Provider Identifier.",
+    )
+    tax_id: Optional[str] = Field(
+        default=None,
+        pattern=r"^\d{2}-\d{7}$",
+        description="EIN in XX-XXXXXXX format.",
+    )
+    taxonomy_code: Optional[str] = Field(
+        default=None,
+        max_length=20,
+        description="Provider taxonomy code (e.g. 341600000X for ground ambulance).",
+    )
+    clearinghouse: ClearinghouseProvider = Field(
+        default=ClearinghouseProvider.NONE_YET,
+    )
+    payer_mix: List[PayerType] = Field(
+        default_factory=list,
+        description="Payer types the agency bills.",
+    )
+    billing_model: BillingModelChoice = Field(
+        default=BillingModelChoice.NOT_YET_DECIDED,
+    )
+    existing_software: Optional[str] = Field(
+        default=None,
+        max_length=128,
+        description="Name of current billing software if migrating.",
+    )
+    average_monthly_transport_volume: Optional[int] = Field(
+        default=None,
+        ge=0,
+        description="Average number of transports billed per month.",
+    )
+    wants_migration_support: bool = Field(default=False)
+
+
+class BillingDefaultsResponse(BaseModel):
+    """Response body for billing-defaults POST and GET."""
+
+    intake_id: UUID
+    organization_id: UUID
+    billing_readiness_state: BillingReadinessState
+    npi: Optional[str] = None
+    tax_id: Optional[str] = None
+    taxonomy_code: Optional[str] = None
+    clearinghouse: ClearinghouseProvider
+    payer_mix: List[PayerType]
+    billing_model: BillingModelChoice
+    existing_software: Optional[str] = None
+    average_monthly_transport_volume: Optional[int] = None
+    wants_migration_support: bool
+    profile_complete: bool
+
+
+__all__ = [
+    "IntakeSegment",
+    "LeadTemperature",
+    "OnboardingStepStatus",
+    "ContractSignatureState",
+    "BillingReadinessState",
+    "GrowthPostStatus",
+    "GrowthPostChannel",
+    "AdaptixModule",
+    "IntakeSubmittedEvent",
+    "IntakeClassifiedEvent",
+    "LeadScoredEvent",
+    "CrmContactCreatedEvent",
+    "OnboardingSessionCreatedEvent",
+    "OnboardingStepStartedEvent",
+    "OnboardingStepCompletedEvent",
+    "OnboardingStepBlockedEvent",
+    "ContractSignaturePacketCreatedEvent",
+    "ContractSignatureCompletedEvent",
+    "TenantProvisionedEvent",
+    "AgencyModuleSelectionUpdatedEvent",
+    "AgencyUnitCreatedEvent",
+    "AgencyUserInvitedEvent",
+    "BillingProfileCompletedEvent",
+    "TrainingBookedEvent",
+    "SandboxLaunchedEvent",
+    "GoLiveReadinessCalculatedEvent",
+    "GoLiveRequestedEvent",
+    "GrowthPostDraftedEvent",
+    "GrowthPostApprovedEvent",
+    "GrowthPostPublishedEvent",
+    "FounderNextActionCreatedEvent",
+    "IntakeInitializeRequest",
+    "IntakeInitializeResponse",
+    "ConditionalEmsFireFields",
+    "ConditionalBillingCompanyFields",
+    "ConditionalInvestorFields",
+    "ConditionalDeveloperFields",
+    "ClearinghouseProvider",
+    "BillingModelChoice",
+    "PayerType",
+    "BillingDefaultsRequest",
+    "BillingDefaultsResponse",
+]
