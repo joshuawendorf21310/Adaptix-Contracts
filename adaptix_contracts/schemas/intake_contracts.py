@@ -106,6 +106,7 @@ class ConditionalEmsFireFields(BaseModel):
     billing_model: Optional[str] = None
     go_live_timeline: Optional[str] = None
     needs_baa: Optional[bool] = None
+    requested_modules: Optional[List[str]] = Field(default_factory=list)
     # Legacy / alternate field names kept for backward compat
     unit_count: Optional[int] = None
     station_count: Optional[int] = None
@@ -121,12 +122,18 @@ class ConditionalEmsFireFields(BaseModel):
 
 class BillingCompanyIntakePayload(BaseModel):
     """Conditional payload for third-party billing company segment."""
+
+    model_config = {"extra": "allow"}
+
     client_agency_count: Optional[int] = None
     monthly_claims_volume: Optional[int] = None
+    # Alias used by lead_scoring_service
+    monthly_claim_volume: Optional[int] = None
     current_platform: Optional[str] = None
     npi: Optional[str] = None
     tax_id: Optional[str] = None
     clearinghouse: Optional[ClearinghouseProvider] = None
+    migration_needed: Optional[bool] = None
 
 
 class InvestorIntakePayload(BaseModel):
@@ -159,11 +166,15 @@ class ConditionalInvestorFields(BaseModel):
 
 class DeveloperIntakePayload(BaseModel):
     """Conditional payload for developer / integration partner segment."""
+
+    model_config = {"extra": "allow"}
+
     integration_type: Optional[str] = None
     target_module: Optional[str] = None
     company_name: Optional[str] = None
     github_org: Optional[str] = None
     use_case_description: Optional[str] = None
+    sandbox_needed: Optional[bool] = None
 
 
 # ---------------------------------------------------------------------------
@@ -212,10 +223,12 @@ class IntakeInitializeRequest(BaseModel):
     terms_accepted: bool = False
 
     # Conditional segment payloads
-    # Accept both legacy payload types and the newer Conditional* variants
-    ems_fire: Optional[Any] = None
+    # Accept both legacy payload types and the newer Conditional* variants.
+    # Union ordering: ConditionalEmsFireFields first so tests using that schema
+    # get a proper model instance (not a raw dict) when Pydantic validates.
+    ems_fire: Optional[ConditionalEmsFireFields] = None
     billing_company: Optional[BillingCompanyIntakePayload] = None
-    investor: Optional[Any] = None
+    investor: Optional[ConditionalInvestorFields] = None
     developer: Optional[DeveloperIntakePayload] = None
 
 
