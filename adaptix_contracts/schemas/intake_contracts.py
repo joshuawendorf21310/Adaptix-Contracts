@@ -30,6 +30,7 @@ class IntakeSegment(str, Enum):
 class LeadTemperature(str, Enum):
     """Deterministic lead temperature bucket derived from lead score."""
     COLD = "cold"
+    COOL = "cool"
     WARM = "warm"
     HOT = "hot"
 
@@ -59,6 +60,7 @@ class ClearinghouseProvider(str, Enum):
     TRIZETTO = "trizetto"
     OTHER = "other"
     NONE = "none"
+    NONE_YET = "none_yet"
 
 
 class PayerType(str, Enum):
@@ -264,6 +266,9 @@ class BillingDefaultsRequest(BaseModel):
 
     ``POST /api/v1/intake/{intake_id}/billing-defaults``
     """
+
+    model_config = {"extra": "allow"}
+
     # Required for billing profile completion
     npi: Optional[str] = None
     tax_id: Optional[str] = None
@@ -271,7 +276,10 @@ class BillingDefaultsRequest(BaseModel):
     # Billing model and clearinghouse preferences
     billing_model: Optional[BillingModelChoice] = None
     clearinghouse_provider: Optional[ClearinghouseProvider] = None
+    clearinghouse: Optional[ClearinghouseProvider] = None
     payer_types: Optional[List[PayerType]] = Field(default_factory=list)
+    # Alias used by billing_defaults_service.py
+    payer_mix: Optional[List[PayerType]] = Field(default_factory=list)
 
     # Office Ally specific credentials (if chosen clearinghouse)
     office_ally_login_id: Optional[str] = None
@@ -293,6 +301,11 @@ class BillingDefaultsRequest(BaseModel):
     billing_city: Optional[str] = None
     billing_state: Optional[str] = None
     billing_zip: Optional[str] = None
+
+    # Additional fields used by tests
+    existing_software: Optional[str] = None
+    average_monthly_transport_volume: Optional[int] = None
+    wants_migration_support: Optional[bool] = None
 
 
 class BillingDefaultsResponse(BaseModel):
