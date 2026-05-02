@@ -41,6 +41,7 @@ class BillingModelChoice(str, Enum):
     CLEARINGHOUSE = "clearinghouse"
     IN_HOUSE = "in_house"
     UNDECIDED = "undecided"
+    NOT_YET_DECIDED = "not_yet_decided"
 
 
 class BillingReadinessState(str, Enum):
@@ -49,6 +50,7 @@ class BillingReadinessState(str, Enum):
     IN_PROGRESS = "in_progress"
     COMPLETE = "complete"
     BLOCKED = "blocked"
+    BILLING_PROFILE_COMPLETE = "billing_profile_complete"
 
 
 class ClearinghouseProvider(str, Enum):
