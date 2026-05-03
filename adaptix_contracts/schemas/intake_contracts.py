@@ -6,10 +6,10 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional, Union
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 
 # ---------------------------------------------------------------------------
@@ -46,11 +46,14 @@ class BillingModelChoice(str, Enum):
 
 class BillingReadinessState(str, Enum):
     """Billing readiness state derived from provided billing defaults."""
-    NOT_STARTED = "not_started"
-    IN_PROGRESS = "in_progress"
-    COMPLETE = "complete"
-    BLOCKED = "blocked"
+    BILLING_NOT_STARTED = "billing_not_started"
+    BILLING_PROFILE_STARTED = "billing_profile_started"
     BILLING_PROFILE_COMPLETE = "billing_profile_complete"
+    CLEARINGHOUSE_PENDING = "clearinghouse_pending"
+    MIGRATION_PENDING = "migration_pending"
+    READY_FOR_TEST_CLAIM = "ready_for_test_claim"
+    READY_FOR_PRODUCTION_CLAIMS = "ready_for_production_claims"
+    BLOCKED = "blocked"
 
 
 class ClearinghouseProvider(str, Enum):
@@ -206,7 +209,7 @@ class IntakeInitializeRequest(BaseModel):
     return the prior result without creating duplicates.
     """
     # Core identity fields
-    email: str
+    email: EmailStr
     full_name: str
     organization_name: str
     role_title: Optional[str] = None
@@ -322,9 +325,160 @@ class BillingDefaultsResponse(BaseModel):
     clearinghouse_provider: Optional[ClearinghouseProvider] = None
     payer_types: List[PayerType] = Field(default_factory=list)
     profile_complete: bool = False
-    readiness_state: BillingReadinessState = BillingReadinessState.NOT_STARTED
+    readiness_state: BillingReadinessState = BillingReadinessState.BILLING_NOT_STARTED
     created_at: datetime
     updated_at: datetime
+
+
+# ---------------------------------------------------------------------------
+# AdaptixModule enum (canonical module registry)
+# ---------------------------------------------------------------------------
+
+class AdaptixModule(str, Enum):
+    """Canonical Adaptix module identifiers."""
+    CORE = "core"
+    BILLING = "billing"
+    EPCR = "epcr"
+    NEMSIS = "nemsis"
+    CAD = "cad"
+    TRANSPORTLINK = "transportlink"
+    FIRE = "fire"
+    NERIS = "neris"
+    CREWLINK = "crewlink"
+    INVENTORY = "inventory"
+    MEDICATIONS = "medications"
+    NARCOTICS = "narcotics"
+    WORKFORCE = "workforce"
+    AIR = "air"
+    AIR_PILOT = "air_pilot"
+    COMMUNICATIONS = "communications"
+    TELEPHONY = "telephony"
+    GRAPH = "graph"
+    SEARCH = "search"
+    CALENDAR = "calendar"
+    FINANCE = "finance"
+    CRM = "crm"
+    INVESTOR = "investor"
+    PARTNER = "partner"
+    FOUNDER = "founder"
+    LABOR = "labor"
+    DOCUMENTS = "documents"
+    COMPLIANCE = "compliance"
+    LEGAL = "legal"
+    ANALYTICS = "analytics"
+    FIELD = "field"  # Android field app module
+
+
+# ---------------------------------------------------------------------------
+# Event schemas required by test_intake_contracts.py
+# ---------------------------------------------------------------------------
+
+class IntakeSubmittedEvent(BaseModel):
+    """Event emitted when an intake form is submitted."""
+    model_config = {"extra": "allow"}
+    event_type: Literal["IntakeSubmitted"] = "IntakeSubmitted"
+    event_id: UUID
+    intake_id: Optional[UUID] = None
+    organization_id: Optional[UUID] = None
+    contact_id: Optional[UUID] = None
+    segment: Optional[IntakeSegment] = None
+    email: Optional[str] = None
+    organization_name: Optional[str] = None
+    occurred_at: Optional[datetime] = None
+    correlation_id: Optional[UUID] = None
+
+
+class LeadScoredEvent(BaseModel):
+    """Event emitted when a lead is scored."""
+    model_config = {"extra": "allow"}
+    event_type: Literal["LeadScored"] = "LeadScored"
+    event_id: UUID
+    intake_id: Optional[UUID] = None
+    organization_id: Optional[UUID] = None
+    lead_score: Optional[int] = None
+    lead_temperature: Optional[LeadTemperature] = None
+    scorer_version: Optional[str] = None
+    occurred_at: Optional[datetime] = None
+    correlation_id: Optional[UUID] = None
+
+
+class TenantProvisionedEvent(BaseModel):
+    """Event emitted when a tenant is provisioned."""
+    model_config = {"extra": "allow"}
+    event_type: Literal["TenantProvisioned"] = "TenantProvisioned"
+    event_id: UUID
+    intake_id: Optional[UUID] = None
+    organization_id: Optional[UUID] = None
+    tenant_id: Optional[UUID] = None
+    provisioned_modules: List[AdaptixModule] = []
+    occurred_at: Optional[datetime] = None
+    correlation_id: Optional[UUID] = None
+
+
+class OnboardingSessionCreatedEvent(BaseModel):
+    """Event emitted when an onboarding session is created."""
+    model_config = {"extra": "allow"}
+    event_type: Literal["OnboardingSessionCreated"] = "OnboardingSessionCreated"
+    event_id: UUID
+    intake_id: Optional[UUID] = None
+    organization_id: Optional[UUID] = None
+    tenant_id: Optional[UUID] = None
+    onboarding_session_id: Optional[UUID] = None
+    occurred_at: Optional[datetime] = None
+    correlation_id: Optional[UUID] = None
+
+
+class GoLiveReadinessCalculatedEvent(BaseModel):
+    """Event emitted when go-live readiness is calculated."""
+    model_config = {"extra": "allow"}
+    event_type: Literal["GoLiveReadinessCalculated"] = "GoLiveReadinessCalculated"
+    event_id: UUID
+    intake_id: Optional[UUID] = None
+    organization_id: Optional[UUID] = None
+    tenant_id: Optional[UUID] = None
+    readiness_state: Optional[BillingReadinessState] = None
+    readiness_score: Optional[int] = None
+    occurred_at: Optional[datetime] = None
+    correlation_id: Optional[UUID] = None
+
+
+class ContractSignatureCompletedEvent(BaseModel):
+    """Event emitted when a contract signature is completed."""
+    model_config = {"extra": "allow"}
+    event_type: Literal["ContractSignatureCompleted"] = "ContractSignatureCompleted"
+    event_id: UUID
+    intake_id: Optional[UUID] = None
+    organization_id: Optional[UUID] = None
+    tenant_id: Optional[UUID] = None
+    contract_type: Optional[str] = None
+    signer_email: Optional[str] = None
+    occurred_at: Optional[datetime] = None
+    correlation_id: Optional[UUID] = None
+
+
+class FounderNextActionCreatedEvent(BaseModel):
+    """Event emitted when a founder next action is created."""
+    model_config = {"extra": "allow"}
+    event_type: Literal["FounderNextActionCreated"] = "FounderNextActionCreated"
+    event_id: UUID
+    intake_id: Optional[UUID] = None
+    organization_id: Optional[UUID] = None
+    action_type: Optional[str] = None
+    priority: Optional[str] = None
+    occurred_at: Optional[datetime] = None
+    correlation_id: Optional[UUID] = None
+
+
+class GrowthPostPublishedEvent(BaseModel):
+    """Event emitted when a growth/marketing post is published."""
+    model_config = {"extra": "allow"}
+    event_type: Literal["GrowthPostPublished"] = "GrowthPostPublished"
+    event_id: UUID
+    post_id: Optional[UUID] = None
+    post_type: Optional[str] = None
+    title: Optional[str] = None
+    occurred_at: Optional[datetime] = None
+    correlation_id: Optional[UUID] = None
 
 
 __all__ = [
@@ -335,6 +489,7 @@ __all__ = [
     "BillingReadinessState",
     "ClearinghouseProvider",
     "PayerType",
+    "AdaptixModule",
     # Sub-schemas (legacy)
     "EmsFireIntakePayload",
     "BillingCompanyIntakePayload",
@@ -349,4 +504,13 @@ __all__ = [
     "IntakeInitializeResponse",
     "BillingDefaultsRequest",
     "BillingDefaultsResponse",
+    # Events
+    "IntakeSubmittedEvent",
+    "LeadScoredEvent",
+    "TenantProvisionedEvent",
+    "OnboardingSessionCreatedEvent",
+    "GoLiveReadinessCalculatedEvent",
+    "ContractSignatureCompletedEvent",
+    "FounderNextActionCreatedEvent",
+    "GrowthPostPublishedEvent",
 ]
