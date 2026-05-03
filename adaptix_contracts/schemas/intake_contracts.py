@@ -324,8 +324,30 @@ class BillingDefaultsResponse(BaseModel):
     billing_model: Optional[BillingModelChoice] = None
     clearinghouse_provider: Optional[ClearinghouseProvider] = None
     payer_types: List[PayerType] = Field(default_factory=list)
+    # payer_mix is an alias for payer_types used by Core-Service
+    payer_mix: Optional[List[PayerType]] = Field(default_factory=list)
+    # clearinghouse is an alias for clearinghouse_provider used by Core-Service
+    clearinghouse: Optional[ClearinghouseProvider] = None
     profile_complete: bool = False
     readiness_state: BillingReadinessState = BillingReadinessState.BILLING_NOT_STARTED
+    # billing_readiness_state is an alias for readiness_state used by Core-Service
+    billing_readiness_state: Optional[BillingReadinessState] = None
+    # Additional fields used by Core-Service
+    taxonomy_code: Optional[str] = None
+    state_license_number: Optional[str] = None
+    medicaid_provider_id: Optional[str] = None
+    billing_contact_name: Optional[str] = None
+    billing_contact_email: Optional[str] = None
+    billing_contact_phone: Optional[str] = None
+    billing_address_line1: Optional[str] = None
+    billing_address_line2: Optional[str] = None
+    billing_city: Optional[str] = None
+    billing_state: Optional[str] = None
+    billing_zip: Optional[str] = None
+    # Additional fields used by Core-Service tests
+    existing_software: Optional[str] = None
+    average_monthly_transport_volume: Optional[int] = None
+    wants_migration_support: Optional[bool] = None
     created_at: datetime
     updated_at: datetime
 
