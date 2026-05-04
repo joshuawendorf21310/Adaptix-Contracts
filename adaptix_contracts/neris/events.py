@@ -1,13 +1,40 @@
+NERIS_MAPPING_STARTED = "neris.mapping.started"
+NERIS_MAPPING_COMPLETED = "neris.mapping.completed"
+NERIS_REQUIRED_FIELD_MISSING = "neris.required_field.missing"
+NERIS_VALIDATION_REQUESTED = "neris.validation.requested"
+NERIS_VALIDATION_COMPLETED = "neris.validation.completed"
+NERIS_EXPORT_CREATED = "neris.export.created"
+NERIS_EXPORT_FAILED = "neris.export.failed"
+NERIS_SUBMISSION_READINESS_UPDATED = "neris.submission.readiness.updated"
+NERIS_AUDIT_EVENT_CREATED = "neris.audit.event.created"
+NERIS_SCHEMA_ASSET_REFRESHED = "neris.schema.asset.refreshed"
+NERIS_NORMALIZATION_COMPLETED = "neris.normalization.completed"
+
 NERIS_EVENTS = {
-    "neris.mapping.started",
-    "neris.mapping.completed",
-    "neris.required_field.missing",
-    "neris.validation.requested",
-    "neris.validation.completed",
-    "neris.export.created",
-    "neris.export.failed",
-    "neris.submission.readiness.updated",
-    "neris.audit.event.created",
+    NERIS_MAPPING_STARTED,
+    NERIS_MAPPING_COMPLETED,
+    NERIS_REQUIRED_FIELD_MISSING,
+    NERIS_VALIDATION_REQUESTED,
+    NERIS_VALIDATION_COMPLETED,
+    NERIS_EXPORT_CREATED,
+    NERIS_EXPORT_FAILED,
+    NERIS_SUBMISSION_READINESS_UPDATED,
+    NERIS_AUDIT_EVENT_CREATED,
+    NERIS_SCHEMA_ASSET_REFRESHED,
+    NERIS_NORMALIZATION_COMPLETED,
 }
 
-__all__ = ["NERIS_EVENTS"]
+__all__ = [
+    "NERIS_AUDIT_EVENT_CREATED",
+    "NERIS_EVENTS",
+    "NERIS_EXPORT_CREATED",
+    "NERIS_EXPORT_FAILED",
+    "NERIS_MAPPING_COMPLETED",
+    "NERIS_MAPPING_STARTED",
+    "NERIS_NORMALIZATION_COMPLETED",
+    "NERIS_REQUIRED_FIELD_MISSING",
+    "NERIS_SCHEMA_ASSET_REFRESHED",
+    "NERIS_SUBMISSION_READINESS_UPDATED",
+    "NERIS_VALIDATION_COMPLETED",
+    "NERIS_VALIDATION_REQUESTED",
+]

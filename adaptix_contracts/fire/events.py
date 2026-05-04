@@ -1,28 +1,85 @@
+FIRE_INCIDENT_CREATED = "fire.incident.created"
+FIRE_INCIDENT_UPDATED = "fire.incident.updated"
+FIRE_INCIDENT_CANCELLED = "fire.incident.cancelled"
+FIRE_INCIDENT_STATUS_UPDATED = "fire.incident.status.updated"
+FIRE_COMMAND_ROLE_ASSIGNED = "fire.command.role.assigned"
+FIRE_COMMAND_ROLE_CHANGED = "fire.command.role.changed"
+FIRE_APPARATUS_ASSIGNED = "fire.apparatus.assigned"
+FIRE_APPARATUS_STATUS_UPDATED = "fire.apparatus.status.updated"
+FIRE_PERSONNEL_ASSIGNED = "fire.personnel.assigned"
+FIRE_PERSONNEL_ACCOUNTABILITY_UPDATED = "fire.personnel.accountability.updated"
+FIRE_TIMELINE_EVENT_CREATED = "fire.timeline.event.created"
+FIRE_PREPLAN_ATTACHED = "fire.preplan.attached"
+FIRE_HYDRANT_ATTACHED = "fire.hydrant.attached"
+FIRE_WATER_SUPPLY_PLAN_CREATED = "fire.water_supply.plan.created"
+FIRE_HAZARD_ATTACHED = "fire.hazard.attached"
+FIRE_OCCUPANCY_PROFILE_ATTACHED = "fire.occupancy.profile.attached"
+FIRE_EMS_ASSIST_REQUESTED = "fire.ems_assist.requested"
+FIRE_REHAB_REQUESTED = "fire.rehab.requested"
+FIRE_PATIENT_CARE_LINKED = "fire.patient_care.linked"
+FIRE_INVENTORY_USAGE_RECORDED = "fire.inventory.usage.recorded"
+FIRE_VOICE_ROOM_CREATED = "fire.voice_room.created"
+FIRE_AI_ASSESSMENT_CREATED = "fire.ai.assessment.created"
+FIRE_AR_OVERLAY_GENERATED = "fire.ar.overlay.generated"
+FIRE_AUDIT_EVENT_CREATED = "fire.audit.event.created"
+FIRE_BENCHMARK_TIMELINE_UPDATED = "fire.benchmark.timeline.updated"
+FIRE_INVESTIGATION_READINESS_UPDATED = "fire.investigation.readiness.updated"
+
 FIRE_EVENTS = {
-    "fire.incident.created",
-    "fire.incident.updated",
-    "fire.incident.cancelled",
-    "fire.incident.status.updated",
-    "fire.command.role.assigned",
-    "fire.command.role.changed",
-    "fire.apparatus.assigned",
-    "fire.apparatus.status.updated",
-    "fire.personnel.assigned",
-    "fire.personnel.accountability.updated",
-    "fire.timeline.event.created",
-    "fire.preplan.attached",
-    "fire.hydrant.attached",
-    "fire.water_supply.plan.created",
-    "fire.hazard.attached",
-    "fire.occupancy.profile.attached",
-    "fire.ems_assist.requested",
-    "fire.rehab.requested",
-    "fire.patient_care.linked",
-    "fire.inventory.usage.recorded",
-    "fire.voice_room.created",
-    "fire.ai.assessment.created",
-    "fire.ar.overlay.generated",
-    "fire.audit.event.created",
+    FIRE_INCIDENT_CREATED,
+    FIRE_INCIDENT_UPDATED,
+    FIRE_INCIDENT_CANCELLED,
+    FIRE_INCIDENT_STATUS_UPDATED,
+    FIRE_COMMAND_ROLE_ASSIGNED,
+    FIRE_COMMAND_ROLE_CHANGED,
+    FIRE_APPARATUS_ASSIGNED,
+    FIRE_APPARATUS_STATUS_UPDATED,
+    FIRE_PERSONNEL_ASSIGNED,
+    FIRE_PERSONNEL_ACCOUNTABILITY_UPDATED,
+    FIRE_TIMELINE_EVENT_CREATED,
+    FIRE_PREPLAN_ATTACHED,
+    FIRE_HYDRANT_ATTACHED,
+    FIRE_WATER_SUPPLY_PLAN_CREATED,
+    FIRE_HAZARD_ATTACHED,
+    FIRE_OCCUPANCY_PROFILE_ATTACHED,
+    FIRE_EMS_ASSIST_REQUESTED,
+    FIRE_REHAB_REQUESTED,
+    FIRE_PATIENT_CARE_LINKED,
+    FIRE_INVENTORY_USAGE_RECORDED,
+    FIRE_VOICE_ROOM_CREATED,
+    FIRE_AI_ASSESSMENT_CREATED,
+    FIRE_AR_OVERLAY_GENERATED,
+    FIRE_AUDIT_EVENT_CREATED,
+    FIRE_BENCHMARK_TIMELINE_UPDATED,
+    FIRE_INVESTIGATION_READINESS_UPDATED,
 }
 
-__all__ = ["FIRE_EVENTS"]
+__all__ = [
+    "FIRE_AI_ASSESSMENT_CREATED",
+    "FIRE_APPARATUS_ASSIGNED",
+    "FIRE_APPARATUS_STATUS_UPDATED",
+    "FIRE_AR_OVERLAY_GENERATED",
+    "FIRE_AUDIT_EVENT_CREATED",
+    "FIRE_BENCHMARK_TIMELINE_UPDATED",
+    "FIRE_COMMAND_ROLE_ASSIGNED",
+    "FIRE_COMMAND_ROLE_CHANGED",
+    "FIRE_EMS_ASSIST_REQUESTED",
+    "FIRE_EVENTS",
+    "FIRE_HAZARD_ATTACHED",
+    "FIRE_HYDRANT_ATTACHED",
+    "FIRE_INCIDENT_CANCELLED",
+    "FIRE_INCIDENT_CREATED",
+    "FIRE_INCIDENT_STATUS_UPDATED",
+    "FIRE_INCIDENT_UPDATED",
+    "FIRE_INVENTORY_USAGE_RECORDED",
+    "FIRE_INVESTIGATION_READINESS_UPDATED",
+    "FIRE_OCCUPANCY_PROFILE_ATTACHED",
+    "FIRE_PATIENT_CARE_LINKED",
+    "FIRE_PERSONNEL_ACCOUNTABILITY_UPDATED",
+    "FIRE_PERSONNEL_ASSIGNED",
+    "FIRE_PREPLAN_ATTACHED",
+    "FIRE_REHAB_REQUESTED",
+    "FIRE_TIMELINE_EVENT_CREATED",
+    "FIRE_VOICE_ROOM_CREATED",
+    "FIRE_WATER_SUPPLY_PLAN_CREATED",
+]

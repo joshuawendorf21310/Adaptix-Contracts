@@ -59,6 +59,8 @@ FIRE_VOICE_ROOM_CREATED: Final[str] = "fire.voice_room.created"
 FIRE_AI_ASSESSMENT_CREATED: Final[str] = "fire.ai.assessment.created"
 FIRE_AR_OVERLAY_GENERATED: Final[str] = "fire.ar.overlay.generated"
 FIRE_AUDIT_EVENT_CREATED: Final[str] = "fire.audit.event.created"
+FIRE_BENCHMARK_TIMELINE_UPDATED: Final[str] = "fire.benchmark.timeline.updated"
+FIRE_INVESTIGATION_READINESS_UPDATED: Final[str] = "fire.investigation.readiness.updated"
 
 NERIS_MAPPING_STARTED: Final[str] = "neris.mapping.started"
 NERIS_MAPPING_COMPLETED: Final[str] = "neris.mapping.completed"
@@ -69,6 +71,8 @@ NERIS_EXPORT_CREATED: Final[str] = "neris.export.created"
 NERIS_EXPORT_FAILED: Final[str] = "neris.export.failed"
 NERIS_SUBMISSION_READINESS_UPDATED: Final[str] = "neris.submission.readiness.updated"
 NERIS_AUDIT_EVENT_CREATED: Final[str] = "neris.audit.event.created"
+NERIS_SCHEMA_ASSET_REFRESHED: Final[str] = "neris.schema.asset.refreshed"
+NERIS_NORMALIZATION_COMPLETED: Final[str] = "neris.normalization.completed"
 
 # ---------------------------------------------------------------------------
 # Scheduling Events
@@ -103,6 +107,8 @@ ALL_EVENTS: Final[dict[str, dict[str, object]]] = {
     FIRE_AI_ASSESSMENT_CREATED: {"version": "1.0", "source_service": "adaptix-fire"},
     FIRE_AR_OVERLAY_GENERATED: {"version": "1.0", "source_service": "adaptix-fire"},
     FIRE_AUDIT_EVENT_CREATED: {"version": "1.0", "source_service": "adaptix-fire"},
+    FIRE_BENCHMARK_TIMELINE_UPDATED: {"version": "1.0", "source_service": "adaptix-fire"},
+    FIRE_INVESTIGATION_READINESS_UPDATED: {"version": "1.0", "source_service": "adaptix-fire"},
     NERIS_MAPPING_STARTED: {"version": "1.0", "source_service": "adaptix-fire"},
     NERIS_MAPPING_COMPLETED: {"version": "1.0", "source_service": "adaptix-fire"},
     NERIS_REQUIRED_FIELD_MISSING: {"version": "1.0", "source_service": "adaptix-fire"},
@@ -112,6 +118,8 @@ ALL_EVENTS: Final[dict[str, dict[str, object]]] = {
     NERIS_EXPORT_FAILED: {"version": "1.0", "source_service": "adaptix-neris"},
     NERIS_SUBMISSION_READINESS_UPDATED: {"version": "1.0", "source_service": "adaptix-fire"},
     NERIS_AUDIT_EVENT_CREATED: {"version": "1.0", "source_service": "adaptix-neris"},
+    NERIS_SCHEMA_ASSET_REFRESHED: {"version": "1.0", "source_service": "adaptix-neris"},
+    NERIS_NORMALIZATION_COMPLETED: {"version": "1.0", "source_service": "adaptix-neris"},
 }
 
 for event_name in SCHEDULING_EVENTS:
@@ -135,7 +143,12 @@ def get_all_events() -> list:
 __all__ = [
     "ALL_EVENTS",
     "ALL_REGISTERED_EVENTS",
+    "FIRE_BENCHMARK_TIMELINE_UPDATED",
     "FIRE_INCIDENT_STATUS_UPDATED",
+    "FIRE_INVESTIGATION_READINESS_UPDATED",
+    "NERIS_AUDIT_EVENT_CREATED",
+    "NERIS_NORMALIZATION_COMPLETED",
+    "NERIS_SCHEMA_ASSET_REFRESHED",
     "NERIS_VALIDATION_COMPLETED",
     "get_all_events",
     "is_registered",

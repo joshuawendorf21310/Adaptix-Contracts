@@ -69,12 +69,40 @@ class NerisMappingAudit(BaseModel):
     source_attribution: list[str] = Field(default_factory=list)
 
 
+class NerisSchemaAsset(BaseModel):
+    asset_id: str
+    asset_type: str
+    version: str
+    checksum: str | None = None
+    source_url: str | None = None
+    published_at: datetime | None = None
+
+
+class NerisNormalizationResult(BaseModel):
+    incident_id: str
+    normalized_payload: dict[str, object] = Field(default_factory=dict)
+    normalization_version: str = "neris-v1"
+    warning_codes: list[str] = Field(default_factory=list)
+
+
+class NerisValidationAudit(BaseModel):
+    validation_id: str
+    incident_id: str
+    status: NerisValidationStatus
+    owner_service: str = "adaptix-neris"
+    handled_at: datetime
+    notes: list[str] = Field(default_factory=list)
+
+
 __all__ = [
     "NerisExportPackage",
     "NerisIncidentMappingResult",
     "NerisMappingAudit",
+    "NerisNormalizationResult",
     "NerisRequiredFieldStatus",
+    "NerisSchemaAsset",
     "NerisSubmissionReadiness",
+    "NerisValidationAudit",
     "NerisValidationFinding",
     "NerisValidationResult",
     "NerisValidationStatus",
