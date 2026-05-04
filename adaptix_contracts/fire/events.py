@@ -1,0 +1,28 @@
+FIRE_EVENTS = {
+    "fire.incident.created",
+    "fire.incident.updated",
+    "fire.incident.cancelled",
+    "fire.incident.status.updated",
+    "fire.command.role.assigned",
+    "fire.command.role.changed",
+    "fire.apparatus.assigned",
+    "fire.apparatus.status.updated",
+    "fire.personnel.assigned",
+    "fire.personnel.accountability.updated",
+    "fire.timeline.event.created",
+    "fire.preplan.attached",
+    "fire.hydrant.attached",
+    "fire.water_supply.plan.created",
+    "fire.hazard.attached",
+    "fire.occupancy.profile.attached",
+    "fire.ems_assist.requested",
+    "fire.rehab.requested",
+    "fire.patient_care.linked",
+    "fire.inventory.usage.recorded",
+    "fire.voice_room.created",
+    "fire.ai.assessment.created",
+    "fire.ar.overlay.generated",
+    "fire.audit.event.created",
+}
+
+__all__ = ["FIRE_EVENTS"]
