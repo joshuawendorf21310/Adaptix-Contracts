@@ -55,3 +55,7 @@ dmypy.json
 # Distribution / packaging
 *.whl
 pip-wheel-metadata/
+
+# Local safety scratch (not committed)
+.local-*
+
