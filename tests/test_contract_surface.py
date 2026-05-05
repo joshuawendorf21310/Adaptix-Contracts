@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
+import importlib
 from importlib import import_module
 from pathlib import Path
 import tomllib
@@ -10,6 +11,7 @@ import tomllib
 import adaptix_contracts
 from adaptix_contracts import schemas
 from pydantic import BaseModel
+import pytest
 
 
 def _load_project_version() -> str:
@@ -40,6 +42,20 @@ def test_package_root_reexports_schema_symbols() -> None:
     assert adaptix_contracts.__all__ == schemas.__all__
     for symbol_name in schemas.__all__:
         assert getattr(adaptix_contracts, symbol_name) is getattr(schemas, symbol_name)
+
+
+def test_package_root_import_fails_loudly_for_missing_schema_exports(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Protect import surface from stale or drifting ``schemas.__all__`` entries."""
+
+    broken_export = "__missing_schema_export_for_test__"
+    original_exports = list(schemas.__all__)
+    monkeypatch.setattr(schemas, "__all__", [*original_exports, broken_export])
+
+    with pytest.raises(ImportError, match=broken_export):
+        importlib.reload(adaptix_contracts)
+
+    monkeypatch.setattr(schemas, "__all__", original_exports)
+    importlib.reload(adaptix_contracts)
 
 
 def test_every_schema_module_imports_cleanly() -> None:

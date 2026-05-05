@@ -93,18 +93,45 @@ class AdaptixAuthContext(BaseModel):
     token_jti: Optional[str] = None  # JWT ID for revocation checks
 
     @classmethod
-    def from_token_payload(cls, payload: Dict[str, Any]) -> "AdaptixAuthContext":
+    def from_token_payload(
+        cls,
+        payload: Dict[str, Any],
+        trusted_tenant_id: Optional[str] = None,
+    ) -> "AdaptixAuthContext":
         """Construct from verified JWT payload."""
-        tenant_id = payload.get("tenant_id", "")
+        tenant_id = payload.get("tenant_id")
+        user_id = payload.get("sub")
+        session_id = payload.get("session_id")
+
+        missing_fields = [
+            field_name
+            for field_name, field_value in (
+                ("tenant_id", tenant_id),
+                ("sub", user_id),
+                ("session_id", session_id),
+            )
+            if not field_value
+        ]
+        if missing_fields:
+            raise ValueError(
+                "Missing required token payload fields: "
+                + ", ".join(missing_fields)
+            )
+
+        if trusted_tenant_id is not None and tenant_id != trusted_tenant_id:
+            raise ValueError(
+                f"Token tenant_id mismatch: payload={tenant_id}, trusted={trusted_tenant_id}"
+            )
+
         roles = [AdaptixRole(r) for r in payload.get("roles", []) if r in AdaptixRole._value2member_map_]
         permissions = payload.get("permissions", [])
         entitlements = payload.get("entitlements", [])
         modules = payload.get("modules_enabled", [])
 
         return cls(
-            user_id=payload.get("sub", ""),
+            user_id=user_id,
             tenant_id=tenant_id,
-            session_id=payload.get("session_id", ""),
+            session_id=session_id,
             email=payload.get("email"),
             full_name=payload.get("full_name"),
             role_set=AdaptixRoleSet(

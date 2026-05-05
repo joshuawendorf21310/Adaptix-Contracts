@@ -10,6 +10,7 @@ import pytest
 from fastapi import HTTPException, status
 
 from adaptix_contracts.auth_contracts import GATEWAY_SHARED_SECRET_ENV, get_auth_context
+from adaptix_contracts.auth.context import AdaptixAuthContext
 
 
 def _signature(secret: str, timestamp: int, user_id: object, tenant_id: object, email: str) -> str:
@@ -88,3 +89,60 @@ async def test_get_auth_context_rejects_signature_mismatch(monkeypatch) -> None:
 
     assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
     assert exc_info.value.detail == "Gateway identity signature is invalid."
+
+
+def test_from_token_payload_rejects_missing_tenant_id() -> None:
+    with pytest.raises(ValueError, match="tenant_id"):
+        AdaptixAuthContext.from_token_payload(
+            {
+                "sub": str(uuid4()),
+                "session_id": str(uuid4()),
+            }
+        )
+
+
+def test_from_token_payload_rejects_missing_sub() -> None:
+    with pytest.raises(ValueError, match="sub"):
+        AdaptixAuthContext.from_token_payload(
+            {
+                "tenant_id": str(uuid4()),
+                "session_id": str(uuid4()),
+            }
+        )
+
+
+def test_from_token_payload_rejects_missing_session_id() -> None:
+    with pytest.raises(ValueError, match="session_id"):
+        AdaptixAuthContext.from_token_payload(
+            {
+                "tenant_id": str(uuid4()),
+                "sub": str(uuid4()),
+            }
+        )
+
+
+def test_from_token_payload_rejects_trusted_tenant_mismatch() -> None:
+    with pytest.raises(ValueError, match="mismatch"):
+        AdaptixAuthContext.from_token_payload(
+            {
+                "tenant_id": str(uuid4()),
+                "sub": str(uuid4()),
+                "session_id": str(uuid4()),
+            },
+            trusted_tenant_id=str(uuid4()),
+        )
+
+
+def test_from_token_payload_accepts_trusted_tenant_match() -> None:
+    tenant_id = str(uuid4())
+    context = AdaptixAuthContext.from_token_payload(
+        {
+            "tenant_id": tenant_id,
+            "sub": str(uuid4()),
+            "session_id": str(uuid4()),
+            "roles": ["founder"],
+        },
+        trusted_tenant_id=tenant_id,
+    )
+
+    assert context.tenant_id == tenant_id
