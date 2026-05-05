@@ -14,6 +14,11 @@ from datetime import datetime
 from pathlib import Path
 
 
+def _status_icon(ok: bool) -> str:
+    """Return ASCII-safe status marker for Windows console compatibility."""
+    return "[PASS]" if ok else "[FAIL]"
+
+
 def validate_imports():
     """Test that all schema modules can be imported."""
     print("=" * 70)
@@ -22,7 +27,7 @@ def validate_imports():
 
     try:
         from adaptix_contracts.schemas import __all__
-        print(f"✓ Schema __all__ list defined ({len(__all__)} exports)")
+        print(f"{_status_icon(True)} Schema __all__ list defined ({len(__all__)} exports)")
 
         # Import all schemas
         from adaptix_contracts import schemas
@@ -31,14 +36,14 @@ def validate_imports():
             if hasattr(schemas, name):
                 imported_count += 1
             else:
-                print(f"❌ Missing export: {name}")
+                print(f"{_status_icon(False)} Missing export: {name}")
                 return False
 
-        print(f"✓ All {imported_count} exports are accessible")
+        print(f"{_status_icon(True)} All {imported_count} exports are accessible")
         return True
 
     except ImportError as e:
-        print(f"❌ Import failed: {e}")
+        print(f"{_status_icon(False)} Import failed: {e}")
         return False
 
 
@@ -66,8 +71,8 @@ def validate_model_structure():
             elif issubclass(obj, Enum) and obj is not Enum:
                 enums.append((name, obj))
 
-    print(f"✓ Found {len(models)} model classes")
-    print(f"✓ Found {len(enums)} enum classes")
+    print(f"{_status_icon(True)} Found {len(models)} model classes")
+    print(f"{_status_icon(True)} Found {len(enums)} enum classes")
 
     # Check for proper Pydantic v2 usage
     issues = []
@@ -80,11 +85,11 @@ def validate_model_structure():
             issues.append(f"{name}: May not be Pydantic v2 compatible")
 
     if issues:
-        print("\n⚠️  Potential issues:")
+        print("\n[WARN] Potential issues:")
         for issue in issues:
             print(f"   - {issue}")
     else:
-        print("✓ All models appear Pydantic v2 compatible")
+        print(f"{_status_icon(True)} All models appear Pydantic v2 compatible")
 
     return True
 
@@ -139,7 +144,7 @@ def validate_sample_instantiation():
             context=audit_ctx,
             occurred_at=datetime.now()
         )
-        print(f"✓ AuditRecord instantiated: {audit.audit_id}")
+        print(f"{_status_icon(True)} AuditRecord instantiated: {audit.audit_id}")
 
         # Test claim contract
         claim = ClaimContract(
@@ -152,7 +157,7 @@ def validate_sample_instantiation():
             created_at=datetime.now(),
             updated_at=datetime.now()
         )
-        print(f"✓ ClaimContract instantiated: {claim.claim_id}")
+        print(f"{_status_icon(True)} ClaimContract instantiated: {claim.claim_id}")
 
         # Test feature flag
         flag = FeatureFlagContract(
@@ -161,7 +166,7 @@ def validate_sample_instantiation():
             default_enabled=True,
             evaluated_at=datetime.now()
         )
-        print(f"✓ FeatureFlagContract instantiated: {flag.flag_key}")
+        print(f"{_status_icon(True)} FeatureFlagContract instantiated: {flag.flag_key}")
 
         # Test workflow execution
         workflow_ctx = WorkflowContext(
@@ -176,20 +181,20 @@ def validate_sample_instantiation():
             status=WorkflowStatus.RUNNING,
             started_at=datetime.now()
         )
-        print(f"✓ WorkflowExecution instantiated: {workflow.workflow_id}")
+        print(f"{_status_icon(True)} WorkflowExecution instantiated: {workflow.workflow_id}")
 
         narcotic_vault = VaultCreateRequest(
             vault_name="Station 1 Main Vault",
             location="Station 1 / Medication Room",
             vault_type=NarcoticVaultType.STATION,
         )
-        print(f"✓ VaultCreateRequest instantiated: {narcotic_vault.vault_name}")
+        print(f"{_status_icon(True)} VaultCreateRequest instantiated: {narcotic_vault.vault_name}")
 
-        print("\n✓ All sample model instantiations successful")
+        print(f"\n{_status_icon(True)} All sample model instantiations successful")
         return True
 
     except Exception as e:
-        print(f"❌ Model instantiation failed: {e}")
+        print(f"{_status_icon(False)} Model instantiation failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -228,14 +233,14 @@ def validate_domain_coverage():
 
     missing = expected_domains - actual_domains
     if missing:
-        print(f"\n⚠️  Missing domains: {sorted(missing)}")
+        print(f"\n[WARN] Missing domains: {sorted(missing)}")
 
     extra = actual_domains - expected_domains
     if extra:
-        print(f"\n✓ Additional domains: {sorted(extra)}")
+        print(f"\n{_status_icon(True)} Additional domains: {sorted(extra)}")
 
     if not missing:
-        print("\n✓ All expected domains are present")
+        print(f"\n{_status_icon(True)} All expected domains are present")
 
     return True
 
@@ -259,7 +264,7 @@ def main():
 
     all_passed = True
     for name, passed in results:
-        status = "✅ PASS" if passed else "❌ FAIL"
+        status = "PASS" if passed else "FAIL"
         print(f"{status} - {name}")
         if not passed:
             all_passed = False
@@ -267,10 +272,10 @@ def main():
     print("=" * 70)
 
     if all_passed:
-        print("\n✅ All validations passed!")
+        print(f"\n{_status_icon(True)} All validations passed!")
         return 0
     else:
-        print("\n❌ Some validations failed!")
+        print(f"\n{_status_icon(False)} Some validations failed!")
         return 1
 
 
