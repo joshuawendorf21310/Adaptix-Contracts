@@ -207,19 +207,22 @@ def validate_domain_coverage():
     print("=" * 70)
 
     expected_domains = {
-        'air', 'air_pilot', 'audit', 'billing', 'billing_auth',
+        'admin', 'ai', 'air', 'air_pilot', 'audit', 'billing', 'billing_auth',
         'billing_clearinghouse', 'billing_eligibility', 'billing_portal',
-        'billing_transport', 'cad', 'cad_transport', 'communications',
-        'clinical_visual', 'core', 'crewlink', 'epcr', 'feature_flag', 'field', 'fire',
-        'inventory', 'narcotic',
-        'metrics', 'nemsis', 'ocr', 'patient_portal', 'search',
-        'transport', 'voice', 'workflow'
+        'billing_transport', 'cad', 'cad_transport', 'calendar',
+        'clinical_visual', 'command_center', 'communications', 'continuity',
+        'contract_onboarding', 'core', 'crewlink', 'crm', 'duty_auth',
+        'epcr', 'feature_flag', 'field', 'fire', 'founder', 'graph',
+        'intake', 'inventory', 'labor', 'legal_execution', 'medications',
+        'metrics', 'narcotic', 'nemsis', 'ocr', 'patient_portal', 'search',
+        'service_registry', 'signature_compliance', 'telnyx', 'tenant',
+        'transport', 'voice', 'workflow', 'workforce'
     }
 
     repo_root = Path(__file__).resolve().parent
     schema_dir = repo_root / 'adaptix_contracts' / 'schemas'
     contract_files = [f.stem for f in schema_dir.glob('*_contracts.py')]
-    contract_files.extend(['nemsis_exports', 'narcotic'])  # Special cases
+    contract_files.extend(['nemsis_exports', 'narcotic', 'service_registry'])  # Special cases
 
     # Normalize names
     actual_domains = set()

@@ -766,6 +766,16 @@ __all__ = [
     # Air Pilot
     "PilotGoNoGoEvent",
     "PilotReadinessStatus",
+    # Duty Auth
+    "FieldLoginRequest",
+    "FieldLoginResolved",
+    "CreateDutySessionRequest",
+    "DutySessionResponse",
+    "EndDutySessionRequest",
+    "EndDutySessionResponse",
+    "RevokeBadgeRequest",
+    "RevokeBadgeResponse",
+    "AuthAuditEvent",
     # Audit
     "AuditActorType",
     "AuditActionType",
@@ -951,6 +961,11 @@ __all__ = [
     "EpcrChartCreatedEvent",
     "EpcrChartFinalizedEvent",
     "EpcrChartContract",
+    "EpcrPatientProfileContract",
+    "EpcrVitalSetContract",
+    "EpcrClinicalImpressionContract",
+    "EpcrMedicationAdministrationContract",
+    "EpcrSignatureArtifactContract",
     "EpcrNemsissComplianceContract",
     # Feature Flags
     "FeatureFlagStatus",
