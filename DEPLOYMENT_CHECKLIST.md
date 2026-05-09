@@ -1,10 +1,13 @@
 # Adaptix-Contracts Deployment Checklist
 
 ## Preflight
-- [ ] Run package tests.
-- [ ] Verify build artifact.
+- [ ] Run `python validate_contracts.py`.
+- [ ] Run `python validate_contracts.py --json` and capture the report.
+- [ ] Run `python -m pytest`.
+- [ ] Verify build artifact with `python -m build --sdist --wheel`.
+- [ ] Verify package metadata with `python -m twine check dist/*`.
 - [ ] Verify package version.
-- [ ] Verify all consumers pin/use the real package.
+- [ ] Verify all consumers pin/use the real package by running `python scripts/audit_workspace_contracts.py --workspace-root <workspace>`.
 
 ## Release
 - [ ] Publish package or commit Git dependency target.
@@ -18,4 +21,4 @@
 - [ ] All service contract imports succeed in deployed images.
 
 ## Verdict
-SETUP_REQUIRED until all consumers are verified.
+PASS when all checks above pass and `python scripts/audit_workspace_contracts.py --workspace-root <workspace>` reports `shadow_package_count = 0`.

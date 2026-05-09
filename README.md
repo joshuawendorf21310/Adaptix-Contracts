@@ -1,6 +1,6 @@
 # Adaptix Contracts
 
-**Version:** 1.0.1
+**Version:** 1.0.2
 
 Canonical shared cross-domain schema definitions for the Adaptix polyrepo platform.
 
@@ -208,11 +208,17 @@ Run the validation script to ensure all contracts are properly defined:
 python validate_contracts.py
 ```
 
+For release automation and machine-readable proof, emit the JSON report:
+
+```bash
+python validate_contracts.py --json
+```
+
 This validates:
-- All 242 exports are importable
-- All 197 models are Pydantic v2 compatible
-- All 45 enums are properly defined
-- All 28 domains are covered
+- All 558 exports are importable
+- All 461 models are Pydantic v2 compatible
+- All 103 enums are properly defined
+- All expected domains are covered
 - Sample models can be instantiated
 
 Run the automated regression suite for export integrity, schema serialization,
@@ -221,6 +227,20 @@ and representative validation failures:
 ```bash
 pip install -e .[dev]
 python -m pytest
+```
+
+Build and verify the publishable package artifacts before any release:
+
+```bash
+python -m build --sdist --wheel
+python -m twine check dist/*
+```
+
+Audit a polyrepo workspace for shadow `adaptix_contracts` packages that can
+silently override the canonical repo during production builds:
+
+```bash
+python scripts/audit_workspace_contracts.py --workspace-root C:\Users\fusio\Desktop\workspace
 ```
 
 ## Versioning
@@ -235,10 +255,11 @@ Release governance artifacts:
 
 - [`CHANGELOG.md`](CHANGELOG.md) — authoritative release history
 - [`DEPRECATION_POLICY.md`](DEPRECATION_POLICY.md) — backward-compatibility and retirement rules
+- [`MARKET_READY_LEDGER.md`](MARKET_READY_LEDGER.md) — current proof ledger and market-readiness verdict
 
 Contract changes are not considered releasable until the changelog is updated,
 deprecation impact is documented for public surface changes, and the validation
-script plus pytest suite both pass.
+script, pytest suite, build verification, and shadow-package audit all pass.
 
 ## Contributing
 

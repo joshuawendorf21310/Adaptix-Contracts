@@ -8,6 +8,7 @@ Publish shared request/response/event schemas used across Adaptix services.
 - Breaking changes must be coordinated across consumers.
 - Runtime services must import the real package, not a local mock.
 - Contract tests must cover required fields, optional fields, validation errors, and backwards compatibility where promised.
+- Workspace release checks must fail if a shadow `adaptix_contracts` package is detected outside this repo.
 
 ## Data Ownership
 This package owns schema definitions only. It does not own persisted domain data.

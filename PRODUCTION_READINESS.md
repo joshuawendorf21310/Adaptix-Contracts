@@ -1,7 +1,7 @@
 # Adaptix-Contracts Production Readiness
 
-Date: 2026-04-28
-Classification: SETUP_REQUIRED
+Date: 2026-05-08
+Classification: PASS
 
 ## Service Purpose
 Shared Python package for cross-service schemas and contract publication truth.
@@ -22,20 +22,29 @@ No database ownership.
 All service repos that import shared schemas.
 
 ## Health/Readiness Endpoint Status
-Not applicable as a library. Import/test health must be verified by consumers.
+No HTTP endpoint applies because this repo is a library. Readiness is defined by:
+- `python validate_contracts.py`
+- `python validate_contracts.py --json`
+- `python -m pytest`
+- `python -m build --sdist --wheel`
+- `python -m twine check dist/*`
+- `python scripts/audit_workspace_contracts.py --workspace-root <workspace>`
 
 ## Test Status
-Prior repo memory records 24 contract tests passing. Current cross-repo consumer compatibility is not fully certified.
+Local validator and regression suite pass in this repo. Focused consumer validation also passed after removing the Core, Inventory, Narcotics, and Integrations shadow `adaptix_contracts` trees.
 
 ## Deployment Status
-Package availability and pinned versioning across all services are not fully proven.
+The package is locally buildable, CI verifies publishable artifacts, and the workspace audit now proves canonical-package adoption across the audited consumer repos.
 
 ## Production Blockers
-- Cross-repo contract runtime authority is not fully certified.
-- At least one repo was previously noted using a local mock `adaptix_contracts` package.
+- None for the audited workspace slice.
 
 ## Remediation Completed
 - Existing shared contract package identified as authority path.
+- Added machine-readable validation output via `validate_contracts.py --json`.
+- Added workspace shadow-package audit script.
+- Added CI artifact build and `twine check` verification.
+- Added `.env.example` for workspace audit configuration.
 
 ## Final Verdict
-SETUP_REQUIRED until consumer compatibility and package publication/install proof is complete.
+PASS — the canonical package is validated, buildable, and proven authoritative across the audited workspace.

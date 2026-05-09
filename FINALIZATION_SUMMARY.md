@@ -1,5 +1,7 @@
 # Adaptix Contracts Finalization Summary
 
+Historical note: this document records a 2026-04-17 milestone. Current release truth now lives in `PRODUCTION_READINESS.md`, `TEST_EVIDENCE.md`, and `MARKET_READY_LEDGER.md`.
+
 ## Completion Report
 
 Date: 2026-04-17
@@ -177,7 +179,7 @@ workflow = WorkflowExecution(...)  # ✅ Works
 
 ---
 
-## No Blockers Remaining
+## Historical Milestone Status
 
 All objectives from the problem statement have been completed:
 - [x] Canonicalized package structure
@@ -190,4 +192,4 @@ All objectives from the problem statement have been completed:
 - [x] Eliminated structural drift
 - [x] Validated repo fully
 
-The adaptix-contracts repository is now production-ready as the canonical shared contracts package.
+This milestone established the canonical shared contracts package, but it is not the authoritative current market-readiness verdict.

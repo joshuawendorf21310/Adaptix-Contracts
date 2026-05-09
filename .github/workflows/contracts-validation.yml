@@ -43,3 +43,9 @@ jobs:
 
       - name: Run pytest regression suite
         run: python -m pytest --cov=adaptix_contracts --cov-report=term-missing
+
+      - name: Build distribution artifacts
+        run: python -m build --sdist --wheel
+
+      - name: Verify distribution metadata
+        run: python -m twine check dist/*
