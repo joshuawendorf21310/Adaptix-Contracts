@@ -73,3 +73,46 @@ Status: PASS
 
 ## Final Status
 - PASS — consumer repos no longer shadow `adaptix_contracts`, and the authoritative workspace audit confirms canonical package ownership.
+
+---
+
+Date: 2026-05-09
+Repo: Adaptix-Contracts
+Feature or workflow: Reduced-scope calendar kernel contracts for TransportLink and Workforce wrapper adoption
+Status: PASS
+
+## Files Changed
+- `adaptix_contracts/calendar/__init__.py`
+- `adaptix_contracts/calendar/event.py`
+- `adaptix_contracts/calendar/resource.py`
+- `adaptix_contracts/calendar/conflict.py`
+- `adaptix_contracts/calendar/audit.py`
+- `adaptix_contracts/schemas/calendar_contracts.py`
+- `adaptix_contracts/schemas/__init__.py`
+- `tests/test_calendar_kernel_contracts.py`
+
+## Migrations Added
+- None
+
+## Environment Variables Added
+- None
+
+## Tests Added
+- `tests/test_calendar_kernel_contracts.py`
+
+## Commands Run
+- `C:\Python314\python.exe -m pytest tests/test_calendar_kernel_contracts.py tests/test_contract_surface.py -q`
+
+## Results Observed
+- Calendar kernel contracts import cleanly through the public `adaptix_contracts.schemas` surface.
+- Focused contract validation passed with 12 tests after reconciling the new reduced-scope exports with the existing calendar authority models in `calendar_contracts.py`.
+
+## Known Limitations
+- This slice only provides the shared contract kernel used by the web wrapper for TransportLink and Workforce. It does not add new backend calendar APIs in service repos.
+
+## Rollback Instructions
+- Revert the calendar kernel contract files and schema export changes listed above.
+- Remove `tests/test_calendar_kernel_contracts.py` if rolling back the reduced-scope wrapper contract surface.
+
+## Final Status
+- PASS — the reduced-scope calendar kernel contract surface is implemented and validated in the package repo.

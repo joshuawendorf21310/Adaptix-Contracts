@@ -1,4 +1,4 @@
-"""Shared calendar authority contracts for Adaptix Core."""
+"""Shared calendar authority and reduced-scope calendar kernel contracts."""
 
 from __future__ import annotations
 
@@ -6,6 +6,24 @@ from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
+
+from adaptix_contracts.calendar import (
+    AdaptixCalendarAuditAction,
+    AdaptixCalendarAuditEvent,
+    AdaptixCalendarConflict,
+    AdaptixCalendarConflictReason,
+    AdaptixCalendarEvent,
+    AdaptixCalendarEventStatus,
+    AdaptixCalendarProduct,
+    AdaptixCalendarResource,
+    AdaptixCalendarResourceKind,
+    CalendarExportRequest,
+    ScheduleEntry,
+    ScheduleStatus,
+    ShiftAssignment,
+    ShiftType,
+    StaffingCoverage,
+)
 
 
 class CalendarAvailabilityResponse(BaseModel):
@@ -70,3 +88,27 @@ class CalendarAuditEntry(BaseModel):
     action: str
     details_json: dict[str, Any] = Field(default_factory=dict)
     occurred_at: datetime
+
+
+__all__ = [
+    "AdaptixCalendarAuditAction",
+    "AdaptixCalendarAuditEvent",
+    "AdaptixCalendarConflict",
+    "AdaptixCalendarConflictReason",
+    "AdaptixCalendarEvent",
+    "AdaptixCalendarEventStatus",
+    "AdaptixCalendarProduct",
+    "AdaptixCalendarResource",
+    "AdaptixCalendarResourceKind",
+    "CalendarAvailabilityResponse",
+    "CalendarAuditEntry",
+    "CalendarEventCreateRequest",
+    "CalendarEventResponse",
+    "CalendarEventUpdateRequest",
+    "CalendarExportRequest",
+    "ScheduleEntry",
+    "ScheduleStatus",
+    "ShiftAssignment",
+    "ShiftType",
+    "StaffingCoverage",
+]

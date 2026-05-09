@@ -18,6 +18,23 @@ from .air_contracts import (
     AirLandingZoneContract,
 )
 
+# Calendar kernel
+from .calendar_contracts import (
+    AdaptixCalendarAuditAction,
+    AdaptixCalendarAuditEvent,
+    AdaptixCalendarConflict,
+    AdaptixCalendarConflictReason,
+    AdaptixCalendarEvent,
+    AdaptixCalendarEventStatus,
+    AdaptixCalendarProduct,
+    AdaptixCalendarResource,
+    AdaptixCalendarResourceKind,
+    CalendarAvailabilityResponse,
+    CalendarAuditEntry,
+    CalendarEventCreateRequest,
+    CalendarEventUpdateRequest,
+)
+
 # Air Pilot
 from .air_pilot_contracts import (
     PilotGoNoGoEvent,
@@ -775,6 +792,20 @@ __all__ = [
     "AirMissionStatusUpdatedEvent",
     "AirMissionContract",
     "AirLandingZoneContract",
+    # Calendar kernel
+    "AdaptixCalendarAuditAction",
+    "AdaptixCalendarAuditEvent",
+    "AdaptixCalendarConflict",
+    "AdaptixCalendarConflictReason",
+    "AdaptixCalendarEvent",
+    "AdaptixCalendarEventStatus",
+    "AdaptixCalendarProduct",
+    "AdaptixCalendarResource",
+    "AdaptixCalendarResourceKind",
+    "CalendarAvailabilityResponse",
+    "CalendarAuditEntry",
+    "CalendarEventCreateRequest",
+    "CalendarEventUpdateRequest",
     # Air Pilot
     "PilotGoNoGoEvent",
     "PilotReadinessStatus",
