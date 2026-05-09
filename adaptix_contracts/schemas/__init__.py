@@ -167,6 +167,11 @@ from .cad_contracts import (
 # CAD Transport
 from .cad_transport_contracts import (
     CadTransportLaneStatus,
+    CadTransportLinkStatus,
+    CadTransportLinkContract,
+    CadDispatchReadyEntryContract,
+    CadTransportExceptionEntryContract,
+    CadTransportStatusSyncContract,
     ScheduledTransportLaneItem,
     DispatchReadyItem,
     CadTransportException,
@@ -871,6 +876,11 @@ __all__ = [
     "CadUnitAssignedEvent",
     # CAD Transport
     "CadTransportLaneStatus",
+    "CadTransportLinkStatus",
+    "CadTransportLinkContract",
+    "CadDispatchReadyEntryContract",
+    "CadTransportExceptionEntryContract",
+    "CadTransportStatusSyncContract",
     "ScheduledTransportLaneItem",
     "DispatchReadyItem",
     "CadTransportException",
