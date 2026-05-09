@@ -1,6 +1,7 @@
 """Security regression tests for gateway-signed auth contracts."""
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import hmac
 import time
@@ -18,17 +19,18 @@ def _signature(secret: str, timestamp: int, user_id: object, tenant_id: object, 
     return hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
 
 
-@pytest.mark.asyncio
-async def test_get_auth_context_fails_closed_without_gateway_secret(monkeypatch) -> None:
+def test_get_auth_context_fails_closed_without_gateway_secret(monkeypatch) -> None:
     monkeypatch.delenv(GATEWAY_SHARED_SECRET_ENV, raising=False)
 
     with pytest.raises(HTTPException) as exc_info:
-        await get_auth_context(
-            x_user_id=str(uuid4()),
-            x_tenant_id=str(uuid4()),
-            x_user_email="admin@example.test",
-            x_gateway_timestamp=str(int(time.time())),
-            x_gateway_signature="deadbeef",
+        asyncio.run(
+            get_auth_context(
+                x_user_id=str(uuid4()),
+                x_tenant_id=str(uuid4()),
+                x_user_email="admin@example.test",
+                x_gateway_timestamp=str(int(time.time())),
+                x_gateway_signature="deadbeef",
+            )
         )
 
     assert exc_info.value.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
@@ -37,23 +39,23 @@ async def test_get_auth_context_fails_closed_without_gateway_secret(monkeypatch)
     assert GATEWAY_SHARED_SECRET_ENV in exc_info.value.detail["required_configuration"]
 
 
-@pytest.mark.asyncio
-async def test_get_auth_context_rejects_unsigned_identity_headers(monkeypatch) -> None:
+def test_get_auth_context_rejects_unsigned_identity_headers(monkeypatch) -> None:
     monkeypatch.setenv(GATEWAY_SHARED_SECRET_ENV, "test-shared-secret")
 
     with pytest.raises(HTTPException) as exc_info:
-        await get_auth_context(
-            x_user_id=str(uuid4()),
-            x_tenant_id=str(uuid4()),
-            x_user_email="admin@example.test",
+        asyncio.run(
+            get_auth_context(
+                x_user_id=str(uuid4()),
+                x_tenant_id=str(uuid4()),
+                x_user_email="admin@example.test",
+            )
         )
 
     assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
     assert "Missing gateway signature headers" in str(exc_info.value.detail)
 
 
-@pytest.mark.asyncio
-async def test_get_auth_context_accepts_valid_gateway_signature(monkeypatch) -> None:
+def test_get_auth_context_accepts_valid_gateway_signature(monkeypatch) -> None:
     secret = "test-shared-secret"
     monkeypatch.setenv(GATEWAY_SHARED_SECRET_ENV, secret)
     user_id = uuid4()
@@ -61,12 +63,14 @@ async def test_get_auth_context_accepts_valid_gateway_signature(monkeypatch) -> 
     email = "admin@example.test"
     timestamp = int(time.time())
 
-    auth_context = await get_auth_context(
-        x_user_id=str(user_id),
-        x_tenant_id=str(tenant_id),
-        x_user_email=email,
-        x_gateway_timestamp=str(timestamp),
-        x_gateway_signature=_signature(secret, timestamp, user_id, tenant_id, email),
+    auth_context = asyncio.run(
+        get_auth_context(
+            x_user_id=str(user_id),
+            x_tenant_id=str(tenant_id),
+            x_user_email=email,
+            x_gateway_timestamp=str(timestamp),
+            x_gateway_signature=_signature(secret, timestamp, user_id, tenant_id, email),
+        )
     )
 
     assert auth_context.user_id == user_id
@@ -74,17 +78,18 @@ async def test_get_auth_context_accepts_valid_gateway_signature(monkeypatch) -> 
     assert auth_context.email == email
 
 
-@pytest.mark.asyncio
-async def test_get_auth_context_rejects_signature_mismatch(monkeypatch) -> None:
+def test_get_auth_context_rejects_signature_mismatch(monkeypatch) -> None:
     monkeypatch.setenv(GATEWAY_SHARED_SECRET_ENV, "test-shared-secret")
 
     with pytest.raises(HTTPException) as exc_info:
-        await get_auth_context(
-            x_user_id=str(uuid4()),
-            x_tenant_id=str(uuid4()),
-            x_user_email="admin@example.test",
-            x_gateway_timestamp=str(int(time.time())),
-            x_gateway_signature="invalid",
+        asyncio.run(
+            get_auth_context(
+                x_user_id=str(uuid4()),
+                x_tenant_id=str(uuid4()),
+                x_user_email="admin@example.test",
+                x_gateway_timestamp=str(int(time.time())),
+                x_gateway_signature="invalid",
+            )
         )
 
     assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED

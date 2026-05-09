@@ -18,6 +18,23 @@ from .air_contracts import (
     AirLandingZoneContract,
 )
 
+# Calendar kernel
+from .calendar_contracts import (
+    AdaptixCalendarAuditAction,
+    AdaptixCalendarAuditEvent,
+    AdaptixCalendarConflict,
+    AdaptixCalendarConflictReason,
+    AdaptixCalendarEvent,
+    AdaptixCalendarEventStatus,
+    AdaptixCalendarProduct,
+    AdaptixCalendarResource,
+    AdaptixCalendarResourceKind,
+    CalendarAvailabilityResponse,
+    CalendarAuditEntry,
+    CalendarEventCreateRequest,
+    CalendarEventUpdateRequest,
+)
+
 # Air Pilot
 from .air_pilot_contracts import (
     PilotGoNoGoEvent,
@@ -167,6 +184,11 @@ from .cad_contracts import (
 # CAD Transport
 from .cad_transport_contracts import (
     CadTransportLaneStatus,
+    CadTransportLinkStatus,
+    CadTransportLinkContract,
+    CadDispatchReadyEntryContract,
+    CadTransportExceptionEntryContract,
+    CadTransportStatusSyncContract,
     ScheduledTransportLaneItem,
     DispatchReadyItem,
     CadTransportException,
@@ -388,6 +410,13 @@ from .narcotic import (
     NarcoticTransactionType,
     NarcoticInvestigationStatus,
     NarcoticAccessType,
+    CountType,
+    ShiftPhase,
+    RecallStatus,
+    WitnessEventType,
+    ComplianceType,
+    ActionStatus,
+    KitStatus,
     VaultCreateRequest,
     VaultUpdateRequest,
     VaultResponse,
@@ -763,6 +792,20 @@ __all__ = [
     "AirMissionStatusUpdatedEvent",
     "AirMissionContract",
     "AirLandingZoneContract",
+    # Calendar kernel
+    "AdaptixCalendarAuditAction",
+    "AdaptixCalendarAuditEvent",
+    "AdaptixCalendarConflict",
+    "AdaptixCalendarConflictReason",
+    "AdaptixCalendarEvent",
+    "AdaptixCalendarEventStatus",
+    "AdaptixCalendarProduct",
+    "AdaptixCalendarResource",
+    "AdaptixCalendarResourceKind",
+    "CalendarAvailabilityResponse",
+    "CalendarAuditEntry",
+    "CalendarEventCreateRequest",
+    "CalendarEventUpdateRequest",
     # Air Pilot
     "PilotGoNoGoEvent",
     "PilotReadinessStatus",
@@ -871,6 +914,11 @@ __all__ = [
     "CadUnitAssignedEvent",
     # CAD Transport
     "CadTransportLaneStatus",
+    "CadTransportLinkStatus",
+    "CadTransportLinkContract",
+    "CadDispatchReadyEntryContract",
+    "CadTransportExceptionEntryContract",
+    "CadTransportStatusSyncContract",
     "ScheduledTransportLaneItem",
     "DispatchReadyItem",
     "CadTransportException",
@@ -1039,6 +1087,13 @@ __all__ = [
     "NarcoticTransactionType",
     "NarcoticInvestigationStatus",
     "NarcoticAccessType",
+    "CountType",
+    "ShiftPhase",
+    "RecallStatus",
+    "WitnessEventType",
+    "ComplianceType",
+    "ActionStatus",
+    "KitStatus",
     "VaultCreateRequest",
     "VaultUpdateRequest",
     "VaultResponse",

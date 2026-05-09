@@ -75,6 +75,77 @@ class NarcoticAccessType(str, Enum):
     EMERGENCY = "emergency"
 
 
+class CountType(str, Enum):
+    """Shift count categories used during narcotics accountability workflows."""
+
+    START_SHIFT = "start_shift"
+    END_SHIFT = "end_shift"
+    MID_SHIFT = "mid_shift"
+    BLIND = "blind"
+    SUPERVISOR = "supervisor"
+    SPOT_CHECK = "spot_check"
+
+
+class ShiftPhase(str, Enum):
+    """Lifecycle phase for a narcotics shift count."""
+
+    START = "start"
+    MIDDLE = "middle"
+    END = "end"
+    EMERGENCY = "emergency"
+
+
+class RecallStatus(str, Enum):
+    """Lifecycle state for narcotic recall tracking."""
+
+    OPEN = "open"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+
+
+class WitnessEventType(str, Enum):
+    """Witnessed narcotics workflow events."""
+
+    ADMINISTRATION = "administration"
+    WASTE = "waste"
+    COUNT = "count"
+    TRANSFER = "transfer"
+    DESTRUCTION = "destruction"
+    EMERGENCY_ACCESS = "emergency_access"
+
+
+class ComplianceType(str, Enum):
+    """Compliance record categories for narcotics operations."""
+
+    DEA_222 = "dea_222"
+    DEA_106 = "dea_106"
+    PERIODIC_AUDIT = "periodic_audit"
+    INVENTORY = "inventory"
+    WITNESS_VERIFICATION = "witness_verification"
+
+
+class ActionStatus(str, Enum):
+    """Corrective action lifecycle state."""
+
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    OVERDUE = "overdue"
+
+
+class KitStatus(str, Enum):
+    """Operational status for narcotic kits."""
+
+    ACTIVE = "active"
+    CHECKED_OUT = "checked_out"
+    INACTIVE = "inactive"
+    EXPIRED = "expired"
+    RESTOCKING = "restocking"
+    COMPROMISED = "compromised"
+    RETIRED = "retired"
+
+
 class VaultCreateRequest(BaseModel):
     """Request to create a narcotic vault."""
 

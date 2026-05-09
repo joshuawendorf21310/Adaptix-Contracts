@@ -23,6 +23,84 @@ class CadTransportLaneStatus(str, Enum):
     CANCELLED = "cancelled"
 
 
+class CadTransportLinkStatus(str, Enum):
+    """Lifecycle status for the durable CAD/TransportLink link record."""
+
+    VISIBLE = "visible"
+    DISPATCH_READY = "dispatch_ready"
+    ACTIVATED = "activated"
+    SYNCING = "syncing"
+    COMPLETED = "completed"
+    UNLINKED = "unlinked"
+    ERROR = "error"
+
+
+class CadTransportLinkContract(BaseModel):
+    """Shared cross-domain shape for the durable CAD link record."""
+
+    trip_id: str
+    request_id: str
+    tenant_id: str
+    status: CadTransportLinkStatus
+    patient_name: Optional[str] = None
+    transport_type: Optional[str] = None
+    level_of_care: Optional[str] = None
+    pickup_facility_name: Optional[str] = None
+    destination_facility_name: Optional[str] = None
+    scheduled_pickup_at: Optional[datetime] = None
+    unit_id: Optional[str] = None
+    cad_case_id: Optional[str] = None
+    activated_at: Optional[datetime] = None
+    last_synced_at: Optional[datetime] = None
+    error_detail: Optional[str] = None
+
+
+class CadDispatchReadyEntryContract(BaseModel):
+    """Shared queue shape for trips that have passed all readiness gates."""
+
+    trip_id: str
+    request_id: str
+    tenant_id: str
+    patient_name: str
+    transport_type: str
+    pickup_facility_name: str
+    scheduled_pickup_at: datetime
+    unit_id: Optional[str] = None
+    readiness_confirmed_at: datetime
+    minutes_until_pickup: Optional[int] = None
+    removed: bool = False
+    removed_at: Optional[datetime] = None
+
+
+class CadTransportExceptionEntryContract(BaseModel):
+    """Shared exception-queue shape for blocked CAD-visible transports."""
+
+    trip_id: str
+    request_id: str
+    tenant_id: str
+    patient_name: str
+    scheduled_pickup_at: datetime
+    exception_type: str
+    exception_reason: str
+    blocking_gates: list[str] = Field(default_factory=list)
+    flagged_at: datetime
+    resolved: bool = False
+    resolved_at: Optional[datetime] = None
+
+
+class CadTransportStatusSyncContract(BaseModel):
+    """Shared immutable sync-history shape for CAD to TransportLink updates."""
+
+    trip_id: str
+    tenant_id: str
+    new_status: str
+    unit_id: Optional[str] = None
+    operator_note: Optional[str] = None
+    synced_at: datetime
+    transport_accepted: bool = False
+    transport_timeline_event_id: Optional[str] = None
+
+
 class ScheduledTransportLaneItem(BaseModel):
     """Read contract for a single trip in the CAD scheduled transport lane."""
 
