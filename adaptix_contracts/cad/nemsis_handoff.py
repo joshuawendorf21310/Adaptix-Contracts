@@ -120,6 +120,53 @@ class CadDispatchTimeline(BaseModel):
     cancellation_reason: Optional[str] = None
 
 
+class CadDispatchContext(BaseModel):
+    """eDispatch section data — CAD-owned dispatch metadata.
+
+    Maps to NEMSIS 3.5.1 eDispatch elements. Previously unmapped; now required
+    for complete state dataset submission.
+
+    CAD owns these fields: dispatcher determines call type, EMD card, and area command.
+    ePCR must NOT override these without explicit dispatcher correction.
+    """
+
+    # NEMSIS eDispatch.01 — Complaint Reported by Dispatch (call type code)
+    call_type: Optional[str] = Field(
+        default=None,
+        description="eDispatch.01 — Complaint/call type reported by dispatcher (e.g. CHEST_PAIN, TRAUMA, CARDIAC_ARREST)",
+    )
+
+    # NEMSIS eDispatch.02 — Unit Dispatched CAD Record ID
+    cad_record_id: Optional[str] = Field(
+        default=None,
+        description="eDispatch.02 — CAD system record/case ID for this dispatch",
+    )
+
+    # NEMSIS eDispatch.03 — Complaint Reported by Dispatch (free text description)
+    complaint: Optional[str] = Field(
+        default=None,
+        description="eDispatch.03 — Dispatch complaint description as reported by dispatcher",
+    )
+
+    # NEMSIS eDispatch.04 — EMD Performed (Yes/No)
+    emd_performed: Optional[bool] = Field(
+        default=None,
+        description="eDispatch.04 — Whether Emergency Medical Dispatch protocol was performed",
+    )
+
+    # NEMSIS eDispatch.05 — EMD Card Number Used
+    emd_card: Optional[str] = Field(
+        default=None,
+        description="eDispatch.05 — EMD card/protocol number used (e.g. ProQA, MPDS card number)",
+    )
+
+    # NEMSIS eDispatch.06 — Area Command
+    area_command: Optional[str] = Field(
+        default=None,
+        description="eDispatch.06 — Geographic area command identifier for this dispatch",
+    )
+
+
 class CadNemsisHandoffPayload(BaseModel):
     """Structured CAD-to-ePCR handoff payload for NEMSIS 3.5.1 field population.
 
@@ -184,6 +231,13 @@ class CadNemsisHandoffPayload(BaseModel):
 
     # Payer/document awareness
     payer_document_awareness: Optional[CadPayerDocumentAwareness] = None
+
+    # eDispatch section — call type, EMD, area command (CAD-owned)
+    # NEMSIS eDispatch.01–.06
+    dispatch_context: Optional[CadDispatchContext] = Field(
+        default=None,
+        description="eDispatch.01–.06 — CAD dispatch metadata: call type, complaint, EMD, area command",
+    )
 
     # Medical necessity support text (CAD-generated, not clinical)
     medical_necessity_support_text: Optional[str] = None
