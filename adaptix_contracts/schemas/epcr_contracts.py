@@ -154,3 +154,55 @@ class EpcrNemsissComplianceContract(BaseModel):
     compliance_percentage: float
 
     missing_mandatory_fields: list[str] = Field(default_factory=list)
+
+
+class EpcrBillingHandoffPayload(BaseModel):
+    """Authoritative payload for ePCR-to-Billing handoff on chart submission.
+
+    Triggered when an ePCR chart is finalized and ready for billing.
+    Contains all essential clinical data needed to auto-populate a billing claim.
+    """
+
+    chart_id: str
+    tenant_id: str
+    call_number: str
+
+    # Patient demographics from ePCR
+    patient_first_name: Optional[str] = None
+    patient_last_name: Optional[str] = None
+    patient_date_of_birth: Optional[str] = None
+    patient_phone: Optional[str] = None
+
+    # Clinical data for claim coding
+    chief_complaint: Optional[str] = None
+    primary_icd10_code: Optional[str] = None
+    secondary_icd10_codes: list[str] = Field(default_factory=list)
+    field_diagnosis: Optional[str] = None
+
+    # Transport/Response info
+    incident_type: str
+    response_started_at: Optional[datetime] = None
+    response_completed_at: Optional[datetime] = None
+
+    # Service-level charge (configurable by org)
+    base_charge_cents: int = Field(default=0, ge=0)
+    mileage_km: Optional[float] = None
+    mileage_charge_cents: int = Field(default=0, ge=0)
+
+    # Compliance & readiness
+    is_nemsis_compliant: bool
+    missing_fields: list[str] = Field(default_factory=list)
+
+    # Audit trail
+    finalized_at: datetime
+    created_at: datetime
+
+
+class EpcrBillingHandoffResponse(BaseModel):
+    """Response from Billing service after claim auto-population."""
+
+    claim_id: str
+    status: str
+    total_charge_cents: int
+    message: Optional[str] = None
+    created_at: datetime
