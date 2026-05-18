@@ -1,0 +1,32 @@
+name: supply-chain
+
+# Shim that delegates to the canonical reusable templates in
+# Adaptix-Core-Service. Contracts is a pyproject-only Python package — no
+# Dockerfile, no Node, no requirements.txt.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  pull-requests: write
+
+jobs:
+  secret-scan:
+    uses: joshuawendorf21310/Adaptix-Core-Service/.github/workflows/_secret-scan.yml@main
+
+  sast:
+    uses: joshuawendorf21310/Adaptix-Core-Service/.github/workflows/_sast-python.yml@main
+    with:
+      package_path: adaptix_contracts
+
+  sbom:
+    uses: joshuawendorf21310/Adaptix-Core-Service/.github/workflows/_sbom.yml@main
+    with:
+      mode: directory
+      target_path: "."
