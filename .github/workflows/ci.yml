@@ -5,6 +5,11 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 jobs:
   standard-ci:
     uses: joshuawendorf21310/Adaptix-Governance/.github/workflows/standard-ci.yml@main
