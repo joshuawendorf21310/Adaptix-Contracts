@@ -779,6 +779,34 @@ from .crm_contracts import (
     FounderOpportunityListResponse,
 )
 
+# Finance
+from .finance_contracts import (
+    AccountType,
+    TransactionSource,
+    ReconciliationStatus,
+    FinancialSummaryStatus,
+    FinancialSummaryCreateRequest,
+    FinancialSummaryUpdateRequest,
+    FinancialSummaryResponse,
+    FinancialSummaryListResponse,
+    RevenueRecordCreateRequest,
+    RevenueRecordResponse,
+    RevenueRecordListResponse,
+    LedgerAccountCreateRequest,
+    LedgerAccountUpdateRequest,
+    LedgerAccountResponse,
+    LedgerAccountListResponse,
+    JournalLineRequest,
+    JournalEntryCreateRequest,
+    JournalLineResponse,
+    JournalEntryResponse,
+    JournalEntryListResponse,
+    ReconciliationPeriodResponse,
+    FinanceDashboardSummaryResponse,
+    RevenueRecordCreatedEvent,
+    JournalEntryPostedEvent,
+)
+
 
 # Explicit public surface
 __all__ = [
@@ -1410,4 +1438,30 @@ __all__ = [
     "FounderOpportunityUpdateRequest",
     "FounderOpportunityResponse",
     "FounderOpportunityListResponse",
+    # Finance
+    "AccountType",
+    "TransactionSource",
+    "ReconciliationStatus",
+    "FinancialSummaryStatus",
+    "FinancialSummaryCreateRequest",
+    "FinancialSummaryUpdateRequest",
+    "FinancialSummaryResponse",
+    "FinancialSummaryListResponse",
+    "RevenueRecordCreateRequest",
+    "RevenueRecordResponse",
+    "RevenueRecordListResponse",
+    "LedgerAccountCreateRequest",
+    "LedgerAccountUpdateRequest",
+    "LedgerAccountResponse",
+    "LedgerAccountListResponse",
+    "JournalLineRequest",
+    "JournalEntryCreateRequest",
+    "JournalLineResponse",
+    "JournalEntryResponse",
+    "JournalEntryListResponse",
+    "ReconciliationPeriodResponse",
+    "FinanceDashboardSummaryResponse",
+    "RevenueRecordCreatedEvent",
+    "JournalEntryPostedEvent",
+
 ]
