@@ -5,10 +5,22 @@ on:
   push:
     branches: [main]
 
+# Top-level permissions required by the reusable workflow at
+# joshuawendorf21310/Adaptix-Governance/.github/workflows/standard-ci.yml@main.
+# Without these the call fails with `startup_failure` and zero jobs run --
+# a caller cannot grant elevated scopes that aren't in its own job permissions.
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 jobs:
   standard-ci:
     uses: joshuawendorf21310/Adaptix-Governance/.github/workflows/standard-ci.yml@main
     with:
       service_name: adaptix-contracts
       runtime: python
+      # Repo is a flat Python package -- no `backend/` directory.
+      # Override the reusable workflow's default test_path so `cd backend` succeeds.
+      test_path: "."
     secrets: inherit
