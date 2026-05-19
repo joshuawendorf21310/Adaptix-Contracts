@@ -8,11 +8,12 @@ on:
 # Top-level permissions required by the reusable workflow at
 # joshuawendorf21310/Adaptix-Governance/.github/workflows/standard-ci.yml@main.
 # Without these the call fails with `startup_failure` and zero jobs run --
-# a caller cannot grant elevated scopes that aren't in its own job permissions.
+# a caller cannot grant elevated scopes that are not in its own job permissions.
 permissions:
   contents: read
   security-events: write
   actions: read
+  pull-requests: write
 
 jobs:
   standard-ci:
