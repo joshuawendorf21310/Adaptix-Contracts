@@ -1,54 +1,40 @@
-<!-- GOVERNANCE_VERSION: 2026.04.21 -->
-# Adaptix Governance Root Contract
+# LOCAL ADAPTIX REPO GOVERNANCE
 
-This repository participates in the Adaptix platform governance contract at version `2026.04.21`.
+This repository inherits global governance from:
 
-## Root execution order
+Adaptix-Governance/AGENTS.md
 
-Every agent runtime for this repository must:
+## Local repo scope
 
-1. Load this root `AGENTS.md` first.
-2. Load the nearest applicable local `AGENTS.md` second.
-3. Enforce root-law inheritance.
-4. Block contradictory or forbidden actions truthfully.
-5. Record audit evidence for rule loading and execution decisions.
+Repo name: Adaptix-Contracts
+Domain: Contracts
+Owner service: adaptix-contracts
 
-## Repo authority
+## Local execution rule
 
-- **Repository:** `Adaptix-Contracts`
-- **Role:** `contracts`
-- **Runtime:** `Python package`
-- **Owned truth:** shared contracts and schema publication truth
+This repo must comply with:
 
-## Shared platform law
+- GLOBAL_EXECUTION_POLICY.md
+- GLOBAL_CHANGE_CLASSIFICATION.md
+- GLOBAL_NO_FAKE_SUCCESS_POLICY.md
+- GLOBAL_PRODUCTION_READINESS.md
+- GLOBAL_ROUTE_POLICY.md
+- GLOBAL_SERVICE_POLICY.md
+- GLOBAL_AUTH_POLICY.md
+- GLOBAL_TENANT_POLICY.md
+- GLOBAL_SCHEMA_POLICY.md
+- GLOBAL_OBSERVABILITY_POLICY.md
+- GLOBAL_SECURITY_POLICY.md
+- GLOBAL_EVIDENCE_POLICY.md
 
-- Shared foundations live in Adaptix Core and must not be reimplemented here.
-- Billing and entitlements remain separated from commercial packaging names.
-- Cross-domain integration must use contracts, APIs, or events.
-- Domain systems must stand alone without forcing suite dependencies.
+## First rollout restriction
 
-## Required governance companions
+This local AGENTS.md file is governance inheritance only.
 
-- `SYSTEM_RULES.md`
-- `DOMAIN_BOUNDARIES.md`
-- `MODULE_ENTITLEMENTS.md`
-- `ARCHITECTURE_TRUTH.md`
-- `BILLING_AND_PACKAGING_RULES.md`
+Do not modify production logic as part of this first rollout.
 
-## Local subsystem agents
+## Local override rule
 
-- `adaptix_contracts/AGENTS.md`
+Local rules may be stricter than global rules.
 
-## Enforcement runtime
-
-- Hook config: `.github/hooks/agent-governance.json`
-- Manifest: `.github/governance/governance.manifest.json`
-- Runtime script: `scripts/agent_governance_runtime.py`
-- Audit log: `.github/governance/audit/agent_runtime_audit.jsonl`
-
-## Forbidden root-level behavior
-
-- Do not duplicate identity, auth, RBAC, tenant, entitlement, or audit foundations.
-- Do not hardcode pricing plans or package names into domain runtime behavior.
-- Do not write private cross-domain imports against sibling repos.
-- Do not override local subsystem governance with weaker root guidance.
+Local rules may never weaken global rules.
