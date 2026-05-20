@@ -69,6 +69,8 @@ from .audit_contracts import (
     PhiAccessLoggedEvent,
     SecurityEventDetectedEvent,
     ComplianceReviewOpenedEvent,
+    AuditDomainAction,
+    AuditEntry,
 )
 
 # Billing
@@ -807,6 +809,26 @@ from .finance_contracts import (
     JournalEntryPostedEvent,
 )
 
+# Dispatch
+from .dispatch_contracts import (
+    DispatchStatus,
+    DispatchPriority,
+    DispatchGpsCoordinate,
+    DispatchContract,
+    DispatchStatusUpdateEvent,
+    DispatchCreatedEvent,
+    DispatchClosedEvent,
+    DispatchUnitGpsPingEvent,
+)
+
+# Platform Events
+from .platform_event_contracts import (
+    AdaptixEventType,
+    AdaptixPlatformEvent,
+    PulseMessageType,
+    PulseMessage,
+)
+
 
 # Explicit public surface
 __all__ = [
@@ -1463,5 +1485,22 @@ __all__ = [
     "FinanceDashboardSummaryResponse",
     "RevenueRecordCreatedEvent",
     "JournalEntryPostedEvent",
+    # Dispatch
+    "DispatchStatus",
+    "DispatchPriority",
+    "DispatchGpsCoordinate",
+    "DispatchContract",
+    "DispatchStatusUpdateEvent",
+    "DispatchCreatedEvent",
+    "DispatchClosedEvent",
+    "DispatchUnitGpsPingEvent",
+    # Platform Events
+    "AdaptixEventType",
+    "AdaptixPlatformEvent",
+    "PulseMessageType",
+    "PulseMessage",
+    # Audit (extended domain actions)
+    "AuditDomainAction",
+    "AuditEntry",
 
 ]

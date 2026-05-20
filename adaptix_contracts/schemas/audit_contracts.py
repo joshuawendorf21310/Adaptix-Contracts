@@ -197,3 +197,82 @@ class ComplianceReviewOpenedEvent(BaseModel):
     severity: AuditSeverity
 
     opened_at: datetime
+
+
+# ---------------------------------------------------------------------------
+# Domain-Specific Audit Action Codes (additive — backward-compatible)
+# ---------------------------------------------------------------------------
+
+
+class AuditDomainAction(str, Enum):
+    """Semantic audit action codes for individual Adaptix domains.
+
+    These codes give compliance and HIPAA audit logs precise, human-readable
+    context beyond the generic CREATE/READ/UPDATE categories in AuditActionType.
+    Services should record both AuditActionType (broad category) and
+    AuditDomainAction (specific operation) on the same audit record.
+    """
+
+    # HIPAA PHI access
+    PHI_ACCESSED = "phi_accessed"
+    CHART_VIEWED = "chart_viewed"
+    CHART_CREATED = "chart_created"
+    CHART_UPDATED = "chart_updated"
+    CHART_SUBMITTED = "chart_submitted"
+    CHART_SIGNED = "chart_signed"
+    CHART_APPROVED = "chart_approved"
+    CHART_REJECTED = "chart_qa_rejected"
+    NEMSIS_EXPORTED = "nemsis_exported"
+
+    # Billing
+    CLAIM_CREATED = "claim_created"
+    CLAIM_SUBMITTED = "claim_submitted"
+    CLAIM_PAID = "claim_paid"
+    CLAIM_DENIED = "claim_denied"
+
+    # Admin / Agency
+    AGENCY_ACTIVATED = "agency_activated"
+    AGENCY_SUSPENDED = "agency_suspended"
+    USER_INVITED = "user_invited"
+    USER_DEACTIVATED = "user_deactivated"
+
+    # Dispatch
+    DISPATCH_CREATED = "dispatch_created"
+    DISPATCH_STATUS_UPDATED = "dispatch_status_updated"
+    DISPATCH_CLOSED = "dispatch_closed"
+
+    # Narcotics (DEA-compliant)
+    NARCOTIC_RECEIVED = "narcotic_received"
+    NARCOTIC_ADMINISTERED = "narcotic_administered"
+    NARCOTIC_WASTED = "narcotic_wasted"
+    NARCOTIC_DISCREPANCY = "narcotic_discrepancy"
+
+    # Search / Interoperability
+    SEARCH_PERFORMED = "search_performed"
+    INTEROP_DATA_SENT = "interop_data_sent"
+    INTEROP_DATA_RECEIVED = "interop_data_received"
+
+
+class AuditEntry(BaseModel):
+    """Lightweight HIPAA-compliant audit log entry for cross-service emission.
+
+    Intended for services that need a minimal, easy-to-emit audit record
+    without the full AuditRecord/AuditContext hierarchy. No PHI values
+    (names, DOBs, SSNs) are stored — only entity IDs.
+    """
+
+    service: str = Field(
+        ...,
+        description="Short service name: 'core', 'cad', 'billing', 'epcr', etc.",
+    )
+    action: AuditDomainAction
+    entity_type: str = Field(
+        ..., description="Resource type: 'chart', 'claim', 'dispatch', etc."
+    )
+    entity_id: str = Field(
+        ..., description="Opaque entity ID. Never a patient name or DOB."
+    )
+    user_id: Optional[str] = None
+    tenant_id: Optional[str] = None
+    ip_address: Optional[str] = None
+    timestamp: datetime
