@@ -1,0 +1,44 @@
+# Adaptix Standard CI — thin caller (Wave C.4 fan-out).
+#
+# Generated 2026-05-21 by Wave C.4 fan-out per Adaptix-Governance pilot PR #16.
+# The reusable workflow is SHA-pinned to the C.1 pilot-validated merge commit
+# on Adaptix-Governance main.
+#
+# BLOCKING checks (required by branch protection):
+#   - secret-scan
+#   - test (python/mixed only)
+#   - sbom-generate
+#   - vulnerability-scan
+#   - dockerfile-lint (when skip_docker_build=false)
+#   - docker-build    (when skip_docker_build=false)
+#
+# Advisory (never required):
+#   - lint
+#   - sbom-upload
+
+name: Adaptix Standard CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  pull-requests: write
+
+jobs:
+  standard-ci:
+    uses: joshuawendorf21310/Adaptix-Governance/.github/workflows/standard-ci.yml@5003ef80e1fcd3322ad0b944450f2b33926c9b1e
+    with:
+      service_name: adaptix-contracts
+      runtime: python
+      dockerfile_path: Dockerfile
+      build_context: .
+      image_repository: adaptix-contracts
+      test_path: tests
+      python_version: "3.11"
+      skip_docker_build: true
+    secrets: inherit
