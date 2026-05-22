@@ -38,7 +38,9 @@ jobs:
       dockerfile_path: Dockerfile
       build_context: .
       image_repository: adaptix-contracts
-      test_path: tests
+      # Repo is a flat Python package -- no `backend/` directory.
+      # Override the reusable workflow's default test_path so `cd backend` succeeds.
+      test_path: "."
       python_version: "3.11"
       skip_docker_build: true
     secrets: inherit
