@@ -191,7 +191,7 @@ class NotificationClient:
     @classmethod
     async def _post_notification(cls, payload: dict[str, Any]) -> bool:
         """POST notification to Notifications Service."""
-        if not cls._BASE_URL or not cls._TOKEN:
+        if not cls._BASE_URL:
             logger.warning("Notifications Service not configured")
             return False
 
@@ -305,7 +305,7 @@ class SearchClient:
     @classmethod
     async def _index_document(cls, index: str, document: dict[str, Any]) -> bool:
         """POST document to Search Service for indexing."""
-        if not cls._BASE_URL or not cls._TOKEN:
+        if not cls._BASE_URL:
             logger.warning("Search Service not configured")
             return False
 
@@ -405,7 +405,7 @@ class AnalyticsClient:
     @classmethod
     async def _post_event(cls, payload: dict[str, Any]) -> bool:
         """POST event to Analytics Service."""
-        if not cls._BASE_URL or not cls._TOKEN:
+        if not cls._BASE_URL:
             logger.warning("Analytics Service not configured")
             return False
 
@@ -486,7 +486,7 @@ class AuditClient:
     @classmethod
     async def _post_audit(cls, payload: dict[str, Any]) -> bool:
         """POST audit entry to Audit Service."""
-        if not cls._BASE_URL or not cls._TOKEN:
+        if not cls._BASE_URL:
             logger.warning("Audit Service not configured")
             return False
 
