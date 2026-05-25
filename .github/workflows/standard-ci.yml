@@ -1,8 +1,4 @@
-# Adaptix Standard CI — thin caller (Wave C.4 fan-out).
-#
-# Generated 2026-05-21 by Wave C.4 fan-out per Adaptix-Governance pilot PR #16.
-# The reusable workflow is SHA-pinned to the C.1 pilot-validated merge commit
-# on Adaptix-Governance main.
+# Adaptix Standard CI — thin caller.
 #
 # BLOCKING checks (required by branch protection):
 #   - secret-scan
@@ -31,15 +27,16 @@ permissions:
 
 jobs:
   standard-ci:
-    uses: joshuawendorf21310/Adaptix-Governance/.github/workflows/standard-ci.yml@5003ef80e1fcd3322ad0b944450f2b33926c9b1e
+    uses: joshuawendorf21310/Adaptix-Governance/.github/workflows/standard-ci.yml@main
     with:
       service_name: adaptix-contracts
       runtime: python
       dockerfile_path: Dockerfile
       build_context: .
       image_repository: adaptix-contracts
-      # Repo is a flat Python package -- no `backend/` directory.
-      # Override the reusable workflow's default test_path so `cd backend` succeeds.
+      # Package root is "." not "tests/" — pyproject.toml lives at repo root.
+      # The reusable workflow runs `cd test_path && pip install -e ".[dev]"`,
+      # which must point to the directory containing pyproject.toml.
       test_path: "."
       python_version: "3.11"
       skip_docker_build: true
