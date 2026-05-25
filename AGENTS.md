@@ -38,3 +38,7 @@ Do not modify production logic as part of this first rollout.
 Local rules may be stricter than global rules.
 
 Local rules may never weaken global rules.
+
+## Bedrock Remote Repair And Deployment Rule
+
+All Bedrock audit, repair, validation, and deployment work must run through GitHub-hosted workflows and pull requests. Do not leave Bedrock-generated fixes, audit results, deployment changes, or conflict resolutions local-only. Every Bedrock-generated change must be pushed to a remote branch, checked for merge conflicts against main, validated by required CI/security checks, merged to main only after green checks, and deployed only through the approved AWS deployment workflow with recorded evidence. If a repository does not have the Bedrock workflow or required AWS/GitHub variables, report it as BLOCKED instead of claiming repair, deployment, or production readiness.
