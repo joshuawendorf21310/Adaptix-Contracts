@@ -16,6 +16,7 @@ This repo must comply with:
 
 - GLOBAL_EXECUTION_POLICY.md
 - GLOBAL_CHANGE_CLASSIFICATION.md
+- GLOBAL_CHANGE_LIFECYCLE_POLICY.md
 - GLOBAL_NO_FAKE_SUCCESS_POLICY.md
 - GLOBAL_PRODUCTION_READINESS.md
 - GLOBAL_ROUTE_POLICY.md
@@ -26,6 +27,29 @@ This repo must comply with:
 - GLOBAL_OBSERVABILITY_POLICY.md
 - GLOBAL_SECURITY_POLICY.md
 - GLOBAL_EVIDENCE_POLICY.md
+
+## Change lifecycle rule
+
+Any change made in this repository must complete the full Adaptix change lifecycle:
+
+1. Commit the change.
+2. Push the branch to GitHub.
+3. Monitor for merge conflicts.
+4. Resolve merge conflicts.
+5. Monitor GitHub Actions / CI.
+6. Correct validation or CI failures.
+7. Merge only after required checks pass.
+8. Deploy to AWS where applicable.
+9. Monitor AWS deployment health.
+10. Monitor ECS tasks, services, logs, target groups, gateway/API behavior, and service health.
+11. Correct runtime failures.
+12. Redeploy if corrections are required.
+13. Repeat monitoring until stable.
+14. Record completion evidence.
+
+A change is not complete because it was edited locally.
+
+A change is complete only when it is committed, pushed, conflict-checked, merged, deployed where applicable, monitored, corrected for failures, and verified stable with evidence.
 
 ## First rollout restriction
 
