@@ -35,9 +35,13 @@ Changelog = "https://github.com/joshuawendorf21310/Adaptix-Contracts/blob/main/C
 dev = [
     "build>=1.2.2.post1,<2",
     "pytest==9.0.3",
-    "pytest-cov==7.1.0"
-    ,"twine>=6.1.0,<7"
+    "pytest-cov==7.1.0",
+    "pytest-asyncio>=0.23.0",
+    "twine>=6.1.0,<7",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [tool.setuptools]
 package-dir = {"" = "."}
