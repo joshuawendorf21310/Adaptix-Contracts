@@ -16,49 +16,50 @@ from datetime import datetime, timezone
 class AdaptixEventEnvelope(BaseModel):
     """
     Canonical event envelope for ALL Adaptix domain events.
-    
+
     Rules:
     - event_id must be unique per event instance
     - idempotency_key must be stable for retry scenarios
     - tenant_id must always be set for tenant-scoped events
     - event_version must be incremented on breaking payload changes
     """
+
     event_id: str = Field(
         default_factory=lambda: str(uuid.uuid4()),
-        description="Unique event instance ID"
+        description="Unique event instance ID",
     )
     event_type: str = Field(..., description="Canonical event type name from registry")
     event_version: str = Field(default="1.0", description="Payload schema version")
-    tenant_id: str = Field(..., description="Tenant scope — required for all tenant events")
-    actor_id: Optional[str] = Field(None, description="User or service that caused this event")
+    tenant_id: str = Field(
+        ..., description="Tenant scope — required for all tenant events"
+    )
+    actor_id: Optional[str] = Field(
+        None, description="User or service that caused this event"
+    )
     source_service: str = Field(..., description="Service that published this event")
     correlation_id: str = Field(
         default_factory=lambda: str(uuid.uuid4()),
-        description="Correlation ID for tracing across services"
+        description="Correlation ID for tracing across services",
     )
     causation_id: Optional[str] = Field(
-        None,
-        description="ID of the event or request that caused this event"
+        None, description="ID of the event or request that caused this event"
     )
     idempotency_key: str = Field(
         default_factory=lambda: str(uuid.uuid4()),
-        description="Stable key for idempotent processing — set explicitly for retries"
+        description="Stable key for idempotent processing — set explicitly for retries",
     )
     occurred_at: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat(),
-        description="ISO 8601 UTC timestamp when event occurred"
+        description="ISO 8601 UTC timestamp when event occurred",
     )
     payload_schema: str = Field(
-        default="adaptix/v1",
-        description="Schema namespace for payload validation"
+        default="adaptix/v1", description="Schema namespace for payload validation"
     )
     payload: Dict[str, Any] = Field(
-        default_factory=dict,
-        description="Event-specific payload data"
+        default_factory=dict, description="Event-specific payload data"
     )
     metadata: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Optional additional metadata (routing hints, flags, etc.)"
+        None, description="Optional additional metadata (routing hints, flags, etc.)"
     )
 
     @classmethod

@@ -6,6 +6,7 @@ organization resolution, role mapping, and post-auth route selection.
 These contracts are the single source of truth for the identity layer.
 The web layer must consume them; it must not infer or hardcode role logic.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

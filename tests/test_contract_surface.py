@@ -44,7 +44,9 @@ def test_package_root_reexports_schema_symbols() -> None:
         assert getattr(adaptix_contracts, symbol_name) is getattr(schemas, symbol_name)
 
 
-def test_package_root_import_fails_loudly_for_missing_schema_exports(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_package_root_import_fails_loudly_for_missing_schema_exports(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Protect import surface from stale or drifting ``schemas.__all__`` entries."""
 
     broken_export = "__missing_schema_export_for_test__"
@@ -92,7 +94,9 @@ def test_all_exported_enums_have_unique_values() -> None:
         symbol = getattr(schemas, symbol_name)
         if isinstance(symbol, type) and issubclass(symbol, Enum):
             values = [member.value for member in symbol]
-            assert len(values) == len(set(values)), f"Duplicate enum values in {symbol_name}"
+            assert len(values) == len(set(values)), (
+                f"Duplicate enum values in {symbol_name}"
+            )
 
 
 def test_contract_onboarding_surface_is_exported() -> None:

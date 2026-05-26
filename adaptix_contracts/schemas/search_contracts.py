@@ -20,6 +20,7 @@ from pydantic import BaseModel, Field
 # Enums
 # ---------------------------------------------------------------------------
 
+
 class SearchDomain(str, Enum):
     """Domains that can be searched."""
 
@@ -60,6 +61,7 @@ class SearchSortOrder(str, Enum):
 # Request Contracts
 # ---------------------------------------------------------------------------
 
+
 class SearchQueryRequest(BaseModel):
     """Cross-domain search query request."""
 
@@ -71,7 +73,7 @@ class SearchQueryRequest(BaseModel):
 
     filters: dict[str, str] = Field(
         default_factory=dict,
-        description="Key-value filters (e.g. status=denied, payer=medicare)"
+        description="Key-value filters (e.g. status=denied, payer=medicare)",
     )
 
     limit: int = Field(25, ge=1, le=100)
@@ -85,6 +87,7 @@ class SearchQueryRequest(BaseModel):
 # ---------------------------------------------------------------------------
 # Result Contracts
 # ---------------------------------------------------------------------------
+
 
 class SearchResultItem(BaseModel):
     """Single search result item."""
@@ -126,6 +129,7 @@ class SearchResponse(BaseModel):
 # ---------------------------------------------------------------------------
 # Indexing Contracts
 # ---------------------------------------------------------------------------
+
 
 class IndexDocumentRequest(BaseModel):
     """Request to index a document into search."""
@@ -171,6 +175,7 @@ class DeleteIndexDocumentResponse(BaseModel):
 # ---------------------------------------------------------------------------
 # Events
 # ---------------------------------------------------------------------------
+
 
 class SearchExecutedEvent(BaseModel):
     """Published when a search query is executed."""

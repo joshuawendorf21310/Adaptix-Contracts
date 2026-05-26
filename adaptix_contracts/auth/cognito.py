@@ -14,42 +14,53 @@ Rules:
 - Adaptix controls all authorization decisions
 - Microsoft login alone does NOT grant Adaptix access
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, List, Optional
+from typing import List, Optional
 from pydantic import BaseModel
 
 
 # ─── Cognito Configuration ────────────────────────────────────────────────────
 
+
 @dataclass
 class AdaptixCognitoConfig:
     """Cognito User Pool configuration for JWT validation."""
+
     region: str
     user_pool_id: str
     client_id: str
     issuer: str
     jwks_url: str
     allowed_audiences: List[str] = field(default_factory=list)
-    allowed_token_use_values: List[str] = field(default_factory=lambda: ["access", "id"])
-    required_claims: List[str] = field(default_factory=lambda: ["sub", "iss", "exp", "iat", "token_use"])
+    allowed_token_use_values: List[str] = field(
+        default_factory=lambda: ["access", "id"]
+    )
+    required_claims: List[str] = field(
+        default_factory=lambda: ["sub", "iss", "exp", "iat", "token_use"]
+    )
     clock_skew_seconds: int = 30
 
     @classmethod
     def from_env(cls) -> "AdaptixCognitoConfig":
         """Build config from environment variables."""
         import os
+
         region = os.environ.get("COGNITO_REGION", "us-east-1")
         user_pool_id = os.environ.get("COGNITO_USER_POOL_ID", "")
-        client_id = os.environ.get("COGNITO_CLIENT_ID", os.environ.get("COGNITO_CLIENT_ID_WEB", ""))
+        client_id = os.environ.get(
+            "COGNITO_CLIENT_ID", os.environ.get("COGNITO_CLIENT_ID_WEB", "")
+        )
         issuer = os.environ.get(
             "COGNITO_ISSUER",
-            f"https://cognito-idp.{region}.amazonaws.com/{user_pool_id}" if user_pool_id else ""
+            f"https://cognito-idp.{region}.amazonaws.com/{user_pool_id}"
+            if user_pool_id
+            else "",
         )
         jwks_url = os.environ.get(
-            "COGNITO_JWKS_URL",
-            f"{issuer}/.well-known/jwks.json" if issuer else ""
+            "COGNITO_JWKS_URL", f"{issuer}/.well-known/jwks.json" if issuer else ""
         )
         return cls(
             region=region,
@@ -63,13 +74,17 @@ class AdaptixCognitoConfig:
     @property
     def is_configured(self) -> bool:
         """Return True if Cognito is configured."""
-        return bool(self.user_pool_id and self.client_id and self.issuer and self.jwks_url)
+        return bool(
+            self.user_pool_id and self.client_id and self.issuer and self.jwks_url
+        )
 
 
 # ─── Cognito Claims ───────────────────────────────────────────────────────────
 
+
 class AdaptixCognitoClaims(BaseModel):
     """Validated Cognito JWT claims."""
+
     # Standard JWT claims
     sub: str
     iss: str
@@ -120,6 +135,7 @@ class AdaptixCognitoClaims(BaseModel):
 
 # ─── Auth Context ─────────────────────────────────────────────────────────────
 
+
 class AdaptixAuthContext(BaseModel):
     """
     Verified Adaptix auth context — built from validated Cognito JWT.
@@ -128,6 +144,7 @@ class AdaptixAuthContext(BaseModel):
     Built by the gateway after Cognito JWT validation.
     Never built from raw client-supplied headers.
     """
+
     # Identity
     subject: str  # Cognito sub (stable user identifier)
     provider: str  # "cognito" | "cognito_entra_federation"
@@ -179,12 +196,14 @@ class AdaptixAuthContext(BaseModel):
 
 # ─── Internal Service Context ─────────────────────────────────────────────────
 
+
 class AdaptixServiceContext(BaseModel):
     """
     Internal service-to-service context.
     Injected by gateway after Cognito JWT validation.
     Domain services must verify this is gateway-originated.
     """
+
     source_service: str
     correlation_id: str
     causation_id: Optional[str] = None
@@ -199,6 +218,7 @@ class AdaptixSignedInternalContext(BaseModel):
     Signed internal context passed between services.
     Services MUST verify the internal_auth_marker before trusting.
     """
+
     service_context: AdaptixServiceContext
     auth_context: Optional[AdaptixAuthContext] = None
     signature_verified: bool = False
@@ -214,7 +234,11 @@ class AdaptixSignedInternalContext(BaseModel):
 COGNITO_PRODUCTION_USER_POOL_ID = "us-east-1_hUiicvQ6c"
 COGNITO_PRODUCTION_WEB_CLIENT_ID = "2d2q79if6tn73arapedf471mkt"
 COGNITO_PRODUCTION_ANDROID_CLIENT_ID = "2od459phr0mauh4kkjhq3b0d5i"
-COGNITO_PRODUCTION_ISSUER = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_hUiicvQ6c"
+COGNITO_PRODUCTION_ISSUER = (
+    "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_hUiicvQ6c"
+)
 COGNITO_PRODUCTION_JWKS_URL = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_hUiicvQ6c/.well-known/jwks.json"
 COGNITO_PRODUCTION_DOMAIN = "adaptix-production.auth.us-east-1.amazoncognito.com"
-COGNITO_PRODUCTION_HOSTED_UI = "https://adaptix-production.auth.us-east-1.amazoncognito.com/login"
+COGNITO_PRODUCTION_HOSTED_UI = (
+    "https://adaptix-production.auth.us-east-1.amazoncognito.com/login"
+)

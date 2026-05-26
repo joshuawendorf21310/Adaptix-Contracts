@@ -1,4 +1,5 @@
 """Inventory domain contract schemas for cross-domain communication and UI/API surfaces."""
+
 from __future__ import annotations
 
 from datetime import date, datetime
@@ -573,6 +574,7 @@ class InventoryCycleCountResponse(BaseModel):
 # Status enums
 # ---------------------------------------------------------------------------
 
+
 class InventoryItemStatus(str):
     """Valid status values for an inventory item."""
 
@@ -616,6 +618,7 @@ class CycleCountStatus(str):
 # ---------------------------------------------------------------------------
 # Domain events
 # ---------------------------------------------------------------------------
+
 
 class InventorySupplyItemCreatedEvent(BaseModel):
     """Published when a new supply item is added to the catalog."""

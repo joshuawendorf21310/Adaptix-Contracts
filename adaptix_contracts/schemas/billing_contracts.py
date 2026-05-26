@@ -21,6 +21,7 @@ from pydantic import BaseModel, Field
 # Enums
 # ---------------------------------------------------------------------------
 
+
 class ClaimStatus(str, Enum):
     """Lifecycle status of a billing claim."""
 
@@ -85,6 +86,7 @@ class PayerType(str, Enum):
 # ---------------------------------------------------------------------------
 # Core Contracts
 # ---------------------------------------------------------------------------
+
 
 class ClaimLineItem(BaseModel):
     """A single billable service line on a claim."""
@@ -218,6 +220,7 @@ class ClearinghouseSubmission(BaseModel):
 # ---------------------------------------------------------------------------
 # Events
 # ---------------------------------------------------------------------------
+
 
 class ClaimCreatedEvent(BaseModel):
     """Published when a claim is created."""

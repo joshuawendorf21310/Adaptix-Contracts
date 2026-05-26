@@ -1,6 +1,7 @@
 """Idempotency contracts for Adaptix services."""
+
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional
 from pydantic import BaseModel
 
 

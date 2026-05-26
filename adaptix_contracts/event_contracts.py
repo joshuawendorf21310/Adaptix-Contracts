@@ -2,21 +2,20 @@
 
 Contains event schemas, validators, and registry for cross-service events.
 """
+
 from __future__ import annotations
-from dataclasses import dataclass, field
-import json
 import os
-from typing import Any, Callable, Dict, List, Optional, Set, Union
+from typing import Any, Callable, Dict, Optional, Set
 
 import httpx
 
 
 class EventMetadata:
     """Metadata for an event.
-    
+
     Contains information about the event source, timing, and context.
     """
-    
+
     def __init__(
         self,
         tenant_id: str,
@@ -30,10 +29,10 @@ class EventMetadata:
         self.source_service = source_service
         self.correlation_id = correlation_id
         self.trace_id = trace_id
-    
+
     def dict(self) -> Dict[str, Any]:
         """Convert the metadata to a dictionary.
-        
+
         Returns:
             A dictionary representation of the metadata.
         """
@@ -48,10 +47,10 @@ class EventMetadata:
 
 class EventSchema:
     """Schema for an event.
-    
+
     Contains the event type, metadata, and payload.
     """
-    
+
     def __init__(
         self,
         event_type: str,
@@ -61,10 +60,10 @@ class EventSchema:
         self.event_type = event_type
         self.metadata = metadata
         self.payload = payload
-    
+
     def dict(self) -> Dict[str, Any]:
         """Convert the event to a dictionary.
-        
+
         Returns:
             A dictionary representation of the event.
         """
@@ -77,74 +76,76 @@ class EventSchema:
 
 class EventValidator:
     """Validator for event schemas.
-    
+
     Ensures that events conform to the expected schema.
     """
-    
+
     def validate_event(self, event: EventSchema) -> None:
         """Validate an event schema.
-        
+
         Args:
             event: The event to validate.
-            
+
         Raises:
             ValueError: If the event is invalid.
         """
         if not event.event_type:
             raise ValueError("Event type is required")
-        
+
         if not event.metadata:
             raise ValueError("Metadata is required")
-        
+
         if not event.metadata.tenant_id:
             raise ValueError("Tenant ID is required in metadata")
-        
+
         if not event.metadata.timestamp:
             raise ValueError("Timestamp is required in metadata")
-        
+
         if not event.metadata.source_service:
             raise ValueError("Source service is required in metadata")
-        
+
         # Payload validation is type-specific and done by consumers
 
 
 class LocalEventConsumerRegistry:
     """Registry for local event consumers.
-    
+
     Used for in-process event handling during development or testing.
     """
-    
+
     def __init__(self) -> None:
         self._handlers: Dict[str, Set[Callable[[EventSchema], Any]]] = {}
-    
+
     def register(self, event_type: str, handler: Callable[[EventSchema], Any]) -> None:
         """Register a handler for a specific event type.
-        
+
         Args:
             event_type: The type of event to handle.
             handler: The function to call when an event of this type is received.
         """
         if event_type not in self._handlers:
             self._handlers[event_type] = set()
-        
+
         self._handlers[event_type].add(handler)
-    
-    def unregister(self, event_type: str, handler: Callable[[EventSchema], Any]) -> None:
+
+    def unregister(
+        self, event_type: str, handler: Callable[[EventSchema], Any]
+    ) -> None:
         """Unregister a handler for a specific event type.
-        
+
         Args:
             event_type: The type of event to stop handling.
             handler: The handler to unregister.
         """
         if event_type in self._handlers and handler in self._handlers[event_type]:
             self._handlers[event_type].remove(handler)
-            
+
             if not self._handlers[event_type]:
                 del self._handlers[event_type]
-    
+
     async def process_event(self, event: EventSchema) -> None:
         """Process an event by calling all registered handlers.
-        
+
         Args:
             event: The event to process.
         """
@@ -159,7 +160,9 @@ class LocalEventConsumerRegistry:
     def list_registrations(self) -> dict[str, list[str]]:
         """Return event registrations for operational diagnostics."""
         return {
-            event_type: [getattr(handler, "__qualname__", repr(handler)) for handler in handlers]
+            event_type: [
+                getattr(handler, "__qualname__", repr(handler)) for handler in handlers
+            ]
             for event_type, handlers in self._handlers.items()
         }
 
@@ -175,7 +178,9 @@ class EventBusPublisherClient:
     @staticmethod
     def _configuration() -> tuple[str, str, float]:
         core_url = os.getenv("CORE_EVENT_BUS_URL", "").rstrip("/")
-        token = os.getenv("CORE_EVENT_BUS_TOKEN", "") or os.getenv("CORE_PROVISIONING_TOKEN", "")
+        token = os.getenv("CORE_EVENT_BUS_TOKEN", "") or os.getenv(
+            "CORE_PROVISIONING_TOKEN", ""
+        )
         timeout = float(os.getenv("CORE_EVENT_BUS_TIMEOUT_SECONDS", "5"))
         if not core_url or not token:
             raise RuntimeError(
@@ -189,14 +194,18 @@ class EventBusPublisherClient:
         headers = dict(kwargs.pop("headers", {}) or {})
         headers["Authorization"] = f"Bearer {token}"
         async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.request(method, f"{core_url}{path}", headers=headers, **kwargs)
+            response = await client.request(
+                method, f"{core_url}{path}", headers=headers, **kwargs
+            )
         response.raise_for_status()
         if not response.content:
             return None
         return response.json()
 
     @staticmethod
-    async def get_pending_events_unfiltered(_session: Any = None, limit: int = 100) -> list[dict[str, Any]]:
+    async def get_pending_events_unfiltered(
+        _session: Any = None, limit: int = 100
+    ) -> list[dict[str, Any]]:
         """Retrieve pending events from Core through the service-authenticated API."""
         data = await EventBusPublisherClient._request(
             "GET",

@@ -4,6 +4,7 @@ Defines all typed contracts for CAD's visibility into scheduled transports:
 scheduled lanes, dispatch-ready queues, exception queues, activation,
 and bidirectional status synchronization with TransportLink.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

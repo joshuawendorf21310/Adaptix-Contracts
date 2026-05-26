@@ -9,6 +9,7 @@ The client writes directly to the ``cad_audit_logs``-equivalent table via
 the active SQLAlchemy async session. Each domain service passes its own
 session; no cross-service network call is made.
 """
+
 from __future__ import annotations
 
 import logging

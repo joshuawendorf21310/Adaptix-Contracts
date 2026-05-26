@@ -6,6 +6,7 @@ artifact attachment to active claims.
 
 These contracts are consumed by billing (primary) and transportlink (secondary).
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -65,7 +66,9 @@ class ClaimArtifactAttachRequest(BaseModel):
     transport_request_id: str
     claim_id: str
     artifact_type: str = Field(..., description="pcs, aob, consent, authorization")
-    signed_artifact_id: str = Field(..., description="ID of the TransportSignedArtifact record")
+    signed_artifact_id: str = Field(
+        ..., description="ID of the TransportSignedArtifact record"
+    )
     s3_key: str = Field(..., description="S3 key for the signed PDF")
     attached_by_user_id: str
 

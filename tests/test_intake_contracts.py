@@ -12,7 +12,6 @@ from adaptix_contracts.schemas.intake_contracts import (
     AdaptixModule,
     BillingReadinessState,
     ConditionalEmsFireFields,
-    ConditionalInvestorFields,
     ContractSignatureCompletedEvent,
     FounderNextActionCreatedEvent,
     GoLiveReadinessCalculatedEvent,

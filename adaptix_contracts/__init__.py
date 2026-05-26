@@ -16,22 +16,26 @@ Import patterns:
 """
 
 from adaptix_contracts import schemas as _schemas
+
+# Redundant aliases mark these as intentional re-exports (suppresses F401
+# without requiring entries in __all__, which preserves the package surface
+# invariant checked by test_contract_surface.py).
 from adaptix_contracts.schemas.legal_execution_contracts import (
-    ContractType,
-    ContractStatus,
-    TenantContractStatusMap,
-    ContractSignatureEvent,
-    ContractAccessCheckRequest,
-    ContractAccessCheckResponse,
+    ContractAccessCheckRequest as ContractAccessCheckRequest,
+    ContractAccessCheckResponse as ContractAccessCheckResponse,
+    ContractSignatureEvent as ContractSignatureEvent,
+    ContractStatus as ContractStatus,
+    ContractType as ContractType,
+    TenantContractStatusMap as TenantContractStatusMap,
 )
 from adaptix_contracts.event_contracts import (
-    EventSchema,
-    EventMetadata,
-    EventValidator,
-    LocalEventConsumerRegistry,
+    EventMetadata as EventMetadata,
+    EventSchema as EventSchema,
+    EventValidator as EventValidator,
+    LocalEventConsumerRegistry as LocalEventConsumerRegistry,
 )
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 # Re-export all schema symbols at package level for convenience.
 __all__ = list(_schemas.__all__)

@@ -24,6 +24,7 @@ from .billing_contracts import ClearinghouseProvider
 # Enums
 # ---------------------------------------------------------------------------
 
+
 class SubmissionStatus(str, Enum):
     """Submission lifecycle at clearinghouse."""
 
@@ -46,6 +47,7 @@ class AckType(str, Enum):
 # ---------------------------------------------------------------------------
 # Submission Contracts
 # ---------------------------------------------------------------------------
+
 
 class ClaimSubmissionRequest(BaseModel):
     """Request to submit a claim to a clearinghouse."""
@@ -78,6 +80,7 @@ class ClaimSubmissionResponse(BaseModel):
 # ---------------------------------------------------------------------------
 # Acknowledgements
 # ---------------------------------------------------------------------------
+
 
 class ClearinghouseAck(BaseModel):
     """Raw acknowledgement from clearinghouse."""
@@ -112,6 +115,7 @@ class ClaimAckStatus(BaseModel):
 # ---------------------------------------------------------------------------
 # Remittance (ERA)
 # ---------------------------------------------------------------------------
+
 
 class RemittanceIngestRequest(BaseModel):
     """Incoming ERA (835) ingestion request."""
@@ -148,6 +152,7 @@ class RemittanceIngestResponse(BaseModel):
 # ---------------------------------------------------------------------------
 # Events
 # ---------------------------------------------------------------------------
+
 
 class ClaimSubmittedToClearinghouseEvent(BaseModel):
     """Published when a claim is sent to a clearinghouse."""

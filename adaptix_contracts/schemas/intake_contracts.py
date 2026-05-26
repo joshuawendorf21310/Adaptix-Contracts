@@ -184,7 +184,9 @@ class OnboardingStepBlockedEvent(_EventBase):
 
 
 class ContractSignaturePacketCreatedEvent(_EventBase):
-    event_type: Literal["ContractSignaturePacketCreated"] = "ContractSignaturePacketCreated"
+    event_type: Literal["ContractSignaturePacketCreated"] = (
+        "ContractSignaturePacketCreated"
+    )
 
 
 class ContractSignatureCompletedEvent(_EventBase):

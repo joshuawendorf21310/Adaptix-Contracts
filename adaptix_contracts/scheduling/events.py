@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 class SchedulingEvent(BaseModel):
     """Base scheduling event envelope."""
+
     event_type: str
     tenant_id: UUID
     actor_id: UUID

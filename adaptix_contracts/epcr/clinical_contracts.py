@@ -12,20 +12,22 @@ Architecture rules enforced by these contracts:
 - Narrative is derived output — never authoritative truth
 - Sync events have idempotency_key — safe for retry
 """
+
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 # ===========================================================================
 # CPAE Contracts
 # ===========================================================================
 
+
 class PhysicalFindingDTO(BaseModel):
     """CPAE physical finding DTO — requires anatomy and physiologic_system."""
+
     id: str
     chart_id: str
     tenant_id: str
@@ -55,6 +57,7 @@ class PhysicalFindingDTO(BaseModel):
 
 class FindingReassessmentDTO(BaseModel):
     """CPAE finding reassessment DTO."""
+
     id: str
     finding_id: str
     chart_id: str
@@ -74,8 +77,10 @@ class FindingReassessmentDTO(BaseModel):
 # VAS Contracts
 # ===========================================================================
 
+
 class VASOverlayDTO(BaseModel):
     """VAS overlay DTO — requires physical_finding_id (CPAE linkage)."""
+
     id: str
     chart_id: str
     physical_finding_id: str  # REQUIRED — no free-floating overlays
@@ -99,6 +104,7 @@ class VASOverlayDTO(BaseModel):
 
 class VASProjectionReviewDTO(BaseModel):
     """VAS projection review DTO — Vision proposals require review."""
+
     id: str
     chart_id: str
     tenant_id: str
@@ -106,7 +112,9 @@ class VASProjectionReviewDTO(BaseModel):
     proposed_overlay: dict
     confidence: float
     model_version: Optional[str] = None
-    review_state: str  # pending, accepted, rejected, edited_accepted — NEVER auto-accepted
+    review_state: (
+        str  # pending, accepted, rejected, edited_accepted — NEVER auto-accepted
+    )
     reviewer_id: Optional[str] = None  # None until reviewed
     reviewed_at: Optional[datetime] = None  # None until reviewed
     proposed_at: datetime
@@ -119,8 +127,10 @@ class VASProjectionReviewDTO(BaseModel):
 # Vision Contracts
 # ===========================================================================
 
+
 class VisionArtifactDTO(BaseModel):
     """Vision artifact DTO — internal storage path only, never public URL."""
+
     id: str
     chart_id: str
     tenant_id: str
@@ -138,6 +148,7 @@ class VisionArtifactDTO(BaseModel):
 
 class VisionExtractionDTO(BaseModel):
     """Vision extraction DTO — always pending_review at creation."""
+
     id: str
     artifact_id: str
     tenant_id: str
@@ -158,6 +169,7 @@ class VisionExtractionDTO(BaseModel):
 
 class VisionReviewQueueDTO(BaseModel):
     """Vision review queue DTO."""
+
     id: str
     extraction_id: str
     chart_id: str
@@ -173,6 +185,7 @@ class VisionReviewQueueDTO(BaseModel):
 
 class VisionProvenanceDTO(BaseModel):
     """Vision provenance DTO — provenance is never destroyed."""
+
     id: str
     extraction_id: str
     tenant_id: str
@@ -188,8 +201,10 @@ class VisionProvenanceDTO(BaseModel):
 # Critical Care Contracts
 # ===========================================================================
 
+
 class InfusionRunDTO(BaseModel):
     """Infusion run DTO — requires indication."""
+
     id: str
     chart_id: str
     tenant_id: str
@@ -210,6 +225,7 @@ class InfusionRunDTO(BaseModel):
 
 class VentilatorSessionDTO(BaseModel):
     """Ventilator session DTO."""
+
     id: str
     chart_id: str
     tenant_id: str
@@ -229,6 +245,7 @@ class VentilatorSessionDTO(BaseModel):
 
 class ResponseWindowDTO(BaseModel):
     """Response window DTO — intervention completeness rule enforced."""
+
     id: str
     chart_id: str
     intervention_id: str
@@ -250,8 +267,10 @@ class ResponseWindowDTO(BaseModel):
 # Terminology Contracts
 # ===========================================================================
 
+
 class ImpressionBindingDTO(BaseModel):
     """Impression binding DTO — multi-layer terminology, AI requires review."""
+
     id: str
     chart_id: str
     tenant_id: str
@@ -280,8 +299,10 @@ class ImpressionBindingDTO(BaseModel):
 # Smart Text Contracts
 # ===========================================================================
 
+
 class SmartTextProposalDTO(BaseModel):
     """Smart text proposal DTO — raw text preserved, requires review."""
+
     id: str
     session_id: str
     chart_id: str
@@ -307,8 +328,10 @@ class SmartTextProposalDTO(BaseModel):
 # Sync Contracts
 # ===========================================================================
 
+
 class SyncEventDTO(BaseModel):
     """Sync event DTO — append-only, idempotent."""
+
     id: str
     tenant_id: str
     chart_id: Optional[str] = None
@@ -329,6 +352,7 @@ class SyncEventDTO(BaseModel):
 
 class SyncHealthDTO(BaseModel):
     """Sync health DTO — always visible, never hidden."""
+
     device_id: str
     health_state: str  # healthy, degraded, offline, sync_failed, partial
     pending_events_count: int
@@ -346,6 +370,7 @@ class SyncHealthDTO(BaseModel):
 
 class UploadQueueItemDTO(BaseModel):
     """Upload queue item DTO — resumable upload support."""
+
     id: str
     tenant_id: str
     chart_id: Optional[str] = None
@@ -365,8 +390,10 @@ class UploadQueueItemDTO(BaseModel):
 # Dashboard Contracts
 # ===========================================================================
 
+
 class DashboardProfileDTO(BaseModel):
     """Dashboard profile DTO — customization never affects clinical truth."""
+
     id: str
     user_id: str
     tenant_id: str
@@ -384,6 +411,7 @@ class DashboardProfileDTO(BaseModel):
 
 class WorkspaceProfileDTO(BaseModel):
     """Workspace profile DTO — cannot hide mandatory blockers."""
+
     id: str
     user_id: str
     tenant_id: str
@@ -403,8 +431,10 @@ class WorkspaceProfileDTO(BaseModel):
 # Validation Contracts
 # ===========================================================================
 
+
 class ValidationIssueDTO(BaseModel):
     """Validation issue DTO — explicit, never hidden."""
+
     layer: int  # 1-5
     severity: str  # error, warning, info
     code: str
@@ -418,6 +448,7 @@ class ValidationIssueDTO(BaseModel):
 
 class ValidationResultDTO(BaseModel):
     """5-layer validation result DTO — export blockers never hidden."""
+
     chart_id: str
     tenant_id: str
     validated_at: datetime
@@ -438,8 +469,10 @@ class ValidationResultDTO(BaseModel):
 # Desktop QA Contracts
 # ===========================================================================
 
+
 class NEMSISReadinessDashboardDTO(BaseModel):
     """NEMSIS readiness dashboard DTO — false readiness never presented."""
+
     tenant_id: str
     total_charts_with_compliance: int
     fully_compliant: int
@@ -453,6 +486,7 @@ class NEMSISReadinessDashboardDTO(BaseModel):
 
 class MappingTraceDTO(BaseModel):
     """NEMSIS mapping trace DTO — full provenance."""
+
     id: str
     chart_id: str
     nemsis_field: str
@@ -467,6 +501,7 @@ class MappingTraceDTO(BaseModel):
 
 class AuditEventDTO(BaseModel):
     """Audit event DTO — immutable, never modified."""
+
     id: str
     chart_id: str
     tenant_id: str
@@ -481,6 +516,7 @@ class AuditEventDTO(BaseModel):
 
 class DerivedOutputDTO(BaseModel):
     """Derived output DTO — NEVER authoritative truth."""
+
     id: str
     chart_id: str
     output_type: str  # narrative, handoff, clinical_summary, billing_justification
@@ -496,6 +532,7 @@ class DerivedOutputDTO(BaseModel):
 
 class ChartReviewDTO(BaseModel):
     """Desktop chart review DTO — export blockers never hidden."""
+
     chart_id: str
     call_number: str
     incident_type: str

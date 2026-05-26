@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 class SchedulingAIAssessment(BaseModel):
     """Full AI assessment output — advisory only, never auto-approves."""
+
     id: UUID
     tenant_id: UUID
     capability_key: str

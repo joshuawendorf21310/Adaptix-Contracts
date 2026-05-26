@@ -35,7 +35,9 @@ def test_workspace_audit_detects_shadow_contract_package(tmp_path: Path) -> None
     scripts_dir = contracts_repo / "scripts"
     scripts_dir.mkdir(parents=True)
     (scripts_dir / "audit_workspace_contracts.py").write_text(
-        (REPO_ROOT / "scripts" / "audit_workspace_contracts.py").read_text(encoding="utf-8"),
+        (REPO_ROOT / "scripts" / "audit_workspace_contracts.py").read_text(
+            encoding="utf-8"
+        ),
         encoding="utf-8",
     )
 
