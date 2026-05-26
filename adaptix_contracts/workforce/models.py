@@ -1,4 +1,5 @@
 """Workforce contracts for Adaptix platform."""
+
 from __future__ import annotations
 from datetime import datetime
 from enum import Enum
@@ -23,6 +24,7 @@ class StaffStatus(str, Enum):
 
 class StaffProfile(BaseModel):
     """Staff profile contract."""
+
     staff_id: str
     tenant_id: str
     name: str
@@ -36,6 +38,7 @@ class StaffProfile(BaseModel):
 
 class FatigueAssessment(BaseModel):
     """Fatigue risk assessment for a staff member."""
+
     assessment_id: str
     staff_id: str
     tenant_id: str
@@ -53,6 +56,7 @@ class FatigueAssessment(BaseModel):
 
 class StaffRestriction(BaseModel):
     """Staff restriction record."""
+
     restriction_id: str
     staff_id: str
     tenant_id: str
@@ -68,6 +72,7 @@ class StaffRestriction(BaseModel):
 
 class ReturnToDutyRecord(BaseModel):
     """Return to duty record."""
+
     record_id: str
     staff_id: str
     tenant_id: str
@@ -81,6 +86,7 @@ class ReturnToDutyRecord(BaseModel):
 
 class WorkforceAvailability(BaseModel):
     """Workforce availability for CAD/CrewLink linkage."""
+
     tenant_id: str
     date: str
     shift_type: str

@@ -1,4 +1,5 @@
 """AI contracts for Adaptix platform."""
+
 from .capabilities import (
     AIProviderStatus,
     AICapabilityRegistryEntry,

@@ -1,4 +1,5 @@
 """Air (HEMS) domain contract schemas for cross-domain communication."""
+
 from __future__ import annotations
 
 from datetime import datetime

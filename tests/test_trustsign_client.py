@@ -17,6 +17,7 @@ Coverage:
 
 All HTTP traffic is stubbed via ``httpx.MockTransport`` — no live calls.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -39,7 +40,9 @@ from adaptix_contracts.trustsign_client import (
 )
 
 
-def _cfg(base_url: str = "https://api.adaptixcore.com", *, secret: str | None = None) -> TrustSignClientConfig:
+def _cfg(
+    base_url: str = "https://api.adaptixcore.com", *, secret: str | None = None
+) -> TrustSignClientConfig:
     return TrustSignClientConfig(
         base_url=base_url,
         bearer_token="test-bearer-token",
@@ -289,8 +292,12 @@ async def test_download_archive_returns_pdf_bytes() -> None:
     pdf = b"%PDF-1.7\nfake-archive-bytes\n%%EOF"
 
     def handler(request: httpx.Request) -> httpx.Response:
-        assert request.url.path == "/api/v1/trustsign/archives/by-request/req_xyz/download"
-        return httpx.Response(200, content=pdf, headers={"content-type": "application/pdf"})
+        assert (
+            request.url.path == "/api/v1/trustsign/archives/by-request/req_xyz/download"
+        )
+        return httpx.Response(
+            200, content=pdf, headers={"content-type": "application/pdf"}
+        )
 
     transport = httpx.MockTransport(handler)
     async with httpx.AsyncClient(transport=transport) as raw:

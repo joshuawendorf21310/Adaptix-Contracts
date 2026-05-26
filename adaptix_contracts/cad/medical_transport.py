@@ -1,4 +1,5 @@
 """CAD medical transport intake and dispatch contracts."""
+
 from __future__ import annotations
 from adaptix_contracts.cad.models import (
     CadMedicalTransportIntake,

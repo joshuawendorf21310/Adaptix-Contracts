@@ -20,7 +20,6 @@ from adaptix_contracts.schemas import (
     NarcoticDiscrepancyRecordedEvent,
     NarcoticInvestigationStatus,
     NarcoticMedicationAddedEvent,
-    NarcoticMedicationStatus,
     NarcoticTransactionRecordedEvent,
     NarcoticTransactionType,
     NarcoticVaultCreatedEvent,
@@ -107,7 +106,9 @@ def test_access_log_list_response_supports_nested_round_trip() -> None:
         version=1,
     )
     payload = AccessLogListResponse(items=[item], total=1)
-    assert AccessLogListResponse.model_validate_json(payload.model_dump_json()) == payload
+    assert (
+        AccessLogListResponse.model_validate_json(payload.model_dump_json()) == payload
+    )
 
 
 def test_discrepancy_response_accepts_investigation_status() -> None:
@@ -161,4 +162,6 @@ def test_representative_event_contracts_instantiate() -> None:
 
 def test_vault_create_request_requires_name() -> None:
     with pytest.raises(ValidationError):
-        VaultCreateRequest(vault_name="", location="Station 1", vault_type=NarcoticVaultType.STATION)
+        VaultCreateRequest(
+            vault_name="", location="Station 1", vault_type=NarcoticVaultType.STATION
+        )

@@ -15,7 +15,9 @@ from pydantic import BaseModel, Field
 class FieldLoginRequest(BaseModel):
     """Payload for POST /api/auth/duty/resolve — credential resolution."""
 
-    tenant_id: str = Field(..., description="UUID of the tenant issuing the credential.")
+    tenant_id: str = Field(
+        ..., description="UUID of the tenant issuing the credential."
+    )
     device_id: str = Field(..., description="Registered device identifier.")
     app: str = Field(
         ...,
@@ -68,7 +70,9 @@ class CreateDutySessionRequest(BaseModel):
     """Payload for POST /api/auth/duty/sessions — duty session creation."""
 
     tenant_id: str = Field(..., description="UUID of the tenant.")
-    responder_id: str = Field(..., description="UUID of the responder starting their shift.")
+    responder_id: str = Field(
+        ..., description="UUID of the responder starting their shift."
+    )
     device_id: str = Field(..., description="Registered device identifier.")
     app: str = Field(
         ...,
@@ -127,7 +131,9 @@ class EndDutySessionResponse(BaseModel):
     """Response confirming duty session termination."""
 
     session_id: str = Field(..., description="UUID of the ended session.")
-    ended_at: datetime = Field(..., description="UTC timestamp when the session was ended.")
+    ended_at: datetime = Field(
+        ..., description="UTC timestamp when the session was ended."
+    )
     reason: Optional[str] = Field(None, description="Reason for session termination.")
 
 
@@ -137,13 +143,17 @@ class RevokeBadgeRequest(BaseModel):
     tenant_id: str = Field(..., description="UUID of the tenant.")
     badge_id: str = Field(..., description="UUID of the badge to revoke.")
     reason: str = Field(..., description="Reason for revocation (required for audit).")
-    revoked_by: str = Field(..., description="UUID of the admin user performing the revocation.")
+    revoked_by: str = Field(
+        ..., description="UUID of the admin user performing the revocation."
+    )
 
 
 class RevokeBadgeResponse(BaseModel):
     """Response confirming badge revocation."""
 
-    status: str = Field(..., description="Revocation status: revoked | already_revoked | not_found.")
+    status: str = Field(
+        ..., description="Revocation status: revoked | already_revoked | not_found."
+    )
     badge_id: str = Field(..., description="UUID of the badge that was processed.")
 
 

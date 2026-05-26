@@ -1,9 +1,10 @@
 """AI audit policy contracts for Adaptix platform."""
+
 from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 import uuid
 
 
@@ -27,6 +28,7 @@ class AIAuditEventType(str, Enum):
 @dataclass
 class AIAuditPolicy:
     """Policy governing AI audit behavior."""
+
     # PHI rules - ALWAYS False
     log_phi: bool = False
     log_prompts: bool = False
@@ -86,6 +88,7 @@ class AIAuditPolicy:
 @dataclass
 class AIAuditEvent:
     """An AI audit event (safe for logging - no PHI/prompts/completions)."""
+
     audit_event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     event_type: AIAuditEventType = AIAuditEventType.GENERATION_REQUESTED
     tenant_id: str = ""

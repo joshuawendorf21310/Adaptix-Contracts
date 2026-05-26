@@ -11,7 +11,7 @@ from datetime import date, datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 
 # ---------------------------------------------------------------------------
@@ -81,7 +81,9 @@ class OpportunityStatus(str, enum.Enum):
 class RelationshipCreateRequest(BaseModel):
     """Create a new CRM relationship."""
 
-    company_name: str = Field(..., min_length=1, description="Company or organisation name.")
+    company_name: str = Field(
+        ..., min_length=1, description="Company or organisation name."
+    )
     contact_person: str = Field(..., description="Primary contact person.")
     contact_email: str = Field(..., description="Primary contact email.")
     contact_phone: Optional[str] = Field(None, description="Primary contact phone.")
@@ -164,7 +166,9 @@ class InvestorResponse(BaseModel):
 class InvestorRoundCreateRequest(BaseModel):
     """Create a new funding round."""
 
-    round_name: str = Field(..., min_length=1, description="Round name, e.g. Seed, Series A.")
+    round_name: str = Field(
+        ..., min_length=1, description="Round name, e.g. Seed, Series A."
+    )
     target_amount: float = Field(..., gt=0, description="Target raise amount in USD.")
     close_date: Optional[date] = Field(None, description="Expected close date.")
     status: str = Field(
@@ -268,7 +272,9 @@ class PartnerAgreementCreateRequest(BaseModel):
     """Create a partner agreement record."""
 
     partner_id: UUID = Field(..., description="UUID of the partner.")
-    agreement_type: str = Field(..., description="Agreement type: nda | msa | referral | reseller.")
+    agreement_type: str = Field(
+        ..., description="Agreement type: nda | msa | referral | reseller."
+    )
     effective_date: date = Field(..., description="Agreement effective date.")
     expiry_date: Optional[date] = Field(None, description="Agreement expiry date.")
     notes: Optional[str] = Field(None, description="Free-text notes.")
@@ -375,8 +381,12 @@ class GrowthTrendResponse(BaseModel):
 class GrowthForecastRequest(BaseModel):
     """Request a growth forecast."""
 
-    months_ahead: int = Field(default=12, ge=1, le=60, description="Number of months to forecast.")
-    growth_model: str = Field(default="linear", description="Forecast model: linear | conservative.")
+    months_ahead: int = Field(
+        default=12, ge=1, le=60, description="Number of months to forecast."
+    )
+    growth_model: str = Field(
+        default="linear", description="Forecast model: linear | conservative."
+    )
 
 
 class GrowthForecastResponse(BaseModel):
@@ -407,8 +417,12 @@ class FounderOpportunityCreateRequest(BaseModel):
         default=OpportunityStatus.DISCOVERED,
         description="Initial status.",
     )
-    estimated_value: Optional[int] = Field(None, ge=0, description="Estimated value in USD.")
-    likelihood_percentage: Optional[float] = Field(None, ge=0.0, le=100.0, description="Win probability 0-100.")
+    estimated_value: Optional[int] = Field(
+        None, ge=0, description="Estimated value in USD."
+    )
+    likelihood_percentage: Optional[float] = Field(
+        None, ge=0.0, le=100.0, description="Win probability 0-100."
+    )
     target_date: Optional[date] = Field(None, description="Target close date.")
     notes: Optional[str] = Field(None, description="Free-text notes.")
 
@@ -417,7 +431,9 @@ class FounderOpportunityUpdateRequest(BaseModel):
     """Update a founder opportunity."""
 
     title: Optional[str] = Field(None, min_length=1)
-    status: Optional[OpportunityStatus] = Field(None, description="discovered | evaluating | pursuing | won | lost | stalled.")
+    status: Optional[OpportunityStatus] = Field(
+        None, description="discovered | evaluating | pursuing | won | lost | stalled."
+    )
     description: Optional[str] = None
     estimated_value: Optional[int] = Field(None, ge=0)
     likelihood_percentage: Optional[float] = Field(None, ge=0.0, le=100.0)

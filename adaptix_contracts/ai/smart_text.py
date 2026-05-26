@@ -1,4 +1,5 @@
 """Smart text contracts for Adaptix platform."""
+
 from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -71,6 +72,7 @@ class SmartTextCapability(str, Enum):
 @dataclass
 class SmartTextRequest:
     """Request for smart text generation."""
+
     tenant_id: str
     actor_id: str
     module: SmartTextModule
@@ -86,6 +88,7 @@ class SmartTextRequest:
 @dataclass
 class SmartTextResponse:
     """Response from smart text generation."""
+
     tenant_id: str
     actor_id: str
     module: SmartTextModule
@@ -114,6 +117,7 @@ class SmartTextResponse:
 @dataclass
 class SmartTextAuditEntry:
     """Audit entry for smart text (no PHI/prompts/completions)."""
+
     audit_event_id: str
     tenant_id: str
     actor_id: str

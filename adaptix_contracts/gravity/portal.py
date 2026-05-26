@@ -69,6 +69,7 @@ class PatientHomeResponse(BaseModel):
     Aggregated patient home data.
     Single endpoint aggregates all patient-facing data.
     """
+
     patient_profile: dict
     open_actions: List[dict]
     invoice_summary: dict

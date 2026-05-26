@@ -1,4 +1,5 @@
 """AI capability contracts for Adaptix platform."""
+
 from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -25,6 +26,7 @@ class AIRiskLevel(str, Enum):
 @dataclass
 class AISourceField:
     """Represents a source field used in AI generation (no PHI in logs)."""
+
     field_name: str
     field_path: str
     redacted: bool = True
@@ -34,14 +36,23 @@ class AISourceField:
 @dataclass
 class AIRedactionPolicy:
     """Policy for redacting PHI/PII from AI inputs/outputs."""
+
     redact_phi: bool = True
     redact_pii: bool = True
     redact_prompts_from_logs: bool = True
     redact_completions_from_logs: bool = True
-    allowed_log_fields: List[str] = field(default_factory=lambda: [
-        "module", "capability_key", "model_provider", "model_name",
-        "risk_level", "human_review_required", "confidence", "created_at"
-    ])
+    allowed_log_fields: List[str] = field(
+        default_factory=lambda: [
+            "module",
+            "capability_key",
+            "model_provider",
+            "model_name",
+            "risk_level",
+            "human_review_required",
+            "confidence",
+            "created_at",
+        ]
+    )
 
     def __post_init__(self):
         # Hard enforcement
@@ -53,6 +64,7 @@ class AIRedactionPolicy:
 @dataclass
 class AICapabilityRegistryEntry:
     """Registry entry for an AI capability."""
+
     capability_key: str
     module: str
     description: str
@@ -71,6 +83,7 @@ class AICapabilityRegistryEntry:
 @dataclass
 class AITextGenerationRequest:
     """Request for AI text generation."""
+
     tenant_id: str
     actor_id: str
     module: str
@@ -86,6 +99,7 @@ class AITextGenerationRequest:
 @dataclass
 class AITextGenerationResponse:
     """Response from AI text generation."""
+
     tenant_id: str
     actor_id: str
     module: str
@@ -117,6 +131,7 @@ class AITextGenerationResponse:
 @dataclass
 class AIReadinessAssessment:
     """AI-generated readiness assessment."""
+
     tenant_id: str
     actor_id: str
     module: str
@@ -136,6 +151,7 @@ class AIReadinessAssessment:
 @dataclass
 class AIDraftNarrative:
     """AI-drafted narrative (requires human review before use)."""
+
     tenant_id: str
     actor_id: str
     module: str
@@ -160,6 +176,7 @@ class AIDraftNarrative:
 @dataclass
 class AIHumanReviewRequirement:
     """Requirement for human review of AI output."""
+
     record_id: str
     module: str
     capability_key: str
@@ -173,6 +190,7 @@ class AIHumanReviewRequirement:
 @dataclass
 class AIAuditRecord:
     """Audit record for AI operations (no PHI/prompts/completions)."""
+
     audit_event_id: str
     tenant_id: str
     actor_id: str
@@ -198,6 +216,7 @@ class AIAuditRecord:
 @dataclass
 class AIGeneratedTextMetadata:
     """Metadata about AI-generated text (no actual text content)."""
+
     generation_id: str
     module: str
     capability_key: str

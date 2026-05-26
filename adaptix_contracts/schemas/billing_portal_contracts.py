@@ -4,6 +4,7 @@ Defines typed shapes for the authenticated billing command portal:
 priority queue summaries, claims, denials, AR, patient financial,
 integration health, analytics, and founder oversight surfaces.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -28,6 +29,7 @@ class UrgencyLevel(str, Enum):
 
 
 # ---------------- Portal Home ----------------
+
 
 class BillingPriorityQueueSummary(BaseModel):
     availability: SurfaceAvailability
@@ -129,6 +131,7 @@ class BillingPortalHomeSummary(BaseModel):
 
 # ---------------- Claims ----------------
 
+
 class ClaimDefectSeverity(str, Enum):
     BLOCKING = "blocking"
     HIGH = "high"
@@ -168,6 +171,7 @@ class ClaimIntakeRecord(BaseModel):
 
 # ---------------- Submission ----------------
 
+
 class SubmissionAttempt(BaseModel):
     attempt_id: str
     claim_id: str
@@ -189,6 +193,7 @@ class SubmissionTimelineEvent(BaseModel):
 
 
 # ---------------- Denials ----------------
+
 
 class DenialRecord(BaseModel):
     denial_id: str
@@ -230,6 +235,7 @@ class DenialRecoveryForecast(BaseModel):
 
 
 # ---------------- Founder ----------------
+
 
 class FounderTenantFinancialSummary(BaseModel):
     tenant_id: str

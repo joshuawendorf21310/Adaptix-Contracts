@@ -36,6 +36,7 @@ MUST stay byte-equivalent. The Billing copy is the source of truth for
 the engine contract; this copy is the source of truth for consumer
 imports. A drift test in this package asserts the two stay in sync.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -326,7 +327,9 @@ class TrustSignClient:
 
     # ── public methods ──────────────────────────────────────────────────
 
-    async def create_request(self, payload: CreateRequestInput) -> CreateRequestResponse:
+    async def create_request(
+        self, payload: CreateRequestInput
+    ) -> CreateRequestResponse:
         """Create a new signing request.
 
         Per-signer magic-link URLs come back in ``response.signers[*].signing_url``
@@ -338,7 +341,9 @@ class TrustSignClient:
                 payload.purpose,
             )
         body = payload.model_dump(exclude_none=True, mode="json")
-        response = await self._request("POST", "/api/v1/trustsign/requests", json_body=body)
+        response = await self._request(
+            "POST", "/api/v1/trustsign/requests", json_body=body
+        )
         return CreateRequestResponse.model_validate(response.json())
 
     async def get_request_status(self, request_id: str) -> RequestStatusResponse:
@@ -415,9 +420,7 @@ class TrustSignClient:
         provided = signature_header.removeprefix("sha256=").strip()
         if len(provided) != 64:
             return False
-        expected = hmac.new(
-            secret.encode("utf-8"), body, hashlib.sha256
-        ).hexdigest()
+        expected = hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
         return hmac.compare_digest(provided, expected)
 
 

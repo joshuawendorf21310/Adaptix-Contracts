@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field
 # Enumerations
 # ---------------------------------------------------------------------------
 
+
 class ScheduleStatus(str, Enum):
     DRAFT = "draft"
     PUBLISHED = "published"
@@ -72,6 +73,7 @@ class RiskLevel(str, Enum):
 # Core Scheduling Models
 # ---------------------------------------------------------------------------
 
+
 class Schedule(BaseModel):
     id: UUID
     tenant_id: UUID
@@ -95,7 +97,7 @@ class ShiftTemplate(BaseModel):
     name: str
     agency_type: str
     start_time: str  # HH:MM
-    end_time: str    # HH:MM
+    end_time: str  # HH:MM
     duration_hours: float
     recurrence_rule: Optional[str] = None  # iCal RRULE
     minimum_staff: int = 1

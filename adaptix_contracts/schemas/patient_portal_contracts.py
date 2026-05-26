@@ -5,6 +5,7 @@ financial trust layer: verification, account summary, statement history,
 payment workflows, payment plans, disputes, document history,
 communication history, AI charge explanations, and support escalation.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -120,8 +121,12 @@ class PaymentSubmitRequest(BaseModel):
     statement_id: Optional[str] = None
     amount_cents: int = Field(..., gt=0)
     payment_method: PaymentMethod
-    payment_token: str = Field(..., description="Stripe token or ACH authorization token")
-    apply_to_oldest: bool = Field(True, description="Auto-apply to oldest balance if no statement specified")
+    payment_token: str = Field(
+        ..., description="Stripe token or ACH authorization token"
+    )
+    apply_to_oldest: bool = Field(
+        True, description="Auto-apply to oldest balance if no statement specified"
+    )
 
 
 class PaymentSubmitResponse(BaseModel):
@@ -195,7 +200,9 @@ class CommunicationEventResponse(BaseModel):
 class AiExplanationRequest(BaseModel):
     account_id: str
     statement_id: Optional[str] = None
-    question: Optional[str] = Field(None, max_length=500, description="Optional specific question from patient")
+    question: Optional[str] = Field(
+        None, max_length=500, description="Optional specific question from patient"
+    )
 
 
 class AiExplanationResponse(BaseModel):

@@ -22,6 +22,7 @@ attribute set of the local module against a frozen manifest. Any time
 the canonical client gains or loses a public attribute, BOTH this
 manifest and the Billing copy must be updated in lockstep.
 """
+
 from __future__ import annotations
 
 import inspect
@@ -81,7 +82,9 @@ def test_public_attribute_set_matches_manifest() -> None:
     }
     missing = EXPECTED_PUBLIC_NAMES - actual_local
     extra = actual_local - EXPECTED_PUBLIC_NAMES
-    assert not missing, f"Manifest expects {missing} but they are missing from the module."
+    assert not missing, (
+        f"Manifest expects {missing} but they are missing from the module."
+    )
     assert not extra, (
         f"Module exposes {extra} which is NOT in the manifest. Either add to "
         f"manifest (and mirror Billing) or remove from module."
@@ -95,8 +98,7 @@ def test_client_public_method_set_matches_manifest() -> None:
         for name, _ in inspect.getmembers(
             canonical.TrustSignClient, predicate=inspect.isfunction
         )
-        if not name.startswith("_")
-        or name in {"__init__", "__aenter__", "__aexit__"}
+        if not name.startswith("_") or name in {"__init__", "__aenter__", "__aexit__"}
     }
     missing = EXPECTED_CLIENT_METHODS - actual
     assert not missing, f"TrustSignClient missing methods: {missing}"

@@ -4,6 +4,7 @@ Defines all typed contracts for the OCR job lifecycle: submission,
 field candidate extraction, confidence scoring, human review, approval,
 and structured field promotion into transport and care records.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

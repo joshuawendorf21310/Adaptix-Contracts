@@ -3,10 +3,11 @@
 MDT provides field units with real-time CAD case display, unit status updates,
 crew assignment display, incident notes, and map/route display.
 """
+
 from __future__ import annotations
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -23,6 +24,7 @@ class UnitStatus(str, Enum):
 
 class MDTUnitStatusUpdate(BaseModel):
     """Unit status update from MDT."""
+
     unit_id: str
     tenant_id: str
     actor_id: str
@@ -37,6 +39,7 @@ class MDTUnitStatusUpdate(BaseModel):
 
 class MDTCaseAssignment(BaseModel):
     """CAD case assignment displayed on MDT."""
+
     case_id: str
     tenant_id: str
     unit_id: str
@@ -52,6 +55,7 @@ class MDTCaseAssignment(BaseModel):
 
 class MDTIncidentNote(BaseModel):
     """Incident note created from MDT."""
+
     note_id: str
     case_id: str
     unit_id: str
@@ -64,6 +68,7 @@ class MDTIncidentNote(BaseModel):
 
 class MDTRouteRequest(BaseModel):
     """Route/map request from MDT."""
+
     unit_id: str
     tenant_id: str
     origin_lat: float
@@ -75,6 +80,7 @@ class MDTRouteRequest(BaseModel):
 
 class MDTRouteResponse(BaseModel):
     """Route response for MDT display."""
+
     unit_id: str
     route_available: bool
     provider_status: str
@@ -86,6 +92,7 @@ class MDTRouteResponse(BaseModel):
 
 class MDTOfflineState(BaseModel):
     """Offline state for Android MDT."""
+
     unit_id: str
     tenant_id: str
     last_sync_at: Optional[datetime] = None

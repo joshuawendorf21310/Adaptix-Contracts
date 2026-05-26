@@ -5,6 +5,7 @@ compact JSON only on stdout, never writes stderr intentionally, contains all
 runtime failures, and exits 0 for every hook path so the hook contract is
 preserved even when malformed input is supplied.
 """
+
 from __future__ import annotations
 
 import json
@@ -287,9 +288,15 @@ def read_stdin_payload() -> tuple[dict[str, Any], str]:
     try:
         parsed = json.loads(raw_input)
     except json.JSONDecodeError as exc:
-        return {}, f"[AdaptixHookGovernance] Invalid JSON input: {exc.msg} at line {exc.lineno}, column {exc.colno}"
+        return (
+            {},
+            f"[AdaptixHookGovernance] Invalid JSON input: {exc.msg} at line {exc.lineno}, column {exc.colno}",
+        )
     if not isinstance(parsed, dict):
-        return {}, "[AdaptixHookGovernance] Invalid JSON input: top-level value must be an object"
+        return (
+            {},
+            "[AdaptixHookGovernance] Invalid JSON input: top-level value must be an object",
+        )
     return parsed, ""
 
 

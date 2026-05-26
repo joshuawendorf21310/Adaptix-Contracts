@@ -1,4 +1,5 @@
 """Calendar and scheduling contracts for Adaptix platform."""
+
 from __future__ import annotations
 from datetime import datetime
 from enum import Enum
@@ -23,6 +24,7 @@ class ScheduleStatus(str, Enum):
 
 class ShiftAssignment(BaseModel):
     """Shift assignment contract."""
+
     shift_id: str
     tenant_id: str
     staff_id: str
@@ -40,6 +42,7 @@ class ShiftAssignment(BaseModel):
 
 class ScheduleEntry(BaseModel):
     """Schedule entry for calendar view."""
+
     entry_id: str
     tenant_id: str
     title: str
@@ -57,6 +60,7 @@ class ScheduleEntry(BaseModel):
 
 class StaffingCoverage(BaseModel):
     """Staffing coverage assessment."""
+
     tenant_id: str
     date: str
     shift_type: ShiftType
@@ -71,6 +75,7 @@ class StaffingCoverage(BaseModel):
 
 class CalendarExportRequest(BaseModel):
     """Calendar export request (iCal/Google)."""
+
     tenant_id: str
     actor_id: str
     staff_id: Optional[str] = None

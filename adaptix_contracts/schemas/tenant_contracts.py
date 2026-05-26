@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class TenantStatus(str, enum.Enum):
@@ -19,6 +19,7 @@ class TenantStatus(str, enum.Enum):
 
 class TenantScopedModel(BaseModel):
     """Base contract for any tenant-scoped entity."""
+
     tenant_id: UUID
 
 

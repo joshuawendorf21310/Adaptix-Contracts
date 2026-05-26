@@ -31,11 +31,22 @@ from adaptix_contracts.event_contracts import (
     LocalEventConsumerRegistry,
 )
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 # Re-export all schema symbols at package level for convenience.
-__all__ = list(_schemas.__all__)
-_missing_exports = [name for name in __all__ if not hasattr(_schemas, name)]
+__all__ = list(_schemas.__all__) + [
+    "ContractType",
+    "ContractStatus",
+    "TenantContractStatusMap",
+    "ContractSignatureEvent",
+    "ContractAccessCheckRequest",
+    "ContractAccessCheckResponse",
+    "EventSchema",
+    "EventMetadata",
+    "EventValidator",
+    "LocalEventConsumerRegistry",
+]
+_missing_exports = [name for name in _schemas.__all__ if not hasattr(_schemas, name)]
 if _missing_exports:
     raise ImportError(
         "adaptix_contracts.schemas.__all__ includes missing exports: "

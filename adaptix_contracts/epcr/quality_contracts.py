@@ -6,6 +6,7 @@ Architecture rules:
 - Providers can only receive their own feedback and education — never protected QA records.
 - Medical Director notes are separate artifacts — they never appear as chart fields.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -20,73 +21,159 @@ from pydantic import BaseModel, ConfigDict, Field
 TriggerType = Literal["mandatory", "optional"]
 Priority = Literal["critical", "high", "standard", "low"]
 QACaseStatus = Literal[
-    "new", "assigned", "in_review", "provider_clarification",
-    "medical_director_escalated", "findings_documented",
-    "education_assigned", "closed", "appealed",
+    "new",
+    "assigned",
+    "in_review",
+    "provider_clarification",
+    "medical_director_escalated",
+    "findings_documented",
+    "education_assigned",
+    "closed",
+    "appealed",
 ]
 QATriggerSource = Literal[
-    "automatic", "random", "supervisor", "medical_director",
-    "provider_request", "billing", "sentinel", "adverse",
-    "peer_review", "accreditation",
+    "automatic",
+    "random",
+    "supervisor",
+    "medical_director",
+    "provider_request",
+    "billing",
+    "sentinel",
+    "adverse",
+    "peer_review",
+    "accreditation",
 ]
 FindingType = Literal[
-    "documentation_deficiency", "protocol_deviation", "medication_variance",
-    "procedure_variance", "adverse_event", "near_miss", "sentinel_event",
-    "exemplary_performance", "education_opportunity", "process_improvement",
+    "documentation_deficiency",
+    "protocol_deviation",
+    "medication_variance",
+    "procedure_variance",
+    "adverse_event",
+    "near_miss",
+    "sentinel_event",
+    "exemplary_performance",
+    "education_opportunity",
+    "process_improvement",
 ]
 Severity = Literal["critical", "major", "minor", "informational", "commendation"]
-ScoreDomain = Literal["documentation", "protocol", "timeliness", "clinical", "operational"]
+ScoreDomain = Literal[
+    "documentation", "protocol", "timeliness", "clinical", "operational"
+]
 MDReviewStatus = Literal[
-    "pending", "in_review", "clarification_requested", "completed", "closed",
+    "pending",
+    "in_review",
+    "clarification_requested",
+    "completed",
+    "closed",
 ]
 MDReviewType = Literal[
-    "high_risk_case", "qa_escalation", "protocol_review",
-    "provider_performance", "sentinel_event", "adverse_event",
+    "high_risk_case",
+    "qa_escalation",
+    "protocol_review",
+    "provider_performance",
+    "sentinel_event",
+    "adverse_event",
 ]
 FindingClassification = Literal[
-    "protocol_deviation", "medication_variance", "exemplary_care",
-    "adverse_event", "sentinel_event", "near_miss", "no_finding",
+    "protocol_deviation",
+    "medication_variance",
+    "exemplary_care",
+    "adverse_event",
+    "sentinel_event",
+    "near_miss",
+    "no_finding",
 ]
-PeerReviewStatus = Literal["assigned", "in_review", "provider_clarification", "completed", "closed"]
+PeerReviewStatus = Literal[
+    "assigned", "in_review", "provider_clarification", "completed", "closed"
+]
 ProtocolStatus = Literal["draft", "published", "retired"]
 ProtocolVersionStatus = Literal["draft", "approved", "published", "retired"]
 EducationType = Literal[
-    "remedial", "informational", "protocol_review", "skills_review",
-    "documentation_training", "commendation_recognition",
+    "remedial",
+    "informational",
+    "protocol_review",
+    "skills_review",
+    "documentation_training",
+    "commendation_recognition",
 ]
-EducationStatus = Literal["assigned", "acknowledged", "in_progress", "completed", "overdue", "waived"]
+EducationStatus = Literal[
+    "assigned", "acknowledged", "in_progress", "completed", "overdue", "waived"
+]
 FeedbackType = Literal[
-    "informational", "clarification_requested", "documentation_correction",
-    "education_assigned", "protocol_reminder", "commendation",
-    "medical_director_note", "supervisor_followup",
+    "informational",
+    "clarification_requested",
+    "documentation_correction",
+    "education_assigned",
+    "protocol_reminder",
+    "commendation",
+    "medical_director_note",
+    "supervisor_followup",
 ]
 FeedbackStatus = Literal["sent", "acknowledged", "responded", "closed"]
 QIInitiativeStatus = Literal[
-    "identified", "baseline_measured", "goal_defined", "intervention_planned",
-    "active", "follow_up", "outcome_measured", "sustained_monitoring",
-    "closed", "reopened",
+    "identified",
+    "baseline_measured",
+    "goal_defined",
+    "intervention_planned",
+    "active",
+    "follow_up",
+    "outcome_measured",
+    "sustained_monitoring",
+    "closed",
+    "reopened",
 ]
 QICategory = Literal[
-    "documentation_quality", "medication_safety", "airway_management",
-    "cardiac_arrest_outcomes", "stroke_care", "STEMI_care", "sepsis_care",
-    "trauma_care", "pediatric_care", "neonatal_care", "refusal_documentation",
-    "CCT_documentation", "transfer_documentation", "response_time",
-    "turnaround_time", "controlled_substances", "provider_education",
-    "protocol_compliance", "NEMSIS_compliance", "billing_documentation",
-    "patient_safety", "operational_safety",
+    "documentation_quality",
+    "medication_safety",
+    "airway_management",
+    "cardiac_arrest_outcomes",
+    "stroke_care",
+    "STEMI_care",
+    "sepsis_care",
+    "trauma_care",
+    "pediatric_care",
+    "neonatal_care",
+    "refusal_documentation",
+    "CCT_documentation",
+    "transfer_documentation",
+    "response_time",
+    "turnaround_time",
+    "controlled_substances",
+    "provider_education",
+    "protocol_compliance",
+    "NEMSIS_compliance",
+    "billing_documentation",
+    "patient_safety",
+    "operational_safety",
 ]
 AuditEventType = Literal[
-    "qa_case_created", "qa_case_assigned", "qa_score_submitted",
-    "qa_finding_added", "qa_case_escalated", "qa_case_closed",
-    "md_review_created", "md_note_added", "md_review_completed",
-    "md_clarification_requested", "peer_review_assigned",
-    "peer_review_completed", "education_assigned", "education_completed",
-    "provider_feedback_sent", "provider_feedback_acknowledged",
-    "protocol_created", "protocol_published", "standing_order_created",
-    "standing_order_published", "protocol_acknowledgment_recorded",
-    "qi_initiative_created", "qi_initiative_status_changed",
-    "qi_initiative_closed", "accreditation_package_generated",
-    "trigger_configuration_changed", "clinical_variance_created",
+    "qa_case_created",
+    "qa_case_assigned",
+    "qa_score_submitted",
+    "qa_finding_added",
+    "qa_case_escalated",
+    "qa_case_closed",
+    "md_review_created",
+    "md_note_added",
+    "md_review_completed",
+    "md_clarification_requested",
+    "peer_review_assigned",
+    "peer_review_completed",
+    "education_assigned",
+    "education_completed",
+    "provider_feedback_sent",
+    "provider_feedback_acknowledged",
+    "protocol_created",
+    "protocol_published",
+    "standing_order_created",
+    "standing_order_published",
+    "protocol_acknowledgment_recorded",
+    "qi_initiative_created",
+    "qi_initiative_status_changed",
+    "qi_initiative_closed",
+    "accreditation_package_generated",
+    "trigger_configuration_changed",
+    "clinical_variance_created",
 ]
 
 HumanReviewStatus = Literal["pending", "accepted", "edited", "rejected"]
@@ -96,18 +183,22 @@ HumanReviewStatus = Literal["pending", "accepted", "edited", "rejected"]
 # AI Suggestion Wrapper
 # ---------------------------------------------------------------------------
 
+
 class AISuggestion(BaseModel):
     """Wrapper for any AI-assisted suggestion in the quality module.
 
     AI suggestions NEVER auto-close cases, auto-approve reviews, or
     auto-finalize scores. Every suggestion requires human accept/edit/reject.
     """
+
     model_config = ConfigDict(extra="forbid")
 
     source_data_references: list[str] = Field(
         description="Chart fields, finding IDs, or case IDs that support this suggestion"
     )
-    confidence_level: float = Field(ge=0.0, le=1.0, description="0.0=low confidence, 1.0=high confidence")
+    confidence_level: float = Field(
+        ge=0.0, le=1.0, description="0.0=low confidence, 1.0=high confidence"
+    )
     suggested_action: str
     human_review_status: HumanReviewStatus = "pending"
     reviewed_by: Optional[str] = None
@@ -118,6 +209,7 @@ class AISuggestion(BaseModel):
 # ---------------------------------------------------------------------------
 # QA Trigger Configuration
 # ---------------------------------------------------------------------------
+
 
 class QATriggerConfigurationDTO(BaseModel):
     id: str
@@ -145,6 +237,7 @@ class CreateQATriggerRequest(BaseModel):
 # ---------------------------------------------------------------------------
 # QA Case
 # ---------------------------------------------------------------------------
+
 
 class QACaseDTO(BaseModel):
     id: str
@@ -194,6 +287,7 @@ class CloseQACaseRequest(BaseModel):
 # QA Score
 # ---------------------------------------------------------------------------
 
+
 class QAScoreDTO(BaseModel):
     id: str
     tenant_id: str
@@ -231,6 +325,7 @@ class SubmitQAScoreRequest(BaseModel):
 
 class QAScoreInterpretation(BaseModel):
     """Standard QA score interpretation bands."""
+
     composite_score: float
     band: Literal["exemplary", "meets_standard", "opportunity", "education_recommended"]
     label: str
@@ -240,16 +335,27 @@ class QAScoreInterpretation(BaseModel):
         if score >= 90:
             return cls(composite_score=score, band="exemplary", label="Exemplary")
         elif score >= 80:
-            return cls(composite_score=score, band="meets_standard", label="Meets Standard")
+            return cls(
+                composite_score=score, band="meets_standard", label="Meets Standard"
+            )
         elif score >= 70:
-            return cls(composite_score=score, band="opportunity", label="Opportunity for Improvement")
+            return cls(
+                composite_score=score,
+                band="opportunity",
+                label="Opportunity for Improvement",
+            )
         else:
-            return cls(composite_score=score, band="education_recommended", label="Education Recommended")
+            return cls(
+                composite_score=score,
+                band="education_recommended",
+                label="Education Recommended",
+            )
 
 
 # ---------------------------------------------------------------------------
 # QA Review Finding
 # ---------------------------------------------------------------------------
+
 
 class QAReviewFindingDTO(BaseModel):
     id: str
@@ -285,6 +391,7 @@ class AddFindingRequest(BaseModel):
 # ---------------------------------------------------------------------------
 # Peer Review
 # ---------------------------------------------------------------------------
+
 
 class PeerReviewDTO(BaseModel):
     id: str
@@ -328,6 +435,7 @@ class CompletePeerReviewRequest(BaseModel):
 # Medical Director Review + Note
 # ---------------------------------------------------------------------------
 
+
 class MedicalDirectorReviewDTO(BaseModel):
     id: str
     tenant_id: str
@@ -350,6 +458,7 @@ class MedicalDirectorReviewDTO(BaseModel):
 
 class MedicalDirectorNoteDTO(BaseModel):
     """Protected MD note — stored as separate artifact, never in original chart."""
+
     id: str
     tenant_id: str
     medical_director_review_id: str
@@ -389,6 +498,7 @@ class EscalateToMDRequest(BaseModel):
 # ---------------------------------------------------------------------------
 # Protocol Document + Version
 # ---------------------------------------------------------------------------
+
 
 class ProtocolDocumentDTO(BaseModel):
     id: str
@@ -436,6 +546,7 @@ class CreateProtocolVersionRequest(BaseModel):
 # Education Follow-Up
 # ---------------------------------------------------------------------------
 
+
 class EducationFollowUpDTO(BaseModel):
     id: str
     tenant_id: str
@@ -470,6 +581,7 @@ class AssignEducationRequest(BaseModel):
 # Provider Feedback
 # ---------------------------------------------------------------------------
 
+
 class ProviderFeedbackDTO(BaseModel):
     id: str
     tenant_id: str
@@ -497,6 +609,7 @@ class SendFeedbackRequest(BaseModel):
 # ---------------------------------------------------------------------------
 # QI Initiative
 # ---------------------------------------------------------------------------
+
 
 class QIInitiativeDTO(BaseModel):
     id: str
@@ -553,6 +666,7 @@ class RecordQIMetricRequest(BaseModel):
 # Quality Audit Event
 # ---------------------------------------------------------------------------
 
+
 class QualityAuditEventDTO(BaseModel):
     id: str
     tenant_id: str
@@ -569,6 +683,7 @@ class QualityAuditEventDTO(BaseModel):
 # ---------------------------------------------------------------------------
 # Dashboard DTOs
 # ---------------------------------------------------------------------------
+
 
 class QADashboardDTO(BaseModel):
     open_cases: int
@@ -605,6 +720,7 @@ class QIDashboardDTO(BaseModel):
 # ---------------------------------------------------------------------------
 # Accreditation Evidence Package
 # ---------------------------------------------------------------------------
+
 
 class AccreditationEvidencePackageDTO(BaseModel):
     id: str

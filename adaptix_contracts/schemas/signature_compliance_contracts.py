@@ -3,6 +3,7 @@
 Implements payer-class-aware, jurisdiction-aware signature workflow compliance
 evaluation for ambulance/EMS transport signatures.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -100,7 +101,10 @@ def evaluate_signature_compliance(
     if "handwritten" in policy or "handwritten_required" in policy:
         allowed_methods.append(SignatureCaptureMethod.HANDWRITTEN)
     if not allowed_methods:
-        allowed_methods = [SignatureCaptureMethod.ELECTRONIC, SignatureCaptureMethod.HANDWRITTEN]
+        allowed_methods = [
+            SignatureCaptureMethod.ELECTRONIC,
+            SignatureCaptureMethod.HANDWRITTEN,
+        ]
 
     is_transfer = request.signature_class in {
         "transfer_of_care",
@@ -113,9 +117,15 @@ def evaluate_signature_compliance(
             missing.append("receiving_facility")
         if not request.receiving_clinician_name:
             missing.append("receiving_clinician_name")
-        if not request.transfer_of_care_time and not request.transfer_exception_reason_code:
+        if (
+            not request.transfer_of_care_time
+            and not request.transfer_exception_reason_code
+        ):
             missing.append("transfer_of_care_time or transfer_exception_reason_code")
-        if request.transfer_exception_reason_code and not request.ambulance_exception_documentation_present:
+        if (
+            request.transfer_exception_reason_code
+            and not request.ambulance_exception_documentation_present
+        ):
             required_docs.append("transfer_exception_supporting_documentation")
 
     patient_incapable = request.patient_capable_to_sign is False
@@ -147,7 +157,10 @@ def evaluate_signature_compliance(
         why = f"Signature compliance blocked: missing required fields: {', '.join(missing)}."
         billing_effect = BillingReadinessEffect.BLOCKED.value
         chart_effect = ChartCompletionEffect.INCOMPLETE.value
-    elif request.ambulance_employee_exception and not request.ambulance_exception_documentation_present:
+    elif (
+        request.ambulance_employee_exception
+        and not request.ambulance_exception_documentation_present
+    ):
         decision = ComplianceDecision.APPROVED_WITH_EXCEPTION
         why = "Ambulance employee exception claimed but exception documentation not confirmed present."
         billing_effect = BillingReadinessEffect.CONDITIONALLY_BILLABLE.value

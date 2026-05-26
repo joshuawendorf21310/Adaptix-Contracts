@@ -19,6 +19,7 @@ import uuid
 
 class AdaptixRole(str, Enum):
     """Canonical role set for Adaptix platform."""
+
     FOUNDER = "founder"
     AGENCY_ADMIN = "agency_admin"
     DISPATCHER = "dispatcher"
@@ -39,6 +40,7 @@ class AdaptixRole(str, Enum):
 
 class AdaptixRoleSet(BaseModel):
     """Verified role set for an authenticated user."""
+
     roles: List[AdaptixRole] = Field(default_factory=list)
     permissions: List[str] = Field(default_factory=list)
     entitlements: List[str] = Field(default_factory=list)
@@ -64,6 +66,7 @@ class AdaptixRoleSet(BaseModel):
 
 class AdaptixTenantContext(BaseModel):
     """Verified tenant context derived from auth token — never from raw headers."""
+
     tenant_id: str = Field(..., description="Verified tenant UUID")
     agency_name: Optional[str] = None
     agency_slug: Optional[str] = None
@@ -77,12 +80,15 @@ class AdaptixTenantContext(BaseModel):
 class AdaptixAuthContext(BaseModel):
     """
     Complete verified auth context for an authenticated request.
-    
+
     This is the ONLY trusted source of identity in Adaptix services.
     Derived from a verified JWT token — never from client-supplied headers.
     """
+
     user_id: str = Field(..., description="Verified user UUID")
-    tenant_id: str = Field(..., description="Verified tenant UUID — same as tenant_context.tenant_id")
+    tenant_id: str = Field(
+        ..., description="Verified tenant UUID — same as tenant_context.tenant_id"
+    )
     session_id: str = Field(..., description="Active session UUID")
     email: Optional[str] = None
     full_name: Optional[str] = None
@@ -114,8 +120,7 @@ class AdaptixAuthContext(BaseModel):
         ]
         if missing_fields:
             raise ValueError(
-                "Missing required token payload fields: "
-                + ", ".join(missing_fields)
+                "Missing required token payload fields: " + ", ".join(missing_fields)
             )
 
         if trusted_tenant_id is not None and tenant_id != trusted_tenant_id:
@@ -123,7 +128,11 @@ class AdaptixAuthContext(BaseModel):
                 f"Token tenant_id mismatch: payload={tenant_id}, trusted={trusted_tenant_id}"
             )
 
-        roles = [AdaptixRole(r) for r in payload.get("roles", []) if r in AdaptixRole._value2member_map_]
+        roles = [
+            AdaptixRole(r)
+            for r in payload.get("roles", [])
+            if r in AdaptixRole._value2member_map_
+        ]
         permissions = payload.get("permissions", [])
         entitlements = payload.get("entitlements", [])
         modules = payload.get("modules_enabled", [])
@@ -157,6 +166,7 @@ class AdaptixServiceContext(BaseModel):
     Context for internal service-to-service calls.
     Must be signed by the gateway or originating service.
     """
+
     source_service: str = Field(..., description="Originating service name")
     correlation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     causation_id: Optional[str] = None
@@ -171,6 +181,7 @@ class AdaptixSignedInternalContext(BaseModel):
     Signed internal context passed between services.
     Services MUST verify the signature before trusting this context.
     """
+
     service_context: AdaptixServiceContext
     auth_context: Optional[AdaptixAuthContext] = None
     signature_verified: bool = False

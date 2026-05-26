@@ -34,7 +34,9 @@ SECRET_PATTERNS = [
     re.compile(r"\bASIA[0-9A-Z]{16}\b"),
     re.compile(r"aws_secret_access_key\s*=\s*['\"][^'\"]+['\"]", re.IGNORECASE),
     re.compile(r"AWS_ACCESS_KEY_ID\s*[:=]\s*['\"]?[A-Z0-9]{16,}", re.IGNORECASE),
-    re.compile(r"AWS_SECRET_ACCESS_KEY\s*[:=]\s*['\"]?[A-Za-z0-9/+=]{20,}", re.IGNORECASE),
+    re.compile(
+        r"AWS_SECRET_ACCESS_KEY\s*[:=]\s*['\"]?[A-Za-z0-9/+=]{20,}", re.IGNORECASE
+    ),
 ]
 
 ALLOWED_MODEL_PREFIXES = (
@@ -80,11 +82,14 @@ def run(command: list[str], timeout: int = 300) -> CommandResult:
 
 
 def command_exists(name: str) -> bool:
-    return subprocess.run(
-        ["bash", "-lc", f"command -v {name} >/dev/null 2>&1"],
-        cwd=ROOT,
-        check=False,
-    ).returncode == 0
+    return (
+        subprocess.run(
+            ["bash", "-lc", f"command -v {name} >/dev/null 2>&1"],
+            cwd=ROOT,
+            check=False,
+        ).returncode
+        == 0
+    )
 
 
 def require_env(name: str) -> str:
@@ -97,7 +102,9 @@ def require_env(name: str) -> str:
 def validate_model_id(model_id: str) -> None:
     if not model_id.startswith(ALLOWED_MODEL_PREFIXES):
         allowed = ", ".join(ALLOWED_MODEL_PREFIXES)
-        raise RuntimeError(f"Blocked Bedrock model id {model_id!r}; allowed prefixes: {allowed}")
+        raise RuntimeError(
+            f"Blocked Bedrock model id {model_id!r}; allowed prefixes: {allowed}"
+        )
 
 
 def get_identity() -> dict[str, str]:
@@ -151,7 +158,11 @@ def invoke_test() -> int:
         messages=[
             {
                 "role": "user",
-                "content": [{"text": "Return exactly this text and nothing else: ADAPTIX_BEDROCK_OK"}],
+                "content": [
+                    {
+                        "text": "Return exactly this text and nothing else: ADAPTIX_BEDROCK_OK"
+                    }
+                ],
             }
         ],
         inferenceConfig={"maxTokens": 64, "temperature": 0},
@@ -160,7 +171,9 @@ def invoke_test() -> int:
     text = response["output"]["message"]["content"][0]["text"].strip()
     print(f"Bedrock response: {text}")
     if text != "ADAPTIX_BEDROCK_OK":
-        raise RuntimeError("Bedrock invoke test failed: expected exact ADAPTIX_BEDROCK_OK response.")
+        raise RuntimeError(
+            "Bedrock invoke test failed: expected exact ADAPTIX_BEDROCK_OK response."
+        )
 
     return 0
 
@@ -254,9 +267,15 @@ def trim(text: str, limit: int = 18000) -> str:
 
 def extract_candidate_paths(output: str) -> list[pathlib.Path]:
     paths: set[pathlib.Path] = set()
-    for match in re.findall(r"([A-Za-z0-9_./-]+\.(py|ts|tsx|js|jsx|json|yml|yaml|md))", output):
+    for match in re.findall(
+        r"([A-Za-z0-9_./-]+\.(py|ts|tsx|js|jsx|json|yml|yaml|md))", output
+    ):
         candidate = ROOT / match[0]
-        if candidate.exists() and candidate.is_file() and not is_ignored_path(candidate):
+        if (
+            candidate.exists()
+            and candidate.is_file()
+            and not is_ignored_path(candidate)
+        ):
             paths.add(candidate)
 
     for raw in os.getenv("FOCUS_PATHS", "").split(","):
@@ -264,7 +283,11 @@ def extract_candidate_paths(output: str) -> list[pathlib.Path]:
         if not value:
             continue
         candidate = ROOT / value
-        if candidate.exists() and candidate.is_file() and not is_ignored_path(candidate):
+        if (
+            candidate.exists()
+            and candidate.is_file()
+            and not is_ignored_path(candidate)
+        ):
             paths.add(candidate)
 
     return sorted(paths)
@@ -366,7 +389,9 @@ def apply_patch(patch_text: str) -> bool:
 
 def write_repair_report(history: list[str], final_results: list[CommandResult]) -> None:
     changed = run(["git", "diff", "--name-only"]).stdout.strip()
-    CHANGED_FILES.write_text((changed if changed else "No files changed.") + "\n", encoding="utf-8")
+    CHANGED_FILES.write_text(
+        (changed if changed else "No files changed.") + "\n", encoding="utf-8"
+    )
     lines = [
         "# Bedrock Repo Repair Report",
         "",
@@ -374,7 +399,9 @@ def write_repair_report(history: list[str], final_results: list[CommandResult]) 
         require_env("BEDROCK_REPAIR_MODEL_ID"),
         "",
         "## AWS caller identity",
-        CALLER_IDENTITY.read_text(encoding="utf-8") if CALLER_IDENTITY.exists() else "Not captured.",
+        CALLER_IDENTITY.read_text(encoding="utf-8")
+        if CALLER_IDENTITY.exists()
+        else "Not captured.",
         "",
         "## Files changed",
         changed if changed else "No files changed.",
@@ -416,7 +443,9 @@ def repair() -> int:
             history.append(f"- Iteration {iteration}: validation passed.")
             write_repair_report(history, results)
             return 0
-        combined_output = "\n".join([result.stdout + "\n" + result.stderr for result in failed])
+        combined_output = "\n".join(
+            [result.stdout + "\n" + result.stderr for result in failed]
+        )
         candidate_paths = extract_candidate_paths(combined_output)
         context = read_context(candidate_paths)
         history.append(
@@ -428,7 +457,9 @@ def repair() -> int:
             return 1
         patch_text = call_bedrock(build_repair_prompt(failed, context))
         if not apply_patch(patch_text):
-            history.append(f"- Iteration {iteration}: Bedrock patch could not be applied.")
+            history.append(
+                f"- Iteration {iteration}: Bedrock patch could not be applied."
+            )
             write_repair_report(history, results)
             return 1
         if command_exists("ruff"):
@@ -444,7 +475,14 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "command",
-        choices=["preflight", "invoke-test", "smoke", "security-audit", "yaml-lint", "repair"],
+        choices=[
+            "preflight",
+            "invoke-test",
+            "smoke",
+            "security-audit",
+            "yaml-lint",
+            "repair",
+        ],
     )
     args = parser.parse_args()
     if args.command == "preflight":

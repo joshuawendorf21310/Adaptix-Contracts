@@ -9,6 +9,7 @@ Rules:
 - Every node is evidence-backed, timestamped, provider-attributed, tenant-scoped
 - Vision proposals require review before becoming CareGraph nodes
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -58,6 +59,7 @@ class EvidenceStrengthDTO(str, Enum):
 
 class CareGraphNodeDTO(BaseModel):
     """CareGraph node DTO — single clinical statement."""
+
     id: str
     chart_id: str
     tenant_id: str
@@ -87,6 +89,7 @@ class CareGraphNodeDTO(BaseModel):
 
 class CareGraphEdgeDTO(BaseModel):
     """CareGraph edge DTO — relationship between clinical statements."""
+
     id: str
     chart_id: str
     tenant_id: str
@@ -104,6 +107,7 @@ class CareGraphEdgeDTO(BaseModel):
 
 class OPQRSTSymptomDTO(BaseModel):
     """OPQRST symptom DTO — structured, not plain text."""
+
     id: str
     chart_id: str
     tenant_id: str
@@ -132,6 +136,7 @@ class OPQRSTSymptomDTO(BaseModel):
 
 class ReassessmentDeltaDTO(BaseModel):
     """Reassessment delta DTO."""
+
     id: str
     chart_id: str
     tenant_id: str
