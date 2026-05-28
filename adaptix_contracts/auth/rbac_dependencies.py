@@ -11,10 +11,10 @@ from __future__ import annotations
 
 import logging
 from functools import wraps
-from typing import Callable, Optional, List, Any
+from typing import Callable, List
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer
 
 from adaptix_contracts.auth.context import AdaptixAuthContext
 from adaptix_contracts.rbac_contracts import (
@@ -22,9 +22,6 @@ from adaptix_contracts.rbac_contracts import (
     compute_inventory_permissions,
     compute_medications_permissions,
     compute_narcotics_permissions,
-)
-from adaptix_contracts.core_service_integration import (
-    get_core_service_client,
 )
 
 

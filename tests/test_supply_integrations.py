@@ -13,7 +13,7 @@ import pytest
 import httpx
 from datetime import datetime, timezone
 from uuid import uuid4
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 
 pytest_plugins = ('pytest_asyncio',)
 

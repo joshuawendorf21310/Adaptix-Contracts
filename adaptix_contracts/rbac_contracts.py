@@ -10,7 +10,7 @@ Every service must use these definitions to enforce consistent RBAC.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional, List, Set, Dict, Any
+from typing import Optional, List, Set
 from pydantic import BaseModel, Field
 
 

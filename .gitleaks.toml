@@ -1,0 +1,25 @@
+[extend]
+# Inherit gitleaks built-in default ruleset.
+useDefault = true
+
+[allowlist]
+description = "Adaptix-Contracts allowlist for documented false positives"
+
+# Historical placeholder in SUPPLY_INTEGRATION_QUICK_START.md. The original
+# committed text used `<service-token>` placeholders in an env-var example
+# block; gitleaks generic-api-key heuristic matched on the angle-bracketed
+# placeholder + the following INVENTORY_ENABLE_NOTIFICATIONS=true line.
+# Working tree has been updated to REPLACE_WITH_SECRETS_MANAGER_REF, but the
+# leak persists in git history (commit 112b0a0). No real secret was ever
+# present — these were always documentation placeholders. Cannot rewrite
+# history without destructive operations.
+commits = [
+  "112b0a0c8f485e0dd6d76b30baa87d9d138f85c1",
+]
+
+# Belt-and-suspenders: also ignore the path even if the false-positive
+# pattern reappears in documentation rewrites.
+paths = [
+  '''SUPPLY_INTEGRATION_QUICK_START\.md''',
+  '''SUPPLY_DOMAIN_INTEGRATION_GUIDE\.md''',
+]
