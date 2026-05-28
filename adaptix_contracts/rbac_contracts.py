@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 
 class InventoryRole(str, Enum):
     """Roles specific to Inventory module."""
+
     FOUNDER = "founder"
     AGENCY_ADMIN = "agency_admin"
     OPERATIONS_CHIEF = "operations_chief"
@@ -30,6 +31,7 @@ class InventoryRole(str, Enum):
 
 class MedicationsRole(str, Enum):
     """Roles specific to Medications module."""
+
     FOUNDER = "founder"
     AGENCY_ADMIN = "agency_admin"
     OPERATIONS_CHIEF = "operations_chief"
@@ -46,6 +48,7 @@ class MedicationsRole(str, Enum):
 
 class NarcoticsRole(str, Enum):
     """Roles specific to Narcotics module."""
+
     FOUNDER = "founder"
     AGENCY_ADMIN = "agency_admin"
     OPERATIONS_CHIEF = "operations_chief"
@@ -64,115 +67,139 @@ class NarcoticsRole(str, Enum):
 
 INVENTORY_PERMISSIONS = {
     # Full read/write access
-    "inventory:full_access": {"roles": [InventoryRole.FOUNDER, InventoryRole.AGENCY_ADMIN]},
-
+    "inventory:full_access": {
+        "roles": [InventoryRole.FOUNDER, InventoryRole.AGENCY_ADMIN]
+    },
     # Supply Officer — inventory full access
-    "inventory:create_items": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.SUPPLY_OFFICER,
-        InventoryRole.FLEET_EQUIPMENT_MANAGER,
-    ]},
-    "inventory:read_items": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.OPERATIONS_CHIEF,
-        InventoryRole.SUPPLY_OFFICER,
-        InventoryRole.FLEET_EQUIPMENT_MANAGER,
-        InventoryRole.SUPERVISOR,
-        InventoryRole.PARAMEDIC,
-        InventoryRole.EMT,
-        InventoryRole.AUDITOR,
-        InventoryRole.INSPECTOR,
-    ]},
-    "inventory:update_items": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.SUPPLY_OFFICER,
-        InventoryRole.FLEET_EQUIPMENT_MANAGER,
-    ]},
-    "inventory:delete_items": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-    ]},
-
+    "inventory:create_items": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.SUPPLY_OFFICER,
+            InventoryRole.FLEET_EQUIPMENT_MANAGER,
+        ]
+    },
+    "inventory:read_items": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.OPERATIONS_CHIEF,
+            InventoryRole.SUPPLY_OFFICER,
+            InventoryRole.FLEET_EQUIPMENT_MANAGER,
+            InventoryRole.SUPERVISOR,
+            InventoryRole.PARAMEDIC,
+            InventoryRole.EMT,
+            InventoryRole.AUDITOR,
+            InventoryRole.INSPECTOR,
+        ]
+    },
+    "inventory:update_items": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.SUPPLY_OFFICER,
+            InventoryRole.FLEET_EQUIPMENT_MANAGER,
+        ]
+    },
+    "inventory:delete_items": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+        ]
+    },
     # Restock (inventory and narcotics)
-    "inventory:record_restock": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.SUPPLY_OFFICER,
-        InventoryRole.FLEET_EQUIPMENT_MANAGER,
-    ]},
-    "inventory:read_restocks": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.OPERATIONS_CHIEF,
-        InventoryRole.SUPPLY_OFFICER,
-        InventoryRole.FLEET_EQUIPMENT_MANAGER,
-        InventoryRole.SUPERVISOR,
-        InventoryRole.AUDITOR,
-        InventoryRole.INSPECTOR,
-    ]},
-
+    "inventory:record_restock": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.SUPPLY_OFFICER,
+            InventoryRole.FLEET_EQUIPMENT_MANAGER,
+        ]
+    },
+    "inventory:read_restocks": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.OPERATIONS_CHIEF,
+            InventoryRole.SUPPLY_OFFICER,
+            InventoryRole.FLEET_EQUIPMENT_MANAGER,
+            InventoryRole.SUPERVISOR,
+            InventoryRole.AUDITOR,
+            InventoryRole.INSPECTOR,
+        ]
+    },
     # Stock management
-    "inventory:receive_stock": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.SUPPLY_OFFICER,
-    ]},
-    "inventory:use_stock": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.PARAMEDIC,
-        InventoryRole.EMT,
-    ]},
-    "inventory:transfer_stock": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.SUPPLY_OFFICER,
-    ]},
-    "inventory:read_stock": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.OPERATIONS_CHIEF,
-        InventoryRole.SUPPLY_OFFICER,
-        InventoryRole.FLEET_EQUIPMENT_MANAGER,
-        InventoryRole.SUPERVISOR,
-        InventoryRole.PARAMEDIC,
-        InventoryRole.EMT,
-        InventoryRole.AUDITOR,
-        InventoryRole.INSPECTOR,
-    ]},
-
+    "inventory:receive_stock": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.SUPPLY_OFFICER,
+        ]
+    },
+    "inventory:use_stock": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.PARAMEDIC,
+            InventoryRole.EMT,
+        ]
+    },
+    "inventory:transfer_stock": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.SUPPLY_OFFICER,
+        ]
+    },
+    "inventory:read_stock": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.OPERATIONS_CHIEF,
+            InventoryRole.SUPPLY_OFFICER,
+            InventoryRole.FLEET_EQUIPMENT_MANAGER,
+            InventoryRole.SUPERVISOR,
+            InventoryRole.PARAMEDIC,
+            InventoryRole.EMT,
+            InventoryRole.AUDITOR,
+            InventoryRole.INSPECTOR,
+        ]
+    },
     # Audit
-    "inventory:submit_audit": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.SUPPLY_OFFICER,
-        InventoryRole.SUPERVISOR,
-    ]},
-    "inventory:read_audit": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.OPERATIONS_CHIEF,
-        InventoryRole.SUPPLY_OFFICER,
-        InventoryRole.SUPERVISOR,
-        InventoryRole.AUDITOR,
-        InventoryRole.INSPECTOR,
-    ]},
-
+    "inventory:submit_audit": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.SUPPLY_OFFICER,
+            InventoryRole.SUPERVISOR,
+        ]
+    },
+    "inventory:read_audit": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.OPERATIONS_CHIEF,
+            InventoryRole.SUPPLY_OFFICER,
+            InventoryRole.SUPERVISOR,
+            InventoryRole.AUDITOR,
+            InventoryRole.INSPECTOR,
+        ]
+    },
     # Approval workflows (Supervisor only)
-    "inventory:approve_discrepancy": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-        InventoryRole.SUPERVISOR,
-    ]},
-
+    "inventory:approve_discrepancy": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+            InventoryRole.SUPERVISOR,
+        ]
+    },
     # Cost reports (Billing only)
-    "inventory:read_cost_reports": {"roles": [
-        InventoryRole.FOUNDER,
-        InventoryRole.AGENCY_ADMIN,
-    ]},
+    "inventory:read_cost_reports": {
+        "roles": [
+            InventoryRole.FOUNDER,
+            InventoryRole.AGENCY_ADMIN,
+        ]
+    },
 }
 
 # ============================================================================
@@ -181,57 +208,70 @@ INVENTORY_PERMISSIONS = {
 
 MEDICATIONS_PERMISSIONS = {
     # Full read/write access
-    "medications:full_access": {"roles": [MedicationsRole.FOUNDER, MedicationsRole.AGENCY_ADMIN]},
-
+    "medications:full_access": {
+        "roles": [MedicationsRole.FOUNDER, MedicationsRole.AGENCY_ADMIN]
+    },
     # Pharmacy/Medication Manager — medications full access
-    "medications:create": {"roles": [
-        MedicationsRole.FOUNDER,
-        MedicationsRole.AGENCY_ADMIN,
-        MedicationsRole.PHARMACY_MEDICATION_MANAGER,
-    ]},
-    "medications:read": {"roles": [
-        MedicationsRole.FOUNDER,
-        MedicationsRole.AGENCY_ADMIN,
-        MedicationsRole.OPERATIONS_CHIEF,
-        MedicationsRole.PHARMACY_MEDICATION_MANAGER,
-        MedicationsRole.MEDICAL_DIRECTOR,
-        MedicationsRole.SUPERVISOR,
-        MedicationsRole.PARAMEDIC,
-        MedicationsRole.EMT,
-        MedicationsRole.AUDITOR,
-        MedicationsRole.INSPECTOR,
-    ]},
-    "medications:update": {"roles": [
-        MedicationsRole.FOUNDER,
-        MedicationsRole.AGENCY_ADMIN,
-        MedicationsRole.PHARMACY_MEDICATION_MANAGER,
-    ]},
-    "medications:delete": {"roles": [
-        MedicationsRole.FOUNDER,
-        MedicationsRole.AGENCY_ADMIN,
-    ]},
-
+    "medications:create": {
+        "roles": [
+            MedicationsRole.FOUNDER,
+            MedicationsRole.AGENCY_ADMIN,
+            MedicationsRole.PHARMACY_MEDICATION_MANAGER,
+        ]
+    },
+    "medications:read": {
+        "roles": [
+            MedicationsRole.FOUNDER,
+            MedicationsRole.AGENCY_ADMIN,
+            MedicationsRole.OPERATIONS_CHIEF,
+            MedicationsRole.PHARMACY_MEDICATION_MANAGER,
+            MedicationsRole.MEDICAL_DIRECTOR,
+            MedicationsRole.SUPERVISOR,
+            MedicationsRole.PARAMEDIC,
+            MedicationsRole.EMT,
+            MedicationsRole.AUDITOR,
+            MedicationsRole.INSPECTOR,
+        ]
+    },
+    "medications:update": {
+        "roles": [
+            MedicationsRole.FOUNDER,
+            MedicationsRole.AGENCY_ADMIN,
+            MedicationsRole.PHARMACY_MEDICATION_MANAGER,
+        ]
+    },
+    "medications:delete": {
+        "roles": [
+            MedicationsRole.FOUNDER,
+            MedicationsRole.AGENCY_ADMIN,
+        ]
+    },
     # Administration
-    "medications:administer": {"roles": [
-        MedicationsRole.FOUNDER,
-        MedicationsRole.AGENCY_ADMIN,
-        MedicationsRole.PARAMEDIC,
-    ]},
-    "medications:read_administrations": {"roles": [
-        MedicationsRole.FOUNDER,
-        MedicationsRole.AGENCY_ADMIN,
-        MedicationsRole.MEDICAL_DIRECTOR,
-        MedicationsRole.SUPERVISOR,
-        MedicationsRole.AUDITOR,
-        MedicationsRole.INSPECTOR,
-    ]},
-
+    "medications:administer": {
+        "roles": [
+            MedicationsRole.FOUNDER,
+            MedicationsRole.AGENCY_ADMIN,
+            MedicationsRole.PARAMEDIC,
+        ]
+    },
+    "medications:read_administrations": {
+        "roles": [
+            MedicationsRole.FOUNDER,
+            MedicationsRole.AGENCY_ADMIN,
+            MedicationsRole.MEDICAL_DIRECTOR,
+            MedicationsRole.SUPERVISOR,
+            MedicationsRole.AUDITOR,
+            MedicationsRole.INSPECTOR,
+        ]
+    },
     # Cost reports
-    "medications:read_cost_reports": {"roles": [
-        MedicationsRole.FOUNDER,
-        MedicationsRole.AGENCY_ADMIN,
-        MedicationsRole.BILLING_OPERATOR,
-    ]},
+    "medications:read_cost_reports": {
+        "roles": [
+            MedicationsRole.FOUNDER,
+            MedicationsRole.AGENCY_ADMIN,
+            MedicationsRole.BILLING_OPERATOR,
+        ]
+    },
 }
 
 # ============================================================================
@@ -240,78 +280,95 @@ MEDICATIONS_PERMISSIONS = {
 
 NARCOTICS_PERMISSIONS = {
     # Full read/write access
-    "narcotics:full_access": {"roles": [NarcoticsRole.FOUNDER, NarcoticsRole.AGENCY_ADMIN]},
-
+    "narcotics:full_access": {
+        "roles": [NarcoticsRole.FOUNDER, NarcoticsRole.AGENCY_ADMIN]
+    },
     # Narcotics Officer — narcotics full access
-    "narcotics:create": {"roles": [
-        NarcoticsRole.FOUNDER,
-        NarcoticsRole.AGENCY_ADMIN,
-        NarcoticsRole.NARCOTICS_OFFICER,
-    ]},
-    "narcotics:read": {"roles": [
-        NarcoticsRole.FOUNDER,
-        NarcoticsRole.AGENCY_ADMIN,
-        NarcoticsRole.OPERATIONS_CHIEF,
-        NarcoticsRole.NARCOTICS_OFFICER,
-        NarcoticsRole.MEDICAL_DIRECTOR,
-        NarcoticsRole.SUPERVISOR,
-        NarcoticsRole.PARAMEDIC,
-        NarcoticsRole.AUDITOR,
-        NarcoticsRole.INSPECTOR,
-    ]},
-    "narcotics:update": {"roles": [
-        NarcoticsRole.FOUNDER,
-        NarcoticsRole.AGENCY_ADMIN,
-        NarcoticsRole.NARCOTICS_OFFICER,
-    ]},
-    "narcotics:delete": {"roles": [
-        NarcoticsRole.FOUNDER,
-        NarcoticsRole.AGENCY_ADMIN,
-    ]},
-
+    "narcotics:create": {
+        "roles": [
+            NarcoticsRole.FOUNDER,
+            NarcoticsRole.AGENCY_ADMIN,
+            NarcoticsRole.NARCOTICS_OFFICER,
+        ]
+    },
+    "narcotics:read": {
+        "roles": [
+            NarcoticsRole.FOUNDER,
+            NarcoticsRole.AGENCY_ADMIN,
+            NarcoticsRole.OPERATIONS_CHIEF,
+            NarcoticsRole.NARCOTICS_OFFICER,
+            NarcoticsRole.MEDICAL_DIRECTOR,
+            NarcoticsRole.SUPERVISOR,
+            NarcoticsRole.PARAMEDIC,
+            NarcoticsRole.AUDITOR,
+            NarcoticsRole.INSPECTOR,
+        ]
+    },
+    "narcotics:update": {
+        "roles": [
+            NarcoticsRole.FOUNDER,
+            NarcoticsRole.AGENCY_ADMIN,
+            NarcoticsRole.NARCOTICS_OFFICER,
+        ]
+    },
+    "narcotics:delete": {
+        "roles": [
+            NarcoticsRole.FOUNDER,
+            NarcoticsRole.AGENCY_ADMIN,
+        ]
+    },
     # DEA compliance and tracking
-    "narcotics:track_usage": {"roles": [
-        NarcoticsRole.FOUNDER,
-        NarcoticsRole.AGENCY_ADMIN,
-        NarcoticsRole.PARAMEDIC,
-    ]},
-    "narcotics:read_usage": {"roles": [
-        NarcoticsRole.FOUNDER,
-        NarcoticsRole.AGENCY_ADMIN,
-        NarcoticsRole.OPERATIONS_CHIEF,
-        NarcoticsRole.NARCOTICS_OFFICER,
-        NarcoticsRole.MEDICAL_DIRECTOR,
-        NarcoticsRole.SUPERVISOR,
-        NarcoticsRole.AUDITOR,
-        NarcoticsRole.INSPECTOR,
-    ]},
-
+    "narcotics:track_usage": {
+        "roles": [
+            NarcoticsRole.FOUNDER,
+            NarcoticsRole.AGENCY_ADMIN,
+            NarcoticsRole.PARAMEDIC,
+        ]
+    },
+    "narcotics:read_usage": {
+        "roles": [
+            NarcoticsRole.FOUNDER,
+            NarcoticsRole.AGENCY_ADMIN,
+            NarcoticsRole.OPERATIONS_CHIEF,
+            NarcoticsRole.NARCOTICS_OFFICER,
+            NarcoticsRole.MEDICAL_DIRECTOR,
+            NarcoticsRole.SUPERVISOR,
+            NarcoticsRole.AUDITOR,
+            NarcoticsRole.INSPECTOR,
+        ]
+    },
     # Discrepancy management (Supervisor approval)
-    "narcotics:submit_discrepancy": {"roles": [
-        NarcoticsRole.FOUNDER,
-        NarcoticsRole.AGENCY_ADMIN,
-        NarcoticsRole.SUPERVISOR,
-    ]},
-    "narcotics:approve_discrepancy": {"roles": [
-        NarcoticsRole.FOUNDER,
-        NarcoticsRole.AGENCY_ADMIN,
-        NarcoticsRole.MEDICAL_DIRECTOR,
-    ]},
-
+    "narcotics:submit_discrepancy": {
+        "roles": [
+            NarcoticsRole.FOUNDER,
+            NarcoticsRole.AGENCY_ADMIN,
+            NarcoticsRole.SUPERVISOR,
+        ]
+    },
+    "narcotics:approve_discrepancy": {
+        "roles": [
+            NarcoticsRole.FOUNDER,
+            NarcoticsRole.AGENCY_ADMIN,
+            NarcoticsRole.MEDICAL_DIRECTOR,
+        ]
+    },
     # DEA packet access
-    "narcotics:read_dea_packet": {"roles": [
-        NarcoticsRole.FOUNDER,
-        NarcoticsRole.AGENCY_ADMIN,
-        NarcoticsRole.NARCOTICS_OFFICER,
-        NarcoticsRole.INSPECTOR,
-    ]},
-
+    "narcotics:read_dea_packet": {
+        "roles": [
+            NarcoticsRole.FOUNDER,
+            NarcoticsRole.AGENCY_ADMIN,
+            NarcoticsRole.NARCOTICS_OFFICER,
+            NarcoticsRole.INSPECTOR,
+        ]
+    },
     # Cost attribution
-    "narcotics:read_cost_attribution": {"roles": [
-        NarcoticsRole.FOUNDER,
-        NarcoticsRole.AGENCY_ADMIN,
-        NarcoticsRole.BILLING_OPERATOR,
-    ]},
+    "narcotics:read_cost_attribution": {
+        "roles": [
+            NarcoticsRole.FOUNDER,
+            NarcoticsRole.AGENCY_ADMIN,
+            NarcoticsRole.BILLING_OPERATOR,
+        ]
+    },
 }
 
 # ============================================================================
@@ -327,6 +384,7 @@ MODULE_ENTITLEMENTS = {
 
 class RBACPermissionCheck(BaseModel):
     """Result of RBAC permission check."""
+
     has_permission: bool
     permission: str
     reason: Optional[str] = None
@@ -335,6 +393,7 @@ class RBACPermissionCheck(BaseModel):
 
 class ModuleEntitlementCheck(BaseModel):
     """Result of module entitlement check."""
+
     has_entitlement: bool
     module: str
     reason: Optional[str] = None
@@ -342,6 +401,7 @@ class ModuleEntitlementCheck(BaseModel):
 
 class RBACContext(BaseModel):
     """Complete RBAC context for a request."""
+
     user_id: str
     tenant_id: str
     roles: List[str]

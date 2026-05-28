@@ -77,7 +77,9 @@ class MedicationLotEvent(BaseModel):
 class MedicationAdministrationEvent(BaseModel):
     """Event published when medication is administered."""
 
-    event_type: MedicationEventType = Field(default=MedicationEventType.ADMINISTRATION_RECORDED)
+    event_type: MedicationEventType = Field(
+        default=MedicationEventType.ADMINISTRATION_RECORDED
+    )
     tenant_id: UUID = Field(..., description="Tenant context")
     unit_id: Optional[str] = Field(None, description="Unit/station ID")
 
@@ -113,13 +115,19 @@ class MedicationWasteEvent(BaseModel):
 
     quantity_wasted: int = Field(..., description="Quantity disposed")
     unit_of_measure: str = Field(...)
-    waste_reason: str = Field(..., description="Reason: expired/damaged/contaminated/other")
+    waste_reason: str = Field(
+        ..., description="Reason: expired/damaged/contaminated/other"
+    )
     cost_per_unit: float = Field(...)
     waste_cost: float = Field(..., description="Value of wasted medication")
 
     disposed_by: Optional[str] = Field(None, description="Person performing disposal")
-    witness: Optional[str] = Field(None, description="Witness to disposal (if required)")
-    witness_signature: Optional[str] = Field(None, description="Witness signature blob key")
+    witness: Optional[str] = Field(
+        None, description="Witness to disposal (if required)"
+    )
+    witness_signature: Optional[str] = Field(
+        None, description="Witness signature blob key"
+    )
 
     disposal_date: datetime = Field(...)
     timestamp: datetime = Field(...)
@@ -144,7 +152,9 @@ class MedicationRecallAlert(BaseModel):
     severity: str = Field(..., description="Severity: low/medium/high/critical")
 
     recommended_action: str = Field(..., description="Recommended action")
-    affected_patients: Optional[list[str]] = Field(None, description="Patient IDs affected")
+    affected_patients: Optional[list[str]] = Field(
+        None, description="Patient IDs affected"
+    )
 
     notify_role: str = Field(default="pharmacy_manager", description="Role to notify")
 
@@ -156,7 +166,9 @@ class MedicationRecallAlert(BaseModel):
 class MedicationExpirationAlert(BaseModel):
     """Alert event when medication lot is within expiration window."""
 
-    event_type: MedicationEventType = Field(default=MedicationEventType.EXPIRATION_ALERT)
+    event_type: MedicationEventType = Field(
+        default=MedicationEventType.EXPIRATION_ALERT
+    )
     tenant_id: UUID = Field(..., description="Tenant context")
     unit_id: Optional[str] = Field(None, description="Unit/station ID")
 

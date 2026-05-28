@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 from unittest.mock import AsyncMock, patch
 
-pytest_plugins = ('pytest_asyncio',)
+pytest_plugins = ("pytest_asyncio",)
 
 
 @pytest.mark.asyncio
@@ -25,12 +25,14 @@ async def test_notification_client_low_stock_alert():
 
     tenant_id = uuid4()
 
-    with patch('httpx.AsyncClient.post') as mock_post:
+    with patch("httpx.AsyncClient.post") as mock_post:
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
         mock_response.json = AsyncMock(return_value={"id": "notif-123"})
 
-        mock_post.return_value.__aenter__.return_value.post = AsyncMock(return_value=mock_response)
+        mock_post.return_value.__aenter__.return_value.post = AsyncMock(
+            return_value=mock_response
+        )
 
         result = await NotificationClient.send_low_stock_alert(
             tenant_id=tenant_id,
@@ -54,7 +56,7 @@ async def test_notification_client_expiration_alert():
     tenant_id = uuid4()
     expiration_date = datetime.now(timezone.utc)
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
@@ -81,7 +83,7 @@ async def test_notification_client_recall_alert():
 
     tenant_id = uuid4()
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
@@ -108,7 +110,7 @@ async def test_notification_client_discrepancy_alert():
 
     tenant_id = uuid4()
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
@@ -135,7 +137,7 @@ async def test_search_client_index_inventory_item():
 
     tenant_id = uuid4()
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
@@ -165,7 +167,7 @@ async def test_search_client_index_medication_lot():
     tenant_id = uuid4()
     expiration_date = datetime.now(timezone.utc)
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
@@ -193,7 +195,7 @@ async def test_search_client_index_narcotic_vial():
 
     tenant_id = uuid4()
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
@@ -222,7 +224,7 @@ async def test_analytics_client_publish_usage_event():
 
     tenant_id = uuid4()
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
@@ -249,7 +251,7 @@ async def test_analytics_client_publish_waste_event():
 
     tenant_id = uuid4()
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
@@ -275,7 +277,7 @@ async def test_analytics_client_publish_risk_event():
 
     tenant_id = uuid4()
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
@@ -301,7 +303,7 @@ async def test_audit_client_log_mutation():
 
     tenant_id = uuid4()
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
@@ -330,7 +332,7 @@ async def test_audit_client_log_approval():
 
     tenant_id = uuid4()
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_response = AsyncMock()
         mock_response.raise_for_status = AsyncMock()
@@ -357,7 +359,7 @@ async def test_integration_graceful_degradation_no_config():
 
     tenant_id = uuid4()
 
-    with patch.dict('os.environ', {}, clear=True):
+    with patch.dict("os.environ", {}, clear=True):
         # Without configuration, should return False gracefully
         result = await NotificationClient.send_low_stock_alert(
             tenant_id=tenant_id,
@@ -378,7 +380,7 @@ async def test_integration_handles_network_errors():
 
     tenant_id = uuid4()
 
-    with patch('httpx.AsyncClient') as mock_client_class:
+    with patch("httpx.AsyncClient") as mock_client_class:
         mock_client = AsyncMock()
         mock_client.__aenter__.return_value.post = AsyncMock(
             side_effect=httpx.ConnectError("Connection failed")

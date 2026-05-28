@@ -61,7 +61,9 @@ class NotificationClient:
     Best-effort delivery with retries.
     """
 
-    _BASE_URL = os.environ.get("NOTIFICATIONS_SERVICE_URL", "http://notifications:8000").rstrip("/")
+    _BASE_URL = os.environ.get(
+        "NOTIFICATIONS_SERVICE_URL", "http://notifications:8000"
+    ).rstrip("/")
     _TOKEN = os.environ.get("NOTIFICATIONS_SERVICE_TOKEN", "")
     _TIMEOUT = float(os.environ.get("NOTIFICATIONS_TIMEOUT_SECONDS", "5"))
 
@@ -195,7 +197,10 @@ class NotificationClient:
             logger.warning("Notifications Service not configured")
             return False
 
-        headers = {"Authorization": f"Bearer {cls._TOKEN}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {cls._TOKEN}",
+            "Content-Type": "application/json",
+        }
 
         try:
             async with httpx.AsyncClient(timeout=cls._TIMEOUT) as client:
@@ -309,7 +314,10 @@ class SearchClient:
             logger.warning("Search Service not configured")
             return False
 
-        headers = {"Authorization": f"Bearer {cls._TOKEN}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {cls._TOKEN}",
+            "Content-Type": "application/json",
+        }
 
         try:
             async with httpx.AsyncClient(timeout=cls._TIMEOUT) as client:
@@ -319,7 +327,11 @@ class SearchClient:
                     headers=headers,
                 )
             resp.raise_for_status()
-            logger.info("Document indexed in %s: %s", index, document.get("item_id") or document.get("vial_id"))
+            logger.info(
+                "Document indexed in %s: %s",
+                index,
+                document.get("item_id") or document.get("vial_id"),
+            )
             return True
         except Exception as exc:
             logger.warning("Failed to index document: %s", exc)
@@ -329,7 +341,9 @@ class SearchClient:
 class AnalyticsClient:
     """Client for publishing analytics events to the Analytics Service."""
 
-    _BASE_URL = os.environ.get("ANALYTICS_SERVICE_URL", "http://analytics:8000").rstrip("/")
+    _BASE_URL = os.environ.get("ANALYTICS_SERVICE_URL", "http://analytics:8000").rstrip(
+        "/"
+    )
     _TOKEN = os.environ.get("ANALYTICS_SERVICE_TOKEN", "")
     _TIMEOUT = float(os.environ.get("ANALYTICS_TIMEOUT_SECONDS", "5"))
 
@@ -409,7 +423,10 @@ class AnalyticsClient:
             logger.warning("Analytics Service not configured")
             return False
 
-        headers = {"Authorization": f"Bearer {cls._TOKEN}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {cls._TOKEN}",
+            "Content-Type": "application/json",
+        }
 
         try:
             async with httpx.AsyncClient(timeout=cls._TIMEOUT) as client:
@@ -490,7 +507,10 @@ class AuditClient:
             logger.warning("Audit Service not configured")
             return False
 
-        headers = {"Authorization": f"Bearer {cls._TOKEN}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {cls._TOKEN}",
+            "Content-Type": "application/json",
+        }
 
         try:
             async with httpx.AsyncClient(timeout=cls._TIMEOUT) as client:
@@ -500,7 +520,12 @@ class AuditClient:
                     headers=headers,
                 )
             resp.raise_for_status()
-            logger.info("Audit entry logged: %s/%s %s", payload.get("entity_type"), payload.get("entity_id"), payload.get("action"))
+            logger.info(
+                "Audit entry logged: %s/%s %s",
+                payload.get("entity_type"),
+                payload.get("entity_id"),
+                payload.get("action"),
+            )
             return True
         except Exception as exc:
             logger.warning("Failed to log audit entry: %s", exc)

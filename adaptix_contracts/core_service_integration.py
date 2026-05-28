@@ -24,7 +24,10 @@ logger = logging.getLogger(__name__)
 
 class CoreServiceConfig(BaseModel):
     """Configuration for Core Service integration."""
-    base_url: str = Field(..., description="Core Service base URL (e.g., https://core.adaptixcore.com)")
+
+    base_url: str = Field(
+        ..., description="Core Service base URL (e.g., https://core.adaptixcore.com)"
+    )
     api_key: Optional[str] = None
     timeout_seconds: int = 10
     cache_ttl_seconds: int = 300
@@ -32,11 +35,13 @@ class CoreServiceConfig(BaseModel):
 
 class TenantLookupRequest(BaseModel):
     """Request to Core Service for tenant lookup."""
+
     tenant_slug: str
 
 
 class TenantLookupResponse(BaseModel):
     """Response from Core Service tenant lookup."""
+
     tenant_id: str
     tenant_slug: str
     agency_name: str
@@ -47,6 +52,7 @@ class TenantLookupResponse(BaseModel):
 
 class RBACVerifyRequest(BaseModel):
     """Request to Core Service for RBAC verification."""
+
     user_id: str
     tenant_id: str
     permission: str
@@ -54,18 +60,21 @@ class RBACVerifyRequest(BaseModel):
 
 class RBACVerifyResponse(BaseModel):
     """Response from Core Service RBAC verification."""
+
     has_permission: bool
     reason: Optional[str] = None
 
 
 class EntitlementCheckRequest(BaseModel):
     """Request to Core Service for entitlement check."""
+
     tenant_id: str
     module: str
 
 
 class EntitlementCheckResponse(BaseModel):
     """Response from Core Service entitlement check."""
+
     has_entitlement: bool
     module: str
     reason: Optional[str] = None
@@ -101,7 +110,9 @@ class CoreServiceClient:
 
     def _set_cached(self, key: str, value: Any) -> None:
         """Cache value with TTL."""
-        expiration = datetime.utcnow() + timedelta(seconds=self.config.cache_ttl_seconds)
+        expiration = datetime.utcnow() + timedelta(
+            seconds=self.config.cache_ttl_seconds
+        )
         self._cache[key] = (value, expiration)
 
     async def lookup_tenant(self, tenant_slug: str) -> TenantLookupResponse:
@@ -168,7 +179,9 @@ class CoreServiceClient:
             return cached
 
         url = f"{self.config.base_url}/api/v1/core/rbac/verify"
-        req = RBACVerifyRequest(user_id=user_id, tenant_id=tenant_id, permission=permission)
+        req = RBACVerifyRequest(
+            user_id=user_id, tenant_id=tenant_id, permission=permission
+        )
 
         headers = self._build_headers()
         try:
@@ -176,7 +189,9 @@ class CoreServiceClient:
             resp.raise_for_status()
             result = RBACVerifyResponse(**resp.json())
             self._set_cached(cache_key, result)
-            logger.debug(f"RBAC check: user={user_id} permission={permission} → {result.has_permission}")
+            logger.debug(
+                f"RBAC check: user={user_id} permission={permission} → {result.has_permission}"
+            )
             return result
         except Exception as e:
             logger.error(f"RBAC verification failed: {permission} - {e}")
@@ -214,7 +229,9 @@ class CoreServiceClient:
             resp.raise_for_status()
             result = EntitlementCheckResponse(**resp.json())
             self._set_cached(cache_key, result)
-            logger.info(f"Entitlement check: tenant={tenant_id} module={module} → {result.has_entitlement}")
+            logger.info(
+                f"Entitlement check: tenant={tenant_id} module={module} → {result.has_entitlement}"
+            )
             return result
         except Exception as e:
             logger.error(f"Entitlement check failed: {module} - {e}")
@@ -270,5 +287,7 @@ async def close_core_service_client():
 def get_core_service_client() -> CoreServiceClient:
     """Get global Core Service client instance."""
     if _core_service_client is None:
-        raise RuntimeError("Core Service client not initialized. Call init_core_service_client() on startup.")
+        raise RuntimeError(
+            "Core Service client not initialized. Call init_core_service_client() on startup."
+        )
     return _core_service_client

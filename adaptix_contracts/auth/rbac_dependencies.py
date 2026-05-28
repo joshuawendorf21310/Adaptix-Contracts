@@ -96,6 +96,7 @@ def require_inventory_permission(permission: str):
         ):
             ...
     """
+
     async def dependency(
         auth: AdaptixAuthContext = Depends(),
     ) -> RBACContext:
@@ -116,10 +117,13 @@ def require_medications_permission(permission: str):
         ):
             ...
     """
+
     async def dependency(
         auth: AdaptixAuthContext = Depends(),
     ) -> RBACContext:
-        return await require_permission(permission, compute_medications_permissions, auth)
+        return await require_permission(
+            permission, compute_medications_permissions, auth
+        )
 
     return Depends(dependency)
 
@@ -136,6 +140,7 @@ def require_narcotics_permission(permission: str):
         ):
             ...
     """
+
     async def dependency(
         auth: AdaptixAuthContext = Depends(),
     ) -> RBACContext:
@@ -217,9 +222,7 @@ async def require_billing_access(
     user_roles = {str(r) for r in auth.role_set.roles} if auth.role_set else set()
 
     if not user_roles.intersection(allowed_roles):
-        logger.warning(
-            f"Billing access denied: user={auth.user_id} roles={user_roles}"
-        )
+        logger.warning(f"Billing access denied: user={auth.user_id} roles={user_roles}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
@@ -285,11 +288,14 @@ def rbac_decorator(
         async def list_items(rbac: RBACContext, ...):
             ...
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def wrapper(*args, **kwargs):
             # rbac dependency will be injected by FastAPI
             # This decorator just marks the route as RBAC-protected
             return await func(*args, **kwargs)
+
         return wrapper
+
     return decorator

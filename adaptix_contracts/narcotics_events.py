@@ -57,7 +57,9 @@ class NarcoticsVialEvent(BaseModel):
     unit_id: str = Field(..., description="Unit/station ID")
 
     substance_id: str = Field(..., description="Substance UUID")
-    substance_name: str = Field(..., description="Controlled substance name (e.g., 'Fentanyl')")
+    substance_name: str = Field(
+        ..., description="Controlled substance name (e.g., 'Fentanyl')"
+    )
     substance_dea_schedule: str = Field(..., description="DEA schedule (e.g., 'C-II')")
 
     vial_id: str = Field(..., description="Vial/unit UUID")
@@ -95,7 +97,9 @@ class NarcoticsChainOfCustodyEntry(BaseModel):
     modified or deleted, only read for inspection.
     """
 
-    event_type: NarcoticsEventType = Field(default=NarcoticsEventType.CHAIN_OF_CUSTODY_ENTRY)
+    event_type: NarcoticsEventType = Field(
+        default=NarcoticsEventType.CHAIN_OF_CUSTODY_ENTRY
+    )
     tenant_id: UUID = Field(..., description="Tenant context")
     unit_id: str = Field(..., description="Unit/station ID")
 
@@ -106,7 +110,9 @@ class NarcoticsChainOfCustodyEntry(BaseModel):
     lot_id: str = Field(...)
 
     # COC entry type
-    entry_type: str = Field(..., description="Type: RECEIVED/TRANSFERRED/USED/WASTED/COUNTED")
+    entry_type: str = Field(
+        ..., description="Type: RECEIVED/TRANSFERRED/USED/WASTED/COUNTED"
+    )
 
     # Quantity tracking
     quantity_involved: int = Field(..., description="Quantity in this event")
@@ -115,8 +121,12 @@ class NarcoticsChainOfCustodyEntry(BaseModel):
     balance_after: int = Field(..., description="Balance after this event")
 
     # Responsible parties
-    responsible_party: str = Field(..., description="User ID responsible for this entry")
-    witness_party: Optional[str] = Field(None, description="Witness user ID (if required)")
+    responsible_party: str = Field(
+        ..., description="User ID responsible for this entry"
+    )
+    witness_party: Optional[str] = Field(
+        None, description="Witness user ID (if required)"
+    )
 
     # Location tracking
     from_location: Optional[str] = Field(None, description="Source location")
@@ -155,12 +165,16 @@ class NarcoticsDiscrepancyAlert(BaseModel):
     unit_of_measure: str = Field(...)
 
     opened_at: datetime = Field(...)
-    time_since_last_count: Optional[int] = Field(None, description="Hours since last count")
+    time_since_last_count: Optional[int] = Field(
+        None, description="Hours since last count"
+    )
 
     # Escalation
     escalation_flag: bool = Field(..., description="True if unresolved > 24h")
     notify_role: str = Field(default="narcotics_officer", description="Role to notify")
-    escalate_to_role: Optional[str] = Field(None, description="Secondary escalation role")
+    escalate_to_role: Optional[str] = Field(
+        None, description="Secondary escalation role"
+    )
     severity: str = Field(..., description="Severity: low/medium/high/critical")
 
     timestamp: datetime = Field(...)
