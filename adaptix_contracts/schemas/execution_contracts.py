@@ -83,7 +83,9 @@ class ExecutionCreateRequest(BaseModel):
     dag: ExecutionDAG
     description: str = Field(min_length=1, max_length=1000)
     requires_approval: bool = Field(default=True)
-    environment: str = Field(default="staging", pattern="^(staging|production|sandbox)$")
+    environment: str = Field(
+        default="staging", pattern="^(staging|production|sandbox)$"
+    )
     tags: list[str] = Field(default_factory=list)
     idempotency_key: str | None = Field(default=None, max_length=255)
 
