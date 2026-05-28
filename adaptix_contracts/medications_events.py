@@ -1,0 +1,222 @@
+"""Medications service event contracts.
+
+Canonical event schemas for medication domain mutations:
+- Medication lot creation, usage, waste
+- Medication recalls and alerts
+- Expiration tracking and disposal
+- Protocol compliance events
+
+All events include tenant_id, unit_id (optional), timestamp, and trace_id for
+cross-service correlation and audit.
+"""
+
+from __future__ import annotations
+
+from datetime import datetime
+from enum import Enum
+from typing import Optional, Any
+from uuid import UUID
+
+from pydantic import BaseModel, Field
+
+
+class MedicationEventType(str, Enum):
+    """Canonical medication event types."""
+
+    MEDICATION_CREATED = "medications.medication.created"
+    MEDICATION_UPDATED = "medications.medication.updated"
+    MEDICATION_DELETED = "medications.medication.deleted"
+
+    LOT_CREATED = "medications.lot.created"
+    LOT_UPDATED = "medications.lot.updated"
+    LOT_DELETED = "medications.lot.deleted"
+
+    ADMINISTRATION_RECORDED = "medications.administration.recorded"
+    WASTE_RECORDED = "medications.waste.recorded"
+    EXPIRATION_DISPOSED = "medications.expiration.disposed"
+
+    RECALL_DETECTED = "medications.recall.detected"
+    RECALL_ALERT = "medications.alert.recall"
+    EXPIRATION_ALERT = "medications.alert.expiration"
+
+    STOCK_ADJUSTED = "medications.stock.adjusted"
+    PROTOCOL_UPDATED = "medications.protocol.updated"
+
+
+class MedicationLotEvent(BaseModel):
+    """Event published when a medication lot is created/updated."""
+
+    event_type: MedicationEventType = Field(...)
+    tenant_id: UUID = Field(..., description="Tenant context")
+    unit_id: Optional[str] = Field(None, description="Unit/station ID")
+
+    medication_id: str = Field(..., description="Medication UUID")
+    medication_name: str = Field(..., description="Medication name")
+    lot_id: str = Field(..., description="Lot/batch ID")
+
+    expiration_date: datetime = Field(..., description="Lot expiration date")
+    received_date: datetime = Field(..., description="When lot was received")
+    quantity_received: int = Field(..., description="Initial quantity")
+    current_quantity: int = Field(..., description="Current remaining quantity")
+
+    storage_location: str = Field(..., description="Storage location")
+    storage_temperature: Optional[str] = Field(None, description="Storage conditions")
+    unit_of_measure: str = Field(..., description="Unit of measure")
+    cost_per_unit: float = Field(..., description="Cost per unit")
+
+    # Before/after for updates
+    before_state: Optional[dict[str, Any]] = Field(None)
+    after_state: Optional[dict[str, Any]] = Field(None)
+
+    actor_user_id: Optional[str] = Field(None)
+    timestamp: datetime = Field(...)
+    correlation_id: Optional[str] = Field(None)
+    trace_id: Optional[str] = Field(None)
+
+
+class MedicationAdministrationEvent(BaseModel):
+    """Event published when medication is administered."""
+
+    event_type: MedicationEventType = Field(
+        default=MedicationEventType.ADMINISTRATION_RECORDED
+    )
+    tenant_id: UUID = Field(..., description="Tenant context")
+    unit_id: Optional[str] = Field(None, description="Unit/station ID")
+
+    medication_id: str = Field(..., description="Medication UUID")
+    medication_name: str = Field(..., description="Medication name")
+    lot_id: str = Field(..., description="Lot/batch ID")
+    patient_id: Optional[str] = Field(None, description="Patient (if applicable)")
+
+    quantity_administered: int = Field(..., description="Amount given")
+    unit_of_measure: str = Field(...)
+    cost_per_unit: float = Field(...)
+    total_cost: float = Field(..., description="Cost of administration")
+
+    administered_by: Optional[str] = Field(None, description="Clinician")
+    administered_date: datetime = Field(...)
+    protocol_id: Optional[str] = Field(None, description="Protocol being followed")
+
+    timestamp: datetime = Field(...)
+    correlation_id: Optional[str] = Field(None)
+    trace_id: Optional[str] = Field(None)
+
+
+class MedicationWasteEvent(BaseModel):
+    """Event published when medication is wasted (expired, disposal, etc)."""
+
+    event_type: MedicationEventType = Field(...)
+    tenant_id: UUID = Field(..., description="Tenant context")
+    unit_id: Optional[str] = Field(None, description="Unit/station ID")
+
+    medication_id: str = Field(..., description="Medication UUID")
+    medication_name: str = Field(..., description="Medication name")
+    lot_id: str = Field(..., description="Lot/batch ID")
+
+    quantity_wasted: int = Field(..., description="Quantity disposed")
+    unit_of_measure: str = Field(...)
+    waste_reason: str = Field(
+        ..., description="Reason: expired/damaged/contaminated/other"
+    )
+    cost_per_unit: float = Field(...)
+    waste_cost: float = Field(..., description="Value of wasted medication")
+
+    disposed_by: Optional[str] = Field(None, description="Person performing disposal")
+    witness: Optional[str] = Field(
+        None, description="Witness to disposal (if required)"
+    )
+    witness_signature: Optional[str] = Field(
+        None, description="Witness signature blob key"
+    )
+
+    disposal_date: datetime = Field(...)
+    timestamp: datetime = Field(...)
+    correlation_id: Optional[str] = Field(None)
+    trace_id: Optional[str] = Field(None)
+
+
+class MedicationRecallAlert(BaseModel):
+    """Alert event when medication recall is detected/imported."""
+
+    event_type: MedicationEventType = Field(default=MedicationEventType.RECALL_ALERT)
+    tenant_id: UUID = Field(..., description="Tenant context")
+    unit_id: Optional[str] = Field(None, description="Unit/station ID")
+
+    medication_id: str = Field(..., description="Medication UUID")
+    medication_name: str = Field(..., description="Medication name")
+    recall_id: str = Field(..., description="FDA/manufacturer recall ID")
+
+    affected_lots: list[str] = Field(..., description="Lot IDs affected by recall")
+    affected_quantity: int = Field(..., description="Total units affected")
+    recall_reason: str = Field(..., description="Reason for recall")
+    severity: str = Field(..., description="Severity: low/medium/high/critical")
+
+    recommended_action: str = Field(..., description="Recommended action")
+    affected_patients: Optional[list[str]] = Field(
+        None, description="Patient IDs affected"
+    )
+
+    notify_role: str = Field(default="pharmacy_manager", description="Role to notify")
+
+    timestamp: datetime = Field(...)
+    correlation_id: Optional[str] = Field(None)
+    trace_id: Optional[str] = Field(None)
+
+
+class MedicationExpirationAlert(BaseModel):
+    """Alert event when medication lot is within expiration window."""
+
+    event_type: MedicationEventType = Field(
+        default=MedicationEventType.EXPIRATION_ALERT
+    )
+    tenant_id: UUID = Field(..., description="Tenant context")
+    unit_id: Optional[str] = Field(None, description="Unit/station ID")
+
+    medication_id: str = Field(..., description="Medication UUID")
+    medication_name: str = Field(..., description="Medication name")
+    lot_id: str = Field(..., description="Lot/batch ID")
+
+    expiration_date: datetime = Field(...)
+    days_until_expiration: int = Field(...)
+    current_quantity: int = Field(...)
+    cost_per_unit: float = Field(...)
+    waste_forecast: float = Field(..., description="Est. cost if expired")
+
+    notify_role: str = Field(default="pharmacy_manager", description="Role to notify")
+    severity: str = Field(..., description="Severity: low/medium/high")
+
+    timestamp: datetime = Field(...)
+    correlation_id: Optional[str] = Field(None)
+    trace_id: Optional[str] = Field(None)
+
+
+class MedicationAnalyticsEvent(BaseModel):
+    """Generic analytics event for medications."""
+
+    event_type: MedicationEventType = Field(...)
+    tenant_id: UUID = Field(...)
+    unit_id: Optional[str] = Field(None)
+
+    timestamp: datetime = Field(...)
+    category: str = Field(..., description="Event category")
+
+    # Generic metrics
+    quantity: Optional[int] = Field(None)
+    cost: Optional[float] = Field(None)
+
+    # Custom metadata
+    metadata: Optional[dict[str, Any]] = Field(None)
+
+    correlation_id: Optional[str] = Field(None)
+    trace_id: Optional[str] = Field(None)
+
+
+__all__ = [
+    "MedicationEventType",
+    "MedicationLotEvent",
+    "MedicationAdministrationEvent",
+    "MedicationWasteEvent",
+    "MedicationRecallAlert",
+    "MedicationExpirationAlert",
+    "MedicationAnalyticsEvent",
+]
