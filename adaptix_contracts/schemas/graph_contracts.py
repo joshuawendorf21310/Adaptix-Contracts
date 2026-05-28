@@ -20,6 +20,7 @@ from pydantic import BaseModel
 # Read contracts
 # ---------------------------------------------------------------------------
 
+
 class GraphEmailSummaryContract(BaseModel):
     """Summary of a single inbox email message."""
 
@@ -84,6 +85,7 @@ class GraphServiceStatusContract(BaseModel):
 # ---------------------------------------------------------------------------
 # Request contracts
 # ---------------------------------------------------------------------------
+
 
 class GraphSendEmailRequest(BaseModel):
     """Request to send an email via Microsoft Graph."""

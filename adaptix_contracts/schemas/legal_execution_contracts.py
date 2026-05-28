@@ -3,17 +3,19 @@
 Contains contract schemas and types for legal document execution,
 including contract types, status enums, and mapping relationships.
 """
+
 from enum import Enum
-from typing import Dict, List, Optional, Union
+from typing import Dict, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
 
 
 class ContractType(str, Enum):
     """Enumeration of contract types supported by the platform.
-    
+
     Used for document execution and module enablement workflows.
     """
+
     MASTER_SERVICES_AGREEMENT = "master_services_agreement"
     BUSINESS_ASSOCIATE_AGREEMENT = "business_associate_agreement"
     AGENCY_ONBOARDING_AGREEMENT = "agency_onboarding_agreement"
@@ -28,9 +30,10 @@ class ContractType(str, Enum):
 
 class ContractStatus(str, Enum):
     """Enumeration of contract execution status values.
-    
+
     Tracks the state of a contract through its lifecycle.
     """
+
     PENDING = "pending"
     SENT = "sent"
     VIEWED = "viewed"
@@ -44,9 +47,10 @@ class ContractStatus(str, Enum):
 
 class TenantContractStatusMap(BaseModel):
     """Mapping between tenant, contract type, and execution status.
-    
+
     Provides the current state of all contracts for a given tenant.
     """
+
     tenant_id: str = Field(..., description="Tenant ID")
     contract_statuses: Dict[ContractType, ContractStatus] = Field(
         ..., description="Mapping of contract types to their current statuses"
@@ -55,9 +59,10 @@ class TenantContractStatusMap(BaseModel):
 
 class ContractSignatureEvent(BaseModel):
     """Event payload for contract signature events.
-    
+
     Published when a contract status changes due to a signature or other event.
     """
+
     tenant_id: str = Field(..., description="Tenant ID")
     contract_type: ContractType = Field(..., description="Type of contract signed")
     status: ContractStatus = Field(..., description="New status of the contract")
@@ -70,9 +75,10 @@ class ContractSignatureEvent(BaseModel):
 
 class ContractAccessCheckRequest(BaseModel):
     """Request to check if a tenant has access to a module via contract.
-    
+
     Used to gate access to features based on contract status.
     """
+
     tenant_id: str = Field(..., description="Tenant ID")
     contract_type: ContractType = Field(..., description="Type of contract to check")
     required_status: ContractStatus = Field(
@@ -83,9 +89,10 @@ class ContractAccessCheckRequest(BaseModel):
 
 class ContractAccessCheckResponse(BaseModel):
     """Response from checking tenant's access to module via contract.
-    
+
     Returns access status and reason for access decisions.
     """
+
     tenant_id: str = Field(..., description="Tenant ID")
     contract_type: ContractType = Field(..., description="Type of contract checked")
     has_access: bool = Field(..., description="Whether tenant has access")

@@ -10,6 +10,7 @@ assessment interactions. They preserve the authority chain:
 - CareGraph remains the clinical truth graph.
 - Vision may suggest but never authoritatively writes chart truth.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

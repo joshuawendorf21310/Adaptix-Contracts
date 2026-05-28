@@ -2,6 +2,7 @@
 
 All CAD events must be imported from this module.
 """
+
 from __future__ import annotations
 from typing import Final
 
@@ -12,7 +13,9 @@ CAD_INTAKE_CANCELLED: Final[str] = "cad.medical_transport.intake.cancelled"
 
 # Assessment events
 CAD_LEVEL_OF_CARE_ASSESSED: Final[str] = "cad.medical_transport.level_of_care.assessed"
-CAD_MEDICAL_NECESSITY_ASSESSED: Final[str] = "cad.medical_transport.medical_necessity.assessed"
+CAD_MEDICAL_NECESSITY_ASSESSED: Final[str] = (
+    "cad.medical_transport.medical_necessity.assessed"
+)
 CAD_UNIT_RECOMMENDED: Final[str] = "cad.medical_transport.unit.recommended"
 CAD_CREW_RECOMMENDED: Final[str] = "cad.medical_transport.crew.recommended"
 
@@ -27,18 +30,28 @@ CAD_UNIT_REASSIGNED: Final[str] = "cad.medical_transport.unit.reassigned"
 CAD_UNIT_STATUS_UPDATED: Final[str] = "cad.medical_transport.unit.status.updated"
 
 # Vehicle tracking events
-CAD_VEHICLE_LOCATION_UPDATED: Final[str] = "cad.medical_transport.vehicle.location.updated"
-CAD_VEHICLE_TELEMETRY_RECEIVED: Final[str] = "cad.medical_transport.vehicle.telemetry.received"
+CAD_VEHICLE_LOCATION_UPDATED: Final[str] = (
+    "cad.medical_transport.vehicle.location.updated"
+)
+CAD_VEHICLE_TELEMETRY_RECEIVED: Final[str] = (
+    "cad.medical_transport.vehicle.telemetry.received"
+)
 
 # Routing / ETA events
 CAD_ROUTING_ETA_UPDATED: Final[str] = "cad.medical_transport.routing_eta.updated"
 
 # Handoff events
-CAD_TRANSPORTLINK_HANDOFF_CREATED: Final[str] = "cad.medical_transport.transportlink.handoff.created"
+CAD_TRANSPORTLINK_HANDOFF_CREATED: Final[str] = (
+    "cad.medical_transport.transportlink.handoff.created"
+)
 CAD_EPCR_CREATED: Final[str] = "cad.medical_transport.epcr.created"
 CAD_EPCR_HANDOFF_CREATED: Final[str] = "cad.medical_transport.epcr_handoff.created"
-CAD_NEMSIS_HANDOFF_GENERATED: Final[str] = "cad.medical_transport.nemsis_handoff.generated"
-CAD_BILLING_HANDOFF_CREATED: Final[str] = "cad.medical_transport.billing_handoff.created"
+CAD_NEMSIS_HANDOFF_GENERATED: Final[str] = (
+    "cad.medical_transport.nemsis_handoff.generated"
+)
+CAD_BILLING_HANDOFF_CREATED: Final[str] = (
+    "cad.medical_transport.billing_handoff.created"
+)
 CAD_CREWLINK_PAGE_CREATED: Final[str] = "cad.medical_transport.crewlink.page.created"
 CAD_VOICE_ROOM_CREATED: Final[str] = "cad.medical_transport.voice_room.created"
 
@@ -50,7 +63,9 @@ CAD_SCHEDULING_SYNCED: Final[str] = "cad.medical_transport.scheduling.synced"
 CAD_HEMS_REQUEST_CREATED: Final[str] = "cad.hems.request.created"
 CAD_HEMS_ELIGIBILITY_ASSESSED: Final[str] = "cad.hems.eligibility.assessed"
 CAD_HEMS_BRIEFING_GENERATED: Final[str] = "cad.hems.briefing.generated"
-CAD_HEMS_GROUND_FALLBACK_RECOMMENDED: Final[str] = "cad.hems.ground_fallback.recommended"
+CAD_HEMS_GROUND_FALLBACK_RECOMMENDED: Final[str] = (
+    "cad.hems.ground_fallback.recommended"
+)
 CAD_HEMS_STATUS_UPDATED: Final[str] = "cad.hems.status.updated"
 
 # AI / Audit events

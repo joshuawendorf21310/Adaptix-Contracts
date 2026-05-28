@@ -4,15 +4,16 @@ Adaptix Service Registry — canonical service names, route prefixes, and ports.
 This is the single source of truth for all Adaptix platform services.
 All services must be registered here before being used in contracts or clients.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass(frozen=True)
 class ServiceDefinition:
     """Canonical definition of an Adaptix platform service."""
+
     name: str
     slug: str
     route_prefix: str

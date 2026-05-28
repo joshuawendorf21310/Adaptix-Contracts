@@ -1,4 +1,5 @@
 """Security regression tests for gateway-signed auth contracts."""
+
 from __future__ import annotations
 
 import asyncio
@@ -14,7 +15,9 @@ from adaptix_contracts.auth_contracts import GATEWAY_SHARED_SECRET_ENV, get_auth
 from adaptix_contracts.auth.context import AdaptixAuthContext
 
 
-def _signature(secret: str, timestamp: int, user_id: object, tenant_id: object, email: str) -> str:
+def _signature(
+    secret: str, timestamp: int, user_id: object, tenant_id: object, email: str
+) -> str:
     payload = f"{timestamp}.{user_id}.{tenant_id}.{email}".encode("utf-8")
     return hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
 
@@ -69,7 +72,9 @@ def test_get_auth_context_accepts_valid_gateway_signature(monkeypatch) -> None:
             x_tenant_id=str(tenant_id),
             x_user_email=email,
             x_gateway_timestamp=str(timestamp),
-            x_gateway_signature=_signature(secret, timestamp, user_id, tenant_id, email),
+            x_gateway_signature=_signature(
+                secret, timestamp, user_id, tenant_id, email
+            ),
         )
     )
 

@@ -1,4 +1,5 @@
 """Adaptix auth context contracts."""
+
 from adaptix_contracts.auth.context import (
     AdaptixRole,
     AdaptixRoleSet,

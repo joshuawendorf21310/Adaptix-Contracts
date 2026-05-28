@@ -873,6 +873,16 @@ __all__ = [
     "PhiAccessLoggedEvent",
     "SecurityEventDetectedEvent",
     "ComplianceReviewOpenedEvent",
+    # Duty Auth
+    "FieldLoginRequest",
+    "FieldLoginResolved",
+    "CreateDutySessionRequest",
+    "DutySessionResponse",
+    "EndDutySessionRequest",
+    "EndDutySessionResponse",
+    "RevokeBadgeRequest",
+    "RevokeBadgeResponse",
+    "AuthAuditEvent",
     # Billing
     "ClaimStatus",
     "DenialStatus",
@@ -1049,6 +1059,11 @@ __all__ = [
     "EpcrChartCreatedEvent",
     "EpcrChartFinalizedEvent",
     "EpcrChartContract",
+    "EpcrPatientProfileContract",
+    "EpcrVitalSetContract",
+    "EpcrClinicalImpressionContract",
+    "EpcrMedicationAdministrationContract",
+    "EpcrSignatureArtifactContract",
     "EpcrNemsissComplianceContract",
     # Feature Flags
     "FeatureFlagStatus",
@@ -1502,5 +1517,4 @@ __all__ = [
     # Audit (extended domain actions)
     "AuditDomainAction",
     "AuditEntry",
-
 ]

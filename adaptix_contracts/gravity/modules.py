@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 # ─── Enums ───────────────────────────────────────────────────────────────────
 
+
 class GravityModuleState(str, Enum):
     LOADING = "loading"
     READY = "ready"
@@ -59,6 +60,7 @@ class GravityNotificationState(str, Enum):
 
 # ─── AI Run Payload ───────────────────────────────────────────────────────────
 
+
 class GravityAIRunPayload(BaseModel):
     """
     Authoritative AI run contract.
@@ -66,6 +68,7 @@ class GravityAIRunPayload(BaseModel):
     AI may NOT finalize records, submit exports, send messages, or alter authoritative state
     without human acceptance.
     """
+
     ai_run_id: str
     model_or_engine_id: str
     source_record_ids: List[str] = Field(default_factory=list)
@@ -85,11 +88,13 @@ class GravityAIRunPayload(BaseModel):
 
 # ─── Audit Event Payload ──────────────────────────────────────────────────────
 
+
 class GravityAuditEventPayload(BaseModel):
     """
     Immutable audit event. Every mutation must write an audit event.
     No silent writes. No silent failures.
     """
+
     id: str
     tenant_id: str
     actor_id: str
@@ -105,11 +110,13 @@ class GravityAuditEventPayload(BaseModel):
 
 # ─── Notification Payload ─────────────────────────────────────────────────────
 
+
 class GravityNotificationPayload(BaseModel):
     """
     Unified notification contract.
     All modules route user-visible action feedback through the notification system.
     """
+
     id: str
     tenant_id: str
     title: str
@@ -130,10 +137,12 @@ class GravityNotificationPayload(BaseModel):
 
 # ─── Action Payload ───────────────────────────────────────────────────────────
 
+
 class GravityActionPayload(BaseModel):
     """
     Prioritized action item requiring human decision.
     """
+
     id: str
     tenant_id: str
     label: str
@@ -155,6 +164,7 @@ class GravityActionPayload(BaseModel):
 
 # ─── Validation Result ────────────────────────────────────────────────────────
 
+
 class GravityValidationError(BaseModel):
     field: str
     message: str
@@ -166,6 +176,7 @@ class GravityValidationResult(BaseModel):
     """
     Structured validation result. Never suppress low-confidence errors.
     """
+
     valid: bool
     errors: List[GravityValidationError] = Field(default_factory=list)
     warnings: List[GravityValidationError] = Field(default_factory=list)
@@ -175,10 +186,12 @@ class GravityValidationResult(BaseModel):
 
 # ─── Error Envelope ───────────────────────────────────────────────────────────
 
+
 class GravityErrorEnvelope(BaseModel):
     """
     Structured error response. Never return fake success.
     """
+
     error_code: str
     message: str
     detail: Optional[str] = None
@@ -190,10 +203,12 @@ class GravityErrorEnvelope(BaseModel):
 
 # ─── Pagination ───────────────────────────────────────────────────────────────
 
+
 class GravityPaginatedResponse(BaseModel):
     """
     Standard paginated response envelope.
     """
+
     items: List[Any]
     total: int
     page: int = 1

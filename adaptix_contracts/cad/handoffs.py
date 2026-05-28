@@ -1,4 +1,5 @@
 """CAD handoff contracts — TransportLink, ePCR, Billing, CrewLink, Voice."""
+
 from __future__ import annotations
 from adaptix_contracts.cad.models import (
     CadTransportLinkHandoff,

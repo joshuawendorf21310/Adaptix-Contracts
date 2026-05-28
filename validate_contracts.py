@@ -34,11 +34,15 @@ def validate_imports(*, verbose: bool = True) -> dict[str, Any]:
 
     try:
         from adaptix_contracts.schemas import __all__
+
         if verbose:
-            print(f"{_status_icon(True)} Schema __all__ list defined ({len(__all__)} exports)")
+            print(
+                f"{_status_icon(True)} Schema __all__ list defined ({len(__all__)} exports)"
+            )
 
         # Import all schemas
         from adaptix_contracts import schemas
+
         imported_count = 0
         missing_exports: list[str] = []
         for name in __all__:
@@ -53,7 +57,9 @@ def validate_imports(*, verbose: bool = True) -> dict[str, Any]:
                 for name in missing_exports:
                     print(f"{_status_icon(False)} Missing export: {name}")
             else:
-                print(f"{_status_icon(True)} All {imported_count} exports are accessible")
+                print(
+                    f"{_status_icon(True)} All {imported_count} exports are accessible"
+                )
         return {
             "name": "Import Validation",
             "passed": passed,
@@ -89,7 +95,7 @@ def validate_model_structure(*, verbose: bool = True) -> dict[str, Any]:
     enums = []
 
     for name in dir(schemas):
-        if name.startswith('_'):
+        if name.startswith("_"):
             continue
         obj = getattr(schemas, name)
 
@@ -107,7 +113,7 @@ def validate_model_structure(*, verbose: bool = True) -> dict[str, Any]:
     issues = []
     for name, model in models:
         # Check if model has model_config (Pydantic v2 pattern)
-        if hasattr(model, 'model_fields'):
+        if hasattr(model, "model_fields"):
             # Pydantic v2
             pass
         else:
@@ -143,16 +149,11 @@ def validate_sample_instantiation(*, verbose: bool = True) -> dict[str, Any]:
     try:
         from adaptix_contracts.schemas import (
             # Core
-            DomainEvent,
-            UserAuthContext,
-            # Narcotic
             VaultCreateRequest,
             NarcoticVaultType,
             # Billing
             ClaimContract,
             ClaimStatus,
-            ClaimCreatedEvent,
-            # Audit
             AuditRecord,
             AuditContext,
             AuditActorType,
@@ -166,13 +167,12 @@ def validate_sample_instantiation(*, verbose: bool = True) -> dict[str, Any]:
             WorkflowContext,
             WorkflowStatus,
         )
-        from uuid import uuid4
+
         instantiated_models: list[str] = []
 
         # Test audit record
         audit_ctx = AuditContext(
-            tenant_id="test-tenant",
-            service_name="validation-script"
+            tenant_id="test-tenant", service_name="validation-script"
         )
 
         audit = AuditRecord(
@@ -183,7 +183,7 @@ def validate_sample_instantiation(*, verbose: bool = True) -> dict[str, Any]:
             success=True,
             severity=AuditSeverity.LOW,
             context=audit_ctx,
-            occurred_at=datetime.now()
+            occurred_at=datetime.now(),
         )
         instantiated_models.append("AuditRecord")
         if verbose:
@@ -198,7 +198,7 @@ def validate_sample_instantiation(*, verbose: bool = True) -> dict[str, Any]:
             total_charge_cents=10000,
             balance_cents=10000,
             created_at=datetime.now(),
-            updated_at=datetime.now()
+            updated_at=datetime.now(),
         )
         instantiated_models.append("ClaimContract")
         if verbose:
@@ -209,16 +209,17 @@ def validate_sample_instantiation(*, verbose: bool = True) -> dict[str, Any]:
             flag_key="test-feature",
             status=FeatureFlagStatus.ENABLED,
             default_enabled=True,
-            evaluated_at=datetime.now()
+            evaluated_at=datetime.now(),
         )
         instantiated_models.append("FeatureFlagContract")
         if verbose:
-            print(f"{_status_icon(True)} FeatureFlagContract instantiated: {flag.flag_key}")
+            print(
+                f"{_status_icon(True)} FeatureFlagContract instantiated: {flag.flag_key}"
+            )
 
         # Test workflow execution
         workflow_ctx = WorkflowContext(
-            workflow_id="workflow-123",
-            tenant_id="tenant-123"
+            workflow_id="workflow-123", tenant_id="tenant-123"
         )
 
         workflow = WorkflowExecution(
@@ -226,11 +227,13 @@ def validate_sample_instantiation(*, verbose: bool = True) -> dict[str, Any]:
             workflow_type="test-workflow",
             context=workflow_ctx,
             status=WorkflowStatus.RUNNING,
-            started_at=datetime.now()
+            started_at=datetime.now(),
         )
         instantiated_models.append("WorkflowExecution")
         if verbose:
-            print(f"{_status_icon(True)} WorkflowExecution instantiated: {workflow.workflow_id}")
+            print(
+                f"{_status_icon(True)} WorkflowExecution instantiated: {workflow.workflow_id}"
+            )
 
         narcotic_vault = VaultCreateRequest(
             vault_name="Station 1 Main Vault",
@@ -239,7 +242,9 @@ def validate_sample_instantiation(*, verbose: bool = True) -> dict[str, Any]:
         )
         instantiated_models.append("VaultCreateRequest")
         if verbose:
-            print(f"{_status_icon(True)} VaultCreateRequest instantiated: {narcotic_vault.vault_name}")
+            print(
+                f"{_status_icon(True)} VaultCreateRequest instantiated: {narcotic_vault.vault_name}"
+            )
 
         if verbose:
             print(f"\n{_status_icon(True)} All sample model instantiations successful")
@@ -253,6 +258,7 @@ def validate_sample_instantiation(*, verbose: bool = True) -> dict[str, Any]:
         if verbose:
             print(f"{_status_icon(False)} Model instantiation failed: {e}")
             import traceback
+
             traceback.print_exc()
         return {
             "name": "Model Instantiation",
@@ -269,24 +275,46 @@ def validate_domain_coverage(*, verbose: bool = True) -> dict[str, Any]:
         print("=" * 70)
 
     expected_domains = {
-        'air', 'air_pilot', 'audit', 'billing', 'billing_auth',
-        'billing_clearinghouse', 'billing_eligibility', 'billing_portal',
-        'billing_transport', 'cad', 'cad_transport', 'communications',
-        'clinical_visual', 'core', 'crewlink', 'epcr', 'feature_flag', 'field', 'fire',
-        'inventory', 'narcotic',
-        'metrics', 'nemsis', 'ocr', 'patient_portal', 'search',
-        'transport', 'voice', 'workflow'
+        "air",
+        "air_pilot",
+        "audit",
+        "billing",
+        "billing_auth",
+        "billing_clearinghouse",
+        "billing_eligibility",
+        "billing_portal",
+        "billing_transport",
+        "cad",
+        "cad_transport",
+        "communications",
+        "clinical_visual",
+        "core",
+        "crewlink",
+        "epcr",
+        "feature_flag",
+        "field",
+        "fire",
+        "inventory",
+        "narcotic",
+        "metrics",
+        "nemsis",
+        "ocr",
+        "patient_portal",
+        "search",
+        "transport",
+        "voice",
+        "workflow",
     }
 
     repo_root = Path(__file__).resolve().parent
-    schema_dir = repo_root / 'adaptix_contracts' / 'schemas'
-    contract_files = [f.stem for f in schema_dir.glob('*_contracts.py')]
-    contract_files.extend(['nemsis_exports', 'narcotic'])  # Special cases
+    schema_dir = repo_root / "adaptix_contracts" / "schemas"
+    contract_files = [f.stem for f in schema_dir.glob("*_contracts.py")]
+    contract_files.extend(["nemsis_exports", "narcotic"])  # Special cases
 
     # Normalize names
     actual_domains = set()
     for f in contract_files:
-        domain = f.replace('_contracts', '').replace('_exports', '')
+        domain = f.replace("_contracts", "").replace("_exports", "")
         actual_domains.add(domain)
 
     missing = sorted(expected_domains - actual_domains)
@@ -339,8 +367,15 @@ def build_validation_report(*, verbose: bool = True) -> dict[str, Any]:
 
 
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Validate Adaptix contract exports and schema surface.")
-    parser.add_argument("--json", action="store_true", dest="json_output", help="Emit a machine-readable JSON report.")
+    parser = argparse.ArgumentParser(
+        description="Validate Adaptix contract exports and schema surface."
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        dest="json_output",
+        help="Emit a machine-readable JSON report.",
+    )
     return parser.parse_args(argv)
 
 

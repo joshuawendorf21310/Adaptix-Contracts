@@ -17,7 +17,12 @@ EDITING_TOOLS = {
     "edit_notebook_file",
     "vscode_renameSymbol",
 }
-TERMINAL_TOOLS = {"run_in_terminal", "send_to_terminal", "create_and_run_task", "run_task"}
+TERMINAL_TOOLS = {
+    "run_in_terminal",
+    "send_to_terminal",
+    "create_and_run_task",
+    "run_task",
+}
 PATH_KEYS = {
     "filePath",
     "filePaths",
@@ -53,7 +58,9 @@ class GovernanceRuntime:
     def __init__(self, cwd: Path) -> None:
         self.cwd = cwd.resolve()
         self.repo_root = self._resolve_repo_root(self.cwd)
-        self.manifest_path = self.repo_root / ".github" / "governance" / "governance.manifest.json"
+        self.manifest_path = (
+            self.repo_root / ".github" / "governance" / "governance.manifest.json"
+        )
         self.manifest = self._load_json(self.manifest_path)
         self.audit_path = self.repo_root / self.manifest["auditLogPath"]
         self.audit_path.parent.mkdir(parents=True, exist_ok=True)
@@ -61,10 +68,14 @@ class GovernanceRuntime:
     @staticmethod
     def _resolve_repo_root(start: Path) -> Path:
         for candidate in [start, *start.parents]:
-            if (candidate / ".github" / "governance" / "governance.manifest.json").exists():
+            if (
+                candidate / ".github" / "governance" / "governance.manifest.json"
+            ).exists():
                 return candidate
             if (candidate / ".git").exists():
-                repo_candidate = candidate / ".github" / "governance" / "governance.manifest.json"
+                repo_candidate = (
+                    candidate / ".github" / "governance" / "governance.manifest.json"
+                )
                 if repo_candidate.exists():
                     return candidate
         raise GovernanceError(f"Unable to locate governance manifest from cwd={start}")
@@ -88,7 +99,9 @@ class GovernanceRuntime:
                 filtered.append(resolved)
         return filtered
 
-    def _walk_paths(self, value: Any, results: list[Path], key: str | None = None) -> None:
+    def _walk_paths(
+        self, value: Any, results: list[Path], key: str | None = None
+    ) -> None:
         if isinstance(value, dict):
             for child_key, child_value in value.items():
                 self._walk_paths(child_value, results, child_key)
@@ -103,7 +116,9 @@ class GovernanceRuntime:
                 return
             if normalized.startswith("http://") or normalized.startswith("https://"):
                 return
-            if key == "query" and not any(sep in normalized for sep in ("/", "\\", ".")):
+            if key == "query" and not any(
+                sep in normalized for sep in ("/", "\\", ".")
+            ):
                 return
             results.append(Path(normalized))
 
@@ -112,7 +127,9 @@ class GovernanceRuntime:
         self._walk_text(value, blobs, key)
         return blobs
 
-    def _walk_text(self, value: Any, results: list[str], key: str | None = None) -> None:
+    def _walk_text(
+        self, value: Any, results: list[str], key: str | None = None
+    ) -> None:
         if isinstance(value, dict):
             for child_key, child_value in value.items():
                 self._walk_text(child_value, results, child_key)
@@ -149,7 +166,9 @@ class GovernanceRuntime:
         ranked.sort(key=lambda item: item[0], reverse=True)
         return ranked[0][1]
 
-    def _load_rules(self, payload: dict[str, Any]) -> tuple[str, str | None, dict[str, Any] | None]:
+    def _load_rules(
+        self, payload: dict[str, Any]
+    ) -> tuple[str, str | None, dict[str, Any] | None]:
         root_agents_path = self.repo_root / self.manifest["rootAgentsPath"]
         if not root_agents_path.exists():
             raise GovernanceError(f"Missing root AGENTS.md at {root_agents_path}")
@@ -164,7 +183,9 @@ class GovernanceRuntime:
             self._validate_inheritance(local_content, local_agent)
         return root_content, local_content, local_agent
 
-    def _validate_inheritance(self, local_content: str, local_agent: dict[str, Any]) -> None:
+    def _validate_inheritance(
+        self, local_content: str, local_agent: dict[str, Any]
+    ) -> None:
         expected_version = local_agent["governanceVersion"]
         required_markers = [
             ROOT_MARKER,
@@ -195,10 +216,14 @@ class GovernanceRuntime:
         repo_role = self.manifest.get("repoRole", "service")
 
         if tool_name in TERMINAL_TOOLS:
-            command = tool_input.get("command", "") if isinstance(tool_input, dict) else ""
+            command = (
+                tool_input.get("command", "") if isinstance(tool_input, dict) else ""
+            )
             for pattern in self.manifest.get("blockedTerminalPatterns", []):
                 if re.search(pattern, command, flags=re.IGNORECASE):
-                    violations.append(f"Blocked terminal command pattern matched: {pattern}")
+                    violations.append(
+                        f"Blocked terminal command pattern matched: {pattern}"
+                    )
 
         if tool_name in EDITING_TOOLS:
             if repo_role not in {"platform-core", "billing", "infra", "web"}:
@@ -231,7 +256,13 @@ class GovernanceRuntime:
 
         return violations
 
-    def audit(self, payload: dict[str, Any], decision: str, reason: str, local_agent: dict[str, Any] | None) -> None:
+    def audit(
+        self,
+        payload: dict[str, Any],
+        decision: str,
+        reason: str,
+        local_agent: dict[str, Any] | None,
+    ) -> None:
         record = {
             "timestamp": utc_now(),
             "governanceVersion": self.manifest["governanceVersion"],
@@ -340,7 +371,9 @@ def _self_test(repo_root: Path) -> int:
         "cwd": str(repo_root),
         "sessionId": "self-test",
     }
-    session_output, session_code = runtime.process({**base_payload, "hookEventName": "SessionStart", "source": "new"})
+    session_output, session_code = runtime.process(
+        {**base_payload, "hookEventName": "SessionStart", "source": "new"}
+    )
     if session_code != 0 or "hookSpecificOutput" not in session_output:
         raise GovernanceError("SessionStart self-test failed")
 
@@ -350,27 +383,34 @@ def _self_test(repo_root: Path) -> int:
             default_local = item
             break
 
-    safe_tool_input = {"filePath": default_local["path"] if default_local else "AGENTS.md", "content": "# safe edit"}
-    safe_output, safe_code = runtime.process({
-        **base_payload,
-        "hookEventName": "PreToolUse",
-        "tool_name": "create_file",
-        "tool_input": safe_tool_input,
-        "tool_use_id": "allow-case",
-    })
+    safe_tool_input = {
+        "filePath": default_local["path"] if default_local else "AGENTS.md",
+        "content": "# safe edit",
+    }
+    safe_output, safe_code = runtime.process(
+        {
+            **base_payload,
+            "hookEventName": "PreToolUse",
+            "tool_name": "create_file",
+            "tool_input": safe_tool_input,
+            "tool_use_id": "allow-case",
+        }
+    )
     decision = safe_output.get("hookSpecificOutput", {}).get("permissionDecision")
     if safe_code != 0 or decision != "allow":
         raise GovernanceError("Allow-case PreToolUse self-test failed")
 
-    deny_output, deny_code = runtime.process({
-        **base_payload,
-        "hookEventName": "PreToolUse",
-        "tool_name": "run_in_terminal",
-        "tool_input": {
-            "command": "git push --force",
-        },
-        "tool_use_id": "deny-case",
-    })
+    deny_output, deny_code = runtime.process(
+        {
+            **base_payload,
+            "hookEventName": "PreToolUse",
+            "tool_name": "run_in_terminal",
+            "tool_input": {
+                "command": "git push --force",
+            },
+            "tool_use_id": "deny-case",
+        }
+    )
     deny_decision = deny_output.get("hookSpecificOutput", {}).get("permissionDecision")
     if deny_code != 0 or deny_decision != "deny":
         raise GovernanceError("Deny-case PreToolUse self-test failed")

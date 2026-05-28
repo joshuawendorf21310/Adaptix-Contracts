@@ -13,6 +13,7 @@ Design goals:
 - explicit retry lineage and idempotency
 - stable machine-readable reason codes alongside human-readable detail
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -188,7 +189,9 @@ class DownstreamResponseMetadata(BaseModel):
 
 class ExportSubmissionMetadata(BaseModel):
     channel: SubmissionChannel = SubmissionChannel.NONE
-    submission_status: SubmissionLifecycleStatus = SubmissionLifecycleStatus.NOT_REQUESTED
+    submission_status: SubmissionLifecycleStatus = (
+        SubmissionLifecycleStatus.NOT_REQUESTED
+    )
 
     queue_message_id: str | None = None
     correlation_id: str | None = None
@@ -320,7 +323,10 @@ class ExportAttemptDetail(BaseModel):
             ExportLifecycleStatus.COMPLETED,
         }
 
-        if self.status == ExportLifecycleStatus.BLOCKED and self.readiness_snapshot.ready_for_export:
+        if (
+            self.status == ExportLifecycleStatus.BLOCKED
+            and self.readiness_snapshot.ready_for_export
+        ):
             raise ValueError("blocked export cannot have ready_for_export=True")
 
         if self.status in success_states and self.failure_type is not None:
@@ -342,28 +348,40 @@ class ExportAttemptDetail(BaseModel):
             ExportLifecycleStatus.COMPLETED,
         }:
             if self.validation is None:
-                raise ValueError("validated submission-capable states require validation metadata")
+                raise ValueError(
+                    "validated submission-capable states require validation metadata"
+                )
             if self.validation.valid is not True:
-                raise ValueError("submission-capable states require validation.valid=True")
+                raise ValueError(
+                    "submission-capable states require validation.valid=True"
+                )
 
         if self.validation and self.validation.valid is True and self.validation.errors:
-            raise ValueError("validation.valid=True cannot coexist with validation errors")
+            raise ValueError(
+                "validation.valid=True cannot coexist with validation errors"
+            )
 
         if self.status == ExportLifecycleStatus.QUEUED_FOR_SUBMISSION:
             if self.submission is None:
                 raise ValueError("queued_for_submission requires submission metadata")
             if self.submission.submission_status != SubmissionLifecycleStatus.QUEUED:
-                raise ValueError("queued_for_submission requires submission_status=queued")
+                raise ValueError(
+                    "queued_for_submission requires submission_status=queued"
+                )
 
-        if self.status in {
-            ExportLifecycleStatus.SUBMISSION_IN_PROGRESS,
-            ExportLifecycleStatus.SUBMISSION_PENDING,
-            ExportLifecycleStatus.SUBMISSION_ACCEPTED,
-            ExportLifecycleStatus.SUBMISSION_REJECTED,
-            ExportLifecycleStatus.RETRIEVAL_IN_PROGRESS,
-            ExportLifecycleStatus.RETRIEVAL_FAILED,
-            ExportLifecycleStatus.COMPLETED,
-        } and self.submission is None:
+        if (
+            self.status
+            in {
+                ExportLifecycleStatus.SUBMISSION_IN_PROGRESS,
+                ExportLifecycleStatus.SUBMISSION_PENDING,
+                ExportLifecycleStatus.SUBMISSION_ACCEPTED,
+                ExportLifecycleStatus.SUBMISSION_REJECTED,
+                ExportLifecycleStatus.RETRIEVAL_IN_PROGRESS,
+                ExportLifecycleStatus.RETRIEVAL_FAILED,
+                ExportLifecycleStatus.COMPLETED,
+            }
+            and self.submission is None
+        ):
             raise ValueError("submission lifecycle states require submission metadata")
 
         if self.status == ExportLifecycleStatus.SUBMISSION_ACCEPTED:
@@ -371,9 +389,14 @@ class ExportAttemptDetail(BaseModel):
                 SubmissionLifecycleStatus.ACCEPTED,
                 SubmissionLifecycleStatus.COMPLETED,
             }:
-                raise ValueError("submission_accepted requires accepted/completed submission status")
+                raise ValueError(
+                    "submission_accepted requires accepted/completed submission status"
+                )
 
-        if self.completed_at is not None and self.status not in success_states | failure_states:
+        if (
+            self.completed_at is not None
+            and self.status not in success_states | failure_states
+        ):
             raise ValueError("completed_at is only valid for terminal states")
 
         return self

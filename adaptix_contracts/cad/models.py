@@ -2,6 +2,7 @@
 
 All models are read-only contracts. CAD owns dispatch coordination only.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -11,6 +12,7 @@ from pydantic import BaseModel, Field
 
 
 # ─── Enums ────────────────────────────────────────────────────────────────────
+
 
 class TransportType(str, Enum):
     SCHEDULED = "SCHEDULED"
@@ -76,6 +78,7 @@ class HemsStatus(str, Enum):
 
 # ─── Facility Models ──────────────────────────────────────────────────────────
 
+
 class CadOriginFacility(BaseModel):
     facility_name: Optional[str] = None
     facility_address: Optional[str] = None
@@ -98,8 +101,10 @@ class CadDestinationFacility(BaseModel):
 
 # ─── Patient / Payer Context ──────────────────────────────────────────────────
 
+
 class CadPatientContext(BaseModel):
     """Minimum patient identifiers available at CAD intake. CAD does NOT own clinical data."""
+
     patient_first_name: Optional[str] = None
     patient_last_name: Optional[str] = None
     date_of_birth: Optional[str] = None
@@ -115,6 +120,7 @@ class CadPatientContext(BaseModel):
 
 class CadPayerContext(BaseModel):
     """Payer awareness from CAD intake. CAD does NOT own billing workflow."""
+
     payer_type: Optional[str] = None
     payer_name: Optional[str] = None
     authorization_number: Optional[str] = None
@@ -125,6 +131,7 @@ class CadPayerContext(BaseModel):
 
 
 # ─── Transport Request ────────────────────────────────────────────────────────
+
 
 class CadTransportRequestReason(BaseModel):
     reason_code: Optional[str] = None
@@ -165,6 +172,7 @@ class CadMedicalTransportIntake(BaseModel):
 
 # ─── Dispatch ─────────────────────────────────────────────────────────────────
 
+
 class CadTransportDispatch(BaseModel):
     dispatch_id: str
     intake_id: str
@@ -190,6 +198,7 @@ class CadTransportDispatch(BaseModel):
 
 
 # ─── Assessments ──────────────────────────────────────────────────────────────
+
 
 class CadLevelOfCareAssessment(BaseModel):
     assessment_id: str
@@ -247,6 +256,7 @@ class CadAOBRequirementAwareness(BaseModel):
 
 # ─── Unit / Crew Recommendations ─────────────────────────────────────────────
 
+
 class CadUnitRecommendation(BaseModel):
     recommendation_id: str
     intake_id: str
@@ -286,6 +296,7 @@ class CadUnitAssignment(BaseModel):
 
 
 # ─── Vehicle Tracking ─────────────────────────────────────────────────────────
+
 
 class CadVehicleTrackingSnapshot(BaseModel):
     snapshot_id: str
@@ -336,6 +347,7 @@ class CadUnitStatusUpdate(BaseModel):
 
 # ─── Timeline ─────────────────────────────────────────────────────────────────
 
+
 class CadTransportTimeline(BaseModel):
     dispatch_id: str
     tenant_id: str
@@ -356,6 +368,7 @@ class CadTransportTimeline(BaseModel):
 
 
 # ─── Routing / ETA ────────────────────────────────────────────────────────────
+
 
 class CadRoutingEta(BaseModel):
     eta_id: str
@@ -384,6 +397,7 @@ class CadGeocodeResult(BaseModel):
 
 
 # ─── HEMS ─────────────────────────────────────────────────────────────────────
+
 
 class CadHemsRequest(BaseModel):
     request_id: str
@@ -442,6 +456,7 @@ class CadGroundFallbackRecommendation(BaseModel):
 
 
 # ─── Handoffs ─────────────────────────────────────────────────────────────────
+
 
 class CadTransportLinkHandoff(BaseModel):
     handoff_id: str
@@ -519,6 +534,7 @@ class CadCrewLinkPageRequest(BaseModel):
 
 # ─── MDT / Scheduling ─────────────────────────────────────────────────────────
 
+
 class CadMdtSyncEvent(BaseModel):
     sync_id: str
     dispatch_id: str
@@ -556,6 +572,7 @@ class CadVoiceRoomRequest(BaseModel):
 
 # ─── AI Assessment ────────────────────────────────────────────────────────────
 
+
 class CadAIAssessment(BaseModel):
     assessment_id: str
     dispatch_id: Optional[str] = None
@@ -577,6 +594,7 @@ class CadAIAssessment(BaseModel):
 
 
 # ─── Audit ────────────────────────────────────────────────────────────────────
+
 
 class CadAuditEvent(BaseModel):
     audit_id: str

@@ -4,7 +4,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import sys
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -24,13 +23,20 @@ IGNORED_DIR_NAMES = {
 
 
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Detect shadow adaptix_contracts packages in a polyrepo workspace.")
+    parser = argparse.ArgumentParser(
+        description="Detect shadow adaptix_contracts packages in a polyrepo workspace."
+    )
     parser.add_argument(
         "--workspace-root",
         default=os.environ.get("ADAPTIX_CONTRACTS_WORKSPACE_ROOT"),
         help="Workspace root containing Adaptix repos. Defaults to ADAPTIX_CONTRACTS_WORKSPACE_ROOT or the current repo parent.",
     )
-    parser.add_argument("--json", action="store_true", dest="json_output", help="Emit a machine-readable JSON report.")
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        dest="json_output",
+        help="Emit a machine-readable JSON report.",
+    )
     return parser.parse_args(argv)
 
 
@@ -40,7 +46,9 @@ def _discover_shadow_packages(workspace_root: Path, current_repo: Path) -> list[
         if not repo_dir.is_dir() or repo_dir.resolve() == current_repo:
             continue
         for root, dirs, _files in os.walk(repo_dir):
-            dirs[:] = [directory for directory in dirs if directory not in IGNORED_DIR_NAMES]
+            dirs[:] = [
+                directory for directory in dirs if directory not in IGNORED_DIR_NAMES
+            ]
             if "adaptix_contracts" in dirs:
                 candidate = Path(root) / "adaptix_contracts"
                 if candidate.resolve().is_dir():
@@ -51,9 +59,15 @@ def _discover_shadow_packages(workspace_root: Path, current_repo: Path) -> list[
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv)
     current_repo = Path(__file__).resolve().parents[1]
-    workspace_root = Path(args.workspace_root).resolve() if args.workspace_root else current_repo.parent
+    workspace_root = (
+        Path(args.workspace_root).resolve()
+        if args.workspace_root
+        else current_repo.parent
+    )
 
-    shadows = _discover_shadow_packages(workspace_root=workspace_root, current_repo=current_repo)
+    shadows = _discover_shadow_packages(
+        workspace_root=workspace_root, current_repo=current_repo
+    )
     passed = not shadows
     report = {
         "workspace_root": str(workspace_root),

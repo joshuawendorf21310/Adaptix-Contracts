@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 
 class AdaptixErrorCode(str, Enum):
     """Canonical error codes for Adaptix platform."""
+
     # Auth errors
     UNAUTHORIZED = "unauthorized"
     FORBIDDEN = "forbidden"
@@ -72,6 +73,7 @@ class AdaptixErrorCode(str, Enum):
 
 class AdaptixValidationErrorDetail(BaseModel):
     """Detail for a single field validation failure."""
+
     field: str
     message: str
     value: Optional[Any] = None
@@ -80,6 +82,7 @@ class AdaptixValidationErrorDetail(BaseModel):
 
 class AdaptixProviderErrorDetail(BaseModel):
     """Detail for a provider integration failure."""
+
     provider: str
     status: str  # provider_unavailable | credential_gated | not_configured | error
     message: str
@@ -89,6 +92,7 @@ class AdaptixProviderErrorDetail(BaseModel):
 
 class AdaptixTraceContext(BaseModel):
     """Trace context for correlating errors across services."""
+
     request_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     correlation_id: Optional[str] = None
     causation_id: Optional[str] = None
@@ -102,10 +106,11 @@ class AdaptixTraceContext(BaseModel):
 class AdaptixErrorEnvelope(BaseModel):
     """
     Standard error response envelope for ALL Adaptix services.
-    
+
     Every error response MUST use this model.
     No raw exception text, stack traces, or internal details may be returned.
     """
+
     success: bool = False
     error_code: AdaptixErrorCode
     message: str

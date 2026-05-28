@@ -13,14 +13,15 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 # ---------------------------------------------------------------------------
 # Enums
 # ---------------------------------------------------------------------------
+
 
 class EmploymentStatus(str, Enum):
     """Lifecycle status of a labor employee."""
@@ -124,6 +125,7 @@ class PolicyStatus(str, Enum):
 # Read contracts
 # ---------------------------------------------------------------------------
 
+
 class LaborShiftContract(BaseModel):
     """Cross-domain read contract for a scheduled labor shift."""
 
@@ -173,6 +175,7 @@ class LaborEmployeeReadinessContract(BaseModel):
 # ---------------------------------------------------------------------------
 # Events
 # ---------------------------------------------------------------------------
+
 
 class LaborShiftPublishedEvent(BaseModel):
     """Published when a shift transitions from draft to published."""

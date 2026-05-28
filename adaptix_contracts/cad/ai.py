@@ -8,6 +8,7 @@ AI guardrails are enforced here:
 - AI may NOT invent patient facts, times, or clinical data.
 - Human review is always required for dispatch-impacting recommendations.
 """
+
 from __future__ import annotations
 from adaptix_contracts.cad.models import CadAIAssessment
 

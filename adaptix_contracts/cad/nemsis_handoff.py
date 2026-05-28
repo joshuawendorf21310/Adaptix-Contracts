@@ -17,6 +17,7 @@ ePCR OWNS:
 - Schematron validation
 - Clinical chart review
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -185,7 +186,9 @@ class CadNemsisHandoffPayload(BaseModel):
     # Correlation identifiers
     handoff_id: str = Field(description="Unique handoff record ID")
     cad_dispatch_id: str = Field(description="CAD dispatch/case ID")
-    cad_intake_id: Optional[str] = Field(default=None, description="CAD intake ID if separate")
+    cad_intake_id: Optional[str] = Field(
+        default=None, description="CAD intake ID if separate"
+    )
     tenant_id: str
     correlation_id: Optional[str] = None
 
@@ -197,10 +200,14 @@ class CadNemsisHandoffPayload(BaseModel):
 
     # Transport metadata
     # NEMSIS eResponse.05 — Type of Service Requested
-    transport_type: str = Field(description="SCHEDULED|UNSCHEDULED|INTERFACILITY|HEMS|etc.")
+    transport_type: str = Field(
+        description="SCHEDULED|UNSCHEDULED|INTERFACILITY|HEMS|etc."
+    )
 
     # NEMSIS eResponse.07 — Primary Role of the Unit
-    level_of_care: str = Field(description="BLS|ALS|CCT|SCT|HEMS|WHEELCHAIR|STRETCHER|UNKNOWN")
+    level_of_care: str = Field(
+        description="BLS|ALS|CCT|SCT|HEMS|WHEELCHAIR|STRETCHER|UNKNOWN"
+    )
 
     # NEMSIS eResponse.23 — Response Priority
     priority: Optional[str] = None
@@ -267,7 +274,11 @@ class CadNemsisHandoffPayload(BaseModel):
                 "unit_id": "UNIT-12",
                 "vehicle_id": "VEH-12",
                 "crew_members": [
-                    {"crew_id": "crew-001", "role": "PARAMEDIC", "certification_level": "ALS"}
+                    {
+                        "crew_id": "crew-001",
+                        "role": "PARAMEDIC",
+                        "certification_level": "ALS",
+                    }
                 ],
                 "handoff_created_at": "2026-05-03T12:00:00Z",
             }

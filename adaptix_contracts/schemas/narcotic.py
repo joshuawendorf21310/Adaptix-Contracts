@@ -1,4 +1,5 @@
 """Narcotics domain contract schemas for cross-domain communication and API surfaces."""
+
 from __future__ import annotations
 
 from datetime import datetime

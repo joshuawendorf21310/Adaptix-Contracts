@@ -5,6 +5,7 @@ Sign is only the embedded signature provider. These schemas define the shared
 contract intake, status, signature callback, activation, and audit events used
 by Web, Billing, Core provisioning, and Founder workflows.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

@@ -7,7 +7,7 @@ from datetime import datetime, date, time
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class ShiftStatus(str, enum.Enum):

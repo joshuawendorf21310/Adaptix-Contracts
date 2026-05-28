@@ -5,6 +5,7 @@ AI may NOT sign, mark complete, override provider status, or submit to CAD.
 All AI output requires human review for PCS/ABN decisions.
 No PHI, prompts, completions, tokens, or secrets are logged.
 """
+
 from __future__ import annotations
 from datetime import datetime
 from typing import Any, Optional
@@ -55,6 +56,7 @@ class DocumentIntelligenceAssessmentContract(BaseModel):
     - readiness.ready_for_signature_packet / ready_for_cad / blocking_reasons
     - audit.model_provider / model_name / policy_version / created_at
     """
+
     assessment_id: str
     request_id: str
     tenant_id: str
