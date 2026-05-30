@@ -8,6 +8,7 @@ on:
       - "pyproject.toml"
       - "validate_contracts.py"
       - ".github/workflows/contracts-validation.yml"
+      - ".github/workflows/ci.yml"
   pull_request:
     paths:
       - "adaptix_contracts/**"
@@ -15,6 +16,7 @@ on:
       - "pyproject.toml"
       - "validate_contracts.py"
       - ".github/workflows/contracts-validation.yml"
+      - ".github/workflows/ci.yml"
 
 jobs:
   validate:
