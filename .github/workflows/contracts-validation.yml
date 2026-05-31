@@ -1,22 +1,13 @@
 name: contracts-validation
 
+# IMPORTANT: validate (3.11) and validate (3.12) are REQUIRED status checks in the
+# main-canonical-protection ruleset. They MUST run on every PR (including dependency
+# updates) so the ruleset can be satisfied. Do not reintroduce path filters here.
 on:
   push:
-    paths:
-      - "adaptix_contracts/**"
-      - "tests/**"
-      - "pyproject.toml"
-      - "validate_contracts.py"
-      - ".github/workflows/contracts-validation.yml"
-      - ".github/workflows/ci.yml"
+    branches:
+      - main
   pull_request:
-    paths:
-      - "adaptix_contracts/**"
-      - "tests/**"
-      - "pyproject.toml"
-      - "validate_contracts.py"
-      - ".github/workflows/contracts-validation.yml"
-      - ".github/workflows/ci.yml"
 
 jobs:
   validate:
