@@ -31,6 +31,7 @@ class ClaimStatus(str, Enum):
     ACCEPTED = "accepted"
     REJECTED = "rejected"
     DENIED = "denied"
+    APPEALING = "appealing"
     PARTIALLY_PAID = "partially_paid"
     PAID = "paid"
     CLOSED = "closed"
@@ -247,14 +248,38 @@ class ClaimSubmittedEvent(BaseModel):
 
 
 class ClaimStatusUpdatedEvent(BaseModel):
-    """Published when a claim status changes."""
+    """Published when a claim status changes.
+
+    Canonical ePCR back-channel event. Whenever a claim enters one of the
+    revenue-terminal states (``paid``, ``denied``, ``partially_paid``,
+    ``appealing``), Billing emits this event so the ePCR chart that
+    originated the claim (via ``encounter_id``) can render the billing
+    outcome without a manual reload.
+
+    ``status`` is the *new* status — kept alongside the original
+    ``new_status`` field for backward compatibility with older consumers.
+    Producers should populate both; consumers should prefer ``status`` when
+    present and fall back to ``new_status`` otherwise.
+
+    Financial fields (``total_paid_cents``, ``patient_balance_cents``,
+    ``denial_reason_code``, ``payer_name``) are optional because not every
+    status transition has settled balances at publish time (e.g. a fresh
+    DENIED before any 835 has applied). The ePCR consumer treats missing
+    values as "not yet reported" rather than zero.
+    """
 
     event_type: str = "billing.claim.status_updated"
 
     claim_id: str
     tenant_id: str
-    old_status: ClaimStatus
-    new_status: ClaimStatus
+    encounter_id: Optional[str] = None
+    status: Optional[ClaimStatus] = None
+    old_status: Optional[ClaimStatus] = None
+    new_status: Optional[ClaimStatus] = None
+    total_paid_cents: Optional[int] = None
+    patient_balance_cents: Optional[int] = None
+    denial_reason_code: Optional[str] = None
+    payer_name: Optional[str] = None
     updated_at: datetime
 
 
