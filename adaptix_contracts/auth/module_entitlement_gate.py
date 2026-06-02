@@ -207,4 +207,89 @@ def require_module_entitlement(module_slug: str) -> Callable:
     return _gate
 
 
-__all__ = ["require_module_entitlement", "AUDIT_ACTION"]
+def require_any_module_entitlement(*module_slugs: str) -> Callable:
+    """Return a FastAPI dependency that gates a route on ANY of the slugs.
+
+    Use when a single route legitimately serves multiple modules — e.g.
+    the CAD write-back surface that is consumed by BOTH Field-App (MDT)
+    and CrewLink. The route should be reachable when the tenant has any
+    one of the named entitlements.
+
+    Usage::
+
+        app.include_router(
+            writeback_router,
+            dependencies=[
+                Depends(require_any_module_entitlement("mdt", "crewlink"))
+            ],
+        )
+    """
+    required = [_normalize_slug(s) for s in module_slugs if s and s.strip()]
+    if not required:
+        raise ValueError(
+            "require_any_module_entitlement(): at least one slug required."
+        )
+    required_set = set(required)
+    label = "|".join(required)
+
+    async def _gate(
+        request: Request,
+        authorization: Annotated[Optional[str], Header(alias="Authorization")] = None,
+    ) -> None:
+        token = _extract_bearer_token(authorization)
+        if not token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail={
+                    "code": "missing_bearer_token",
+                    "message": "Authorization bearer token is required.",
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        claims = _decode_claims_for_gate(token)
+        if _claims_carry_founder(claims):
+            return
+        entitlements = _claims_module_entitlements(claims)
+        if not entitlements:
+            state_entitlements = getattr(request.state, "module_entitlements", None)
+            if isinstance(state_entitlements, list):
+                entitlements = [
+                    _normalize_slug(str(m))
+                    for m in state_entitlements
+                    if str(m).strip()
+                ]
+        if required_set & set(entitlements):
+            return
+        logger.info(
+            "module_entitlement_gate: denied any-of=%s current=%s tenant=%s",
+            label,
+            entitlements,
+            claims.get("tid")
+            or claims.get("tenant_id")
+            or claims.get("custom:adaptix_tenant_id"),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail={
+                "code": "module_not_entitled",
+                "message": (
+                    f"Your agency's current subscription does not include any "
+                    f"of the required modules ({label}). Upgrade or contact us "
+                    f"to enable them."
+                ),
+                "required_modules": required,
+                "current_entitlements": entitlements,
+                "upgrade_url": os.environ.get("ADAPTIX_UPGRADE_URL", "/pricing"),
+                "contact_url": os.environ.get("ADAPTIX_CONTACT_URL", "/schedule"),
+            },
+        )
+
+    _gate.__name__ = f"require_any_module_entitlement_{'_'.join(required)}"
+    return _gate
+
+
+__all__ = [
+    "require_module_entitlement",
+    "require_any_module_entitlement",
+    "AUDIT_ACTION",
+]
