@@ -8,6 +8,9 @@ from adaptix_contracts.auth.context import (
     AdaptixServiceContext,
     AdaptixSignedInternalContext,
 )
+from adaptix_contracts.auth.module_entitlement_gate import (
+    require_module_entitlement,
+)
 
 __all__ = [
     "AdaptixRole",
@@ -16,4 +19,5 @@ __all__ = [
     "AdaptixAuthContext",
     "AdaptixServiceContext",
     "AdaptixSignedInternalContext",
+    "require_module_entitlement",
 ]
