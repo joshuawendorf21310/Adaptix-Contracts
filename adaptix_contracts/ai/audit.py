@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 import uuid
@@ -101,7 +101,7 @@ class AIAuditEvent:
     risk_level: str = "unknown"
     human_review_required: bool = False
     confidence: Optional[float] = None
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     correlation_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     causation_id: Optional[str] = None
     error: Optional[str] = None

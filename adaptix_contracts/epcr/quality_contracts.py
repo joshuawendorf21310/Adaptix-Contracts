@@ -9,7 +9,7 @@ Architecture rules:
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Literal, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -203,7 +203,7 @@ class AISuggestion(BaseModel):
     human_review_status: HumanReviewStatus = "pending"
     reviewed_by: Optional[str] = None
     reviewed_at: Optional[datetime] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 # ---------------------------------------------------------------------------
