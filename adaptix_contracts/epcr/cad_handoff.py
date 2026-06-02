@@ -6,7 +6,7 @@ ePCR owns final NEMSIS mapping, XML generation, XSD validation, and Schematron v
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field
 
@@ -33,7 +33,7 @@ class EpcrCadHandoffIngestRequest(BaseModel):
         description="Full CadNemsisHandoffPayload as dict"
     )
     ingest_requested_by: Optional[str] = None
-    ingest_requested_at: datetime = Field(default_factory=datetime.utcnow)
+    ingest_requested_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class EpcrCadHandoffFieldMapping(BaseModel):

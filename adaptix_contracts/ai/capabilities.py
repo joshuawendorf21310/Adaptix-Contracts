@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 import uuid
@@ -162,7 +162,7 @@ class AIDraftNarrative:
     ai_signed: bool = False  # ALWAYS False - AI never signs
     ai_marked_complete: bool = False  # ALWAYS False
     ai_auto_locked: bool = False  # ALWAYS False
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     audit_event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     correlation_id: str = field(default_factory=lambda: str(uuid.uuid4()))
 
@@ -184,7 +184,7 @@ class AIHumanReviewRequirement:
     risk_level: AIRiskLevel
     required_reviewer_role: str
     deadline: Optional[datetime] = None
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass
@@ -231,4 +231,4 @@ class AIGeneratedTextMetadata:
     edited: bool = False
     rejected: bool = False
     regenerated: bool = False
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))

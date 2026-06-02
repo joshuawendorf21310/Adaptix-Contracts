@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 import os
 from typing import Optional, Dict, Any, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import httpx
 
 from pydantic import BaseModel, Field
@@ -101,7 +101,7 @@ class CoreServiceClient:
         """Get cached value if not expired."""
         if key in self._cache:
             value, expiration = self._cache[key]
-            if datetime.utcnow() < expiration:
+            if datetime.now(timezone.utc) < expiration:
                 logger.debug(f"Cache hit: {key}")
                 return value
             else:
@@ -110,7 +110,7 @@ class CoreServiceClient:
 
     def _set_cached(self, key: str, value: Any) -> None:
         """Cache value with TTL."""
-        expiration = datetime.utcnow() + timedelta(
+        expiration = datetime.now(timezone.utc) + timedelta(
             seconds=self.config.cache_ttl_seconds
         )
         self._cache[key] = (value, expiration)
