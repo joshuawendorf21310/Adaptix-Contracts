@@ -87,7 +87,6 @@ def _verify_rs256_gateway_context(token: str) -> AuthContext:
 
     try:
         import jwt as pyjwt
-        from jwt.exceptions import PyJWTError
 
         claims = pyjwt.decode(
             token,
