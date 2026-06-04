@@ -174,8 +174,12 @@ def build_gateway_context_jwt(**kwargs) -> str:  # type: ignore[misc]
     prior custom Python gateway. It is no longer needed because AWS API
     Gateway injects verified identity headers directly. Code calling this
     should switch to reading X-User-Id / X-Tenant-Id / X-User-Roles headers.
+
+    Raises RuntimeError (not NotImplementedError) so existing callers that
+    catch (ValueError, RuntimeError) for graceful degradation continue to
+    work without modification.
     """
-    raise NotImplementedError(
+    raise RuntimeError(
         "build_gateway_context_jwt has been removed. "
         "AWS API Gateway injects X-User-Id / X-Tenant-Id / X-User-Roles headers "
         "after validating the Bearer JWT. No custom context JWT is needed."
