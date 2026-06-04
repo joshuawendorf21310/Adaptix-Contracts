@@ -100,6 +100,8 @@ class AuditServiceClient:
         resource_id: str | None = None,
         changes_before: dict[str, Any] | None = None,
         changes_after: dict[str, Any] | None = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
         **_ignored_kwargs: Any,
     ) -> AuditLogEntry:
         """Write a structured audit record for a domain mutation.
@@ -114,6 +116,9 @@ class AuditServiceClient:
             resource_id: String representation of the entity primary key.
             changes_before: Field snapshot before the mutation.
             changes_after: Field snapshot after the mutation.
+            ip_address: Source IP of the HTTP request (HIPAA §164.312(b)).
+                Extracted from X-Forwarded-For or direct client address.
+            user_agent: HTTP User-Agent header value (HIPAA §164.312(b)).
             **_ignored_kwargs: Additional keyword arguments are silently ignored
                 to allow callers to pass domain-specific metadata without
                 raising TypeError.
