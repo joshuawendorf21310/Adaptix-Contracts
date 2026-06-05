@@ -33,7 +33,9 @@ class EpcrCadHandoffIngestRequest(BaseModel):
         description="Full CadNemsisHandoffPayload as dict"
     )
     ingest_requested_by: Optional[str] = None
-    ingest_requested_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    ingest_requested_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
 
 class EpcrCadHandoffFieldMapping(BaseModel):
