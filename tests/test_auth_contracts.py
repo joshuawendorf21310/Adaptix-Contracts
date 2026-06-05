@@ -17,7 +17,6 @@ import pytest
 from fastapi import HTTPException, status
 
 from adaptix_contracts.auth_contracts import (
-    AuthContext,
     get_auth_context,
 )
 from adaptix_contracts.auth.context import AdaptixAuthContext
@@ -26,6 +25,7 @@ from adaptix_contracts.auth.context import AdaptixAuthContext
 # ---------------------------------------------------------------------------
 # Happy-path tests
 # ---------------------------------------------------------------------------
+
 
 def test_get_auth_context_accepts_valid_gateway_headers() -> None:
     user_id = uuid4()
@@ -126,6 +126,7 @@ def test_get_auth_context_whitespace_stripped() -> None:
 # Rejection tests
 # ---------------------------------------------------------------------------
 
+
 def test_get_auth_context_fails_without_user_id() -> None:
     with pytest.raises(HTTPException) as exc_info:
         asyncio.run(
@@ -194,6 +195,7 @@ def test_get_auth_context_fails_with_empty_user_id() -> None:
 # Immutability test
 # ---------------------------------------------------------------------------
 
+
 def test_auth_context_is_frozen() -> None:
     user_id = uuid4()
     tenant_id = uuid4()
@@ -212,6 +214,7 @@ def test_auth_context_is_frozen() -> None:
 # ---------------------------------------------------------------------------
 # AdaptixAuthContext legacy tests (must not regress)
 # ---------------------------------------------------------------------------
+
 
 def test_from_token_payload_rejects_missing_tenant_id() -> None:
     with pytest.raises(ValueError, match="tenant_id"):
