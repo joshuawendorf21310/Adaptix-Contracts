@@ -137,7 +137,7 @@ jobs:
 
       - name: Upload repair artifacts
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: bedrock-repo-repair-artifacts
           path: |
