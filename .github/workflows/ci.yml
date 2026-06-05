@@ -31,7 +31,7 @@ permissions:
 
 jobs:
   standard-ci:
-    uses: joshuawendorf21310/Adaptix-Governance/.github/workflows/standard-ci.yml@5003ef80e1fcd3322ad0b944450f2b33926c9b1e
+    uses: FusionEMS-Quantum-LLC/Adaptix-Governance/.github/workflows/standard-ci.yml@13d8cbdb0ff6986ed8fdf101210024d200f5bb0e
     with:
       service_name: adaptix-contracts
       runtime: python
