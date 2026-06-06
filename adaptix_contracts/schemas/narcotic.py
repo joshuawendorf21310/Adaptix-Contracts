@@ -67,13 +67,32 @@ class NarcoticInvestigationStatus(str, Enum):
 
 
 class NarcoticAccessType(str, Enum):
-    """Vault access categories tracked for audit purposes."""
+    """Vault access categories tracked for audit purposes.
+
+    Each value corresponds to a DEA 21 CFR 1304.04 immutable access event
+    on the controlled-substance vault. Service-layer code in
+    ``Adaptix-Narcotics-Service.core_app.narcotic.service._log_vault_access``
+    writes a ``NarcoticAccess`` row with one of these values on every
+    dispensing operation.
+
+    Added 2026-06-06 (v3 readiness pass):
+      - ``ADMINISTER`` -- patient administration (was previously logged as ``ISSUE``)
+      - ``WASTE``      -- documented narcotic waste with witness
+      - ``TRANSFER_OUT`` -- vault-to-vault outbound transfer leg
+      - ``TRANSFER_IN``  -- vault-to-vault inbound transfer leg
+    Backfill of legacy rows is handled by the Narcotics-Service Alembic
+    migration that adds these enum members at the DB level.
+    """
 
     AUDIT = "audit"
     COUNT = "count"
     ISSUE = "issue"
     RETURN = "return"
     EMERGENCY = "emergency"
+    ADMINISTER = "administer"
+    WASTE = "waste"
+    TRANSFER_OUT = "transfer_out"
+    TRANSFER_IN = "transfer_in"
 
 
 class CountType(str, Enum):
