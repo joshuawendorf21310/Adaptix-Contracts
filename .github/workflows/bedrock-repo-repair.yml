@@ -119,7 +119,7 @@ jobs:
           fi
 
           git status --short
-          git add .
+          git add -- . ':!.github/workflows/'
           git commit -m "fix: repair lint and test blockers with Bedrock"
           git push -u origin "$REPAIR_BRANCH"
           echo "changed=true" >> "$GITHUB_OUTPUT"
