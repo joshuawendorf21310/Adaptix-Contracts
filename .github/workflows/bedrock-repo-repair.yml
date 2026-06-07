@@ -1,4 +1,4 @@
-﻿name: Bedrock Repo Repair
+name: Bedrock Repo Repair
 
 on:
   workflow_dispatch:
@@ -52,7 +52,7 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
