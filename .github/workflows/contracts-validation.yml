@@ -1,4 +1,4 @@
-name: contracts-validation
+﻿name: contracts-validation
 
 # IMPORTANT: validate (3.11) and validate (3.12) are REQUIRED status checks in the
 # main-canonical-protection ruleset. They MUST run on every PR (including dependency
@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
         uses: actions/setup-python@v5
