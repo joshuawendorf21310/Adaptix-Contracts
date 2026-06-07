@@ -1,4 +1,4 @@
-﻿name: Bedrock Repo Repair
+name: Bedrock Repo Repair
 
 on:
   workflow_dispatch:
@@ -46,7 +46,7 @@ jobs:
           test -n "${{ vars.BEDROCK_REPAIR_MODEL_ID }}"
 
       - name: Configure AWS credentials through OIDC
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.AWS_BEDROCK_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
