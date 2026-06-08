@@ -1,4 +1,4 @@
-# Adaptix Standard CI — thin caller (Wave C.4 fan-out).
+# Adaptix Standard CI - thin caller (Wave C.4 fan-out).
 #
 # Generated 2026-05-21 by Wave C.4 fan-out per Adaptix-Governance pilot PR #16.
 # The reusable workflow is SHA-pinned to the C.1 pilot-validated merge commit
@@ -38,7 +38,7 @@ jobs:
       dockerfile_path: Dockerfile
       build_context: .
       image_repository: adaptix-contracts
-      # Package root is "." not "tests/" — pyproject.toml lives at repo root.
+      # Package root is "." not "tests/" - pyproject.toml lives at repo root.
       # The reusable workflow runs `cd test_path && pip install -e ".[dev]"`,
       # which must point to the directory containing pyproject.toml.
       test_path: "."
