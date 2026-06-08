@@ -24,7 +24,7 @@ env:
 jobs:
   repair:
     name: Repair repo failures with Bedrock
-    runs-on: ubuntu-latest
+    runs-on: codebuild-adaptix-ci-${{ github.run_id }}-${{ github.run_attempt }}
 
     env:
       AWS_REGION: ${{ vars.AWS_REGION }}
