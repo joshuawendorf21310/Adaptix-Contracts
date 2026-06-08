@@ -10,9 +10,8 @@ Every service must use these definitions to enforce consistent RBAC.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional, List, Set
-from pydantic import BaseModel, Field
 
+from pydantic import BaseModel, Field
 
 class InventoryRole(str, Enum):
     """Roles specific to Inventory module."""
@@ -27,7 +26,6 @@ class InventoryRole(str, Enum):
     EMT = "emt"
     AUDITOR = "auditor"
     INSPECTOR = "inspector"
-
 
 class MedicationsRole(str, Enum):
     """Roles specific to Medications module."""
@@ -45,7 +43,6 @@ class MedicationsRole(str, Enum):
     AUDITOR = "auditor"
     INSPECTOR = "inspector"
 
-
 class NarcoticsRole(str, Enum):
     """Roles specific to Narcotics module."""
 
@@ -59,7 +56,6 @@ class NarcoticsRole(str, Enum):
     BILLING_OPERATOR = "billing_operator"
     AUDITOR = "auditor"
     INSPECTOR = "inspector"
-
 
 # ============================================================================
 # INVENTORY PERMISSIONS
@@ -381,32 +377,29 @@ MODULE_ENTITLEMENTS = {
     "narcotics": "Narcotics Module - Controlled substance tracking",
 }
 
-
 class RBACPermissionCheck(BaseModel):
     """Result of RBAC permission check."""
 
     has_permission: bool
     permission: str
-    reason: Optional[str] = None
-    roles_with_permission: List[str] = Field(default_factory=list)
-
+    reason: str | None = None
+    roles_with_permission: list[str] = Field(default_factory=list)
 
 class ModuleEntitlementCheck(BaseModel):
     """Result of module entitlement check."""
 
     has_entitlement: bool
     module: str
-    reason: Optional[str] = None
-
+    reason: str | None = None
 
 class RBACContext(BaseModel):
     """Complete RBAC context for a request."""
 
     user_id: str
     tenant_id: str
-    roles: List[str]
-    permissions: Set[str] = Field(default_factory=set)
-    modules_enabled: List[str] = Field(default_factory=list)
+    roles: list[str]
+    permissions: set[str] = Field(default_factory=set)
+    modules_enabled: list[str] = Field(default_factory=list)
 
     def has_permission(self, permission: str) -> bool:
         """Check if user has a specific permission."""
@@ -432,8 +425,7 @@ class RBACContext(BaseModel):
         """Check if user is agency admin."""
         return "agency_admin" in self.roles or self.is_founder()
 
-
-def compute_inventory_permissions(roles: List[str]) -> Set[str]:
+def compute_inventory_permissions(roles: list[str]) -> set[str]:
     """Compute all inventory permissions for a user based on roles."""
     permissions = set()
     for permission, config in INVENTORY_PERMISSIONS.items():
@@ -442,8 +434,7 @@ def compute_inventory_permissions(roles: List[str]) -> Set[str]:
             permissions.add(permission)
     return permissions
 
-
-def compute_medications_permissions(roles: List[str]) -> Set[str]:
+def compute_medications_permissions(roles: list[str]) -> set[str]:
     """Compute all medications permissions for a user based on roles."""
     permissions = set()
     for permission, config in MEDICATIONS_PERMISSIONS.items():
@@ -452,8 +443,7 @@ def compute_medications_permissions(roles: List[str]) -> Set[str]:
             permissions.add(permission)
     return permissions
 
-
-def compute_narcotics_permissions(roles: List[str]) -> Set[str]:
+def compute_narcotics_permissions(roles: list[str]) -> set[str]:
     """Compute all narcotics permissions for a user based on roles."""
     permissions = set()
     for permission, config in NARCOTICS_PERMISSIONS.items():

@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field
-
 
 class SchedulingAIAssessment(BaseModel):
     """Full AI assessment output — advisory only, never auto-approves."""
@@ -16,19 +15,18 @@ class SchedulingAIAssessment(BaseModel):
     tenant_id: UUID
     capability_key: str
     actor_id: UUID
-    schedule_id: Optional[UUID] = None
-    shift_id: Optional[UUID] = None
+    schedule_id: UUID | None = None
+    shift_id: UUID | None = None
     assessment_type: str
-    findings: List[Dict[str, Any]] = Field(default_factory=list)
-    recommended_actions: List[str] = Field(default_factory=list)
-    blocking_issues: List[str] = Field(default_factory=list)
+    findings: list[dict[str, Any]] = Field(default_factory=list)
+    recommended_actions: list[str] = Field(default_factory=list)
+    blocking_issues: list[str] = Field(default_factory=list)
     human_review_required: bool = True
-    policy_references: List[str] = Field(default_factory=list)
+    policy_references: list[str] = Field(default_factory=list)
     confidence: float = 0.0
     risk_level: str = "low"
     created_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class StaffingShortageFinding(BaseModel):
     shift_id: UUID
@@ -36,11 +34,10 @@ class StaffingShortageFinding(BaseModel):
     shortage_count: int
     required_count: int
     actual_count: int
-    missing_ranks: List[str] = Field(default_factory=list)
-    missing_specialties: List[str] = Field(default_factory=list)
+    missing_ranks: list[str] = Field(default_factory=list)
+    missing_specialties: list[str] = Field(default_factory=list)
     risk_level: str = "high"
     explanation: str
-
 
 class CoverageRiskExplanation(BaseModel):
     area_type: str  # beat, zone, district, station, console
@@ -51,7 +48,6 @@ class CoverageRiskExplanation(BaseModel):
     minimum_required: int
     explanation: str
     recommended_action: str
-
 
 class FatigueRiskScore(BaseModel):
     person_id: UUID
@@ -65,7 +61,6 @@ class FatigueRiskScore(BaseModel):
     explanation: str
     human_review_required: bool = True
 
-
 class OvertimeFairnessScore(BaseModel):
     person_id: UUID
     overtime_hours_ytd: float
@@ -75,7 +70,6 @@ class OvertimeFairnessScore(BaseModel):
     rank_in_rotation: int
     explanation: str
 
-
 class SwapCompatibilityResult(BaseModel):
     requester_id: UUID
     target_id: UUID
@@ -83,19 +77,18 @@ class SwapCompatibilityResult(BaseModel):
     target_shift_id: UUID
     compatible: bool
     compatibility_score: float
-    issues: List[str] = Field(default_factory=list)
+    issues: list[str] = Field(default_factory=list)
     rank_compatible: bool = True
     credential_compatible: bool = True
     fatigue_risk: str = "low"
     explanation: str
     human_review_required: bool = True
 
-
 class BackfillRecommendation(BaseModel):
     shift_id: UUID
     vacancy_reason: str
-    candidates: List[Dict[str, Any]] = Field(default_factory=list)
-    top_candidate_id: Optional[UUID] = None
+    candidates: list[dict[str, Any]] = Field(default_factory=list)
+    top_candidate_id: UUID | None = None
     top_candidate_reason: str = ""
     seniority_considered: bool = True
     union_rules_considered: bool = True
@@ -104,11 +97,10 @@ class BackfillRecommendation(BaseModel):
     human_review_required: bool = True
     explanation: str
 
-
 class HoldoverRecommendation(BaseModel):
     shift_id: UUID
     shortage_reason: str
-    recommended_person_id: Optional[UUID] = None
+    recommended_person_id: UUID | None = None
     recommended_person_reason: str = ""
     duration_hours: float = 4.0
     seniority_considered: bool = True
@@ -117,7 +109,6 @@ class HoldoverRecommendation(BaseModel):
     human_review_required: bool = True
     supervisor_approval_required: bool = True
     explanation: str
-
 
 class PolicyViolationWarning(BaseModel):
     person_id: UUID
@@ -130,35 +121,32 @@ class PolicyViolationWarning(BaseModel):
     auto_override_forbidden: bool = True
     explanation: str
 
-
 class SeniorityRuleExplanation(BaseModel):
     person_id: UUID
     rule_key: str
     seniority_rank: int
     bid_priority: int
-    applicable_rules: List[str] = Field(default_factory=list)
+    applicable_rules: list[str] = Field(default_factory=list)
     explanation: str
     human_decision_required: bool = True
 
-
 class SupervisorDecisionSummary(BaseModel):
     shift_id: UUID
-    schedule_id: Optional[UUID] = None
-    pending_approvals: List[Dict[str, Any]] = Field(default_factory=list)
+    schedule_id: UUID | None = None
+    pending_approvals: list[dict[str, Any]] = Field(default_factory=list)
     coverage_status: str
     shortage_count: int
     fatigue_flags: int
     policy_warnings: int
-    ai_recommendations: List[str] = Field(default_factory=list)
+    ai_recommendations: list[str] = Field(default_factory=list)
     risk_level: str
     summary: str
     generated_at: datetime
 
-
 class StaffingCommandBriefing(BaseModel):
     schedule_id: UUID
     briefing_date: datetime
-    agency_types: List[str] = Field(default_factory=list)
+    agency_types: list[str] = Field(default_factory=list)
     total_shifts: int
     filled_shifts: int
     open_shifts: int
@@ -169,11 +157,10 @@ class StaffingCommandBriefing(BaseModel):
     timeoff_requests_pending: int
     holdover_orders_pending: int
     ai_risk_level: str
-    key_findings: List[str] = Field(default_factory=list)
-    recommended_actions: List[str] = Field(default_factory=list)
+    key_findings: list[str] = Field(default_factory=list)
+    recommended_actions: list[str] = Field(default_factory=list)
     generated_at: datetime
     human_review_required: bool = True
-
 
 # AI Capability Keys
 SCHED_AI_STAFFING_SHORTAGE = "sched_ai.staffing_shortage"

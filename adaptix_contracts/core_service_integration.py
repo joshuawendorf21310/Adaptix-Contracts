@@ -12,15 +12,13 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Optional, Dict, Any, List
+from typing import Any
 from datetime import datetime, timedelta, timezone
 import httpx
 
 from pydantic import BaseModel, Field
 
-
 logger = logging.getLogger(__name__)
-
 
 class CoreServiceConfig(BaseModel):
     """Configuration for Core Service integration."""
@@ -28,16 +26,14 @@ class CoreServiceConfig(BaseModel):
     base_url: str = Field(
         ..., description="Core Service base URL (e.g., https://core.adaptixcore.com)"
     )
-    api_key: Optional[str] = None
+    api_key: str | None = None
     timeout_seconds: int = 10
     cache_ttl_seconds: int = 300
-
 
 class TenantLookupRequest(BaseModel):
     """Request to Core Service for tenant lookup."""
 
     tenant_slug: str
-
 
 class TenantLookupResponse(BaseModel):
     """Response from Core Service tenant lookup."""
@@ -47,8 +43,7 @@ class TenantLookupResponse(BaseModel):
     agency_name: str
     agency_slug: str
     is_active: bool
-    modules_enabled: List[str] = Field(default_factory=list)
-
+    modules_enabled: list[str] = Field(default_factory=list)
 
 class RBACVerifyRequest(BaseModel):
     """Request to Core Service for RBAC verification."""
@@ -57,13 +52,11 @@ class RBACVerifyRequest(BaseModel):
     tenant_id: str
     permission: str
 
-
 class RBACVerifyResponse(BaseModel):
     """Response from Core Service RBAC verification."""
 
     has_permission: bool
-    reason: Optional[str] = None
-
+    reason: str | None = None
 
 class EntitlementCheckRequest(BaseModel):
     """Request to Core Service for entitlement check."""
@@ -71,14 +64,12 @@ class EntitlementCheckRequest(BaseModel):
     tenant_id: str
     module: str
 
-
 class EntitlementCheckResponse(BaseModel):
     """Response from Core Service entitlement check."""
 
     has_entitlement: bool
     module: str
-    reason: Optional[str] = None
-
+    reason: str | None = None
 
 class CoreServiceClient:
     """
@@ -91,13 +82,13 @@ class CoreServiceClient:
     def __init__(self, config: CoreServiceConfig):
         self.config = config
         self._client = httpx.AsyncClient(timeout=config.timeout_seconds)
-        self._cache: Dict[str, tuple] = {}  # (response, expiration_time)
+        self._cache: dict[str, tuple] = {}  # (response, expiration_time)
 
     async def close(self):
         """Close HTTP client."""
         await self._client.aclose()
 
-    def _get_cached(self, key: str) -> Optional[Any]:
+    def _get_cached(self, key: str) -> Any | None:
         """Get cached value if not expired."""
         if key in self._cache:
             value, expiration = self._cache[key]
@@ -237,7 +228,7 @@ class CoreServiceClient:
             logger.error(f"Entitlement check failed: {module} - {e}")
             raise
 
-    def _build_headers(self) -> Dict[str, str]:
+    def _build_headers(self) -> dict[str, str]:
         """Build HTTP headers with API key if configured."""
         headers = {
             "Content-Type": "application/json",
@@ -246,7 +237,6 @@ class CoreServiceClient:
         if self.config.api_key:
             headers["Authorization"] = f"Bearer {self.config.api_key}"
         return headers
-
 
 def get_core_service_config() -> CoreServiceConfig:
     """Load Core Service configuration from environment."""
@@ -262,10 +252,8 @@ def get_core_service_config() -> CoreServiceConfig:
         cache_ttl_seconds=cache_ttl,
     )
 
-
 # Global client instance (will be initialized on app startup)
-_core_service_client: Optional[CoreServiceClient] = None
-
+_core_service_client: CoreServiceClient | None = None
 
 async def init_core_service_client():
     """Initialize global Core Service client."""
@@ -274,7 +262,6 @@ async def init_core_service_client():
     _core_service_client = CoreServiceClient(config)
     logger.info(f"Core Service client initialized: {config.base_url}")
 
-
 async def close_core_service_client():
     """Close global Core Service client."""
     global _core_service_client
@@ -282,7 +269,6 @@ async def close_core_service_client():
         await _core_service_client.close()
         _core_service_client = None
         logger.info("Core Service client closed")
-
 
 def get_core_service_client() -> CoreServiceClient:
     """Get global Core Service client instance."""

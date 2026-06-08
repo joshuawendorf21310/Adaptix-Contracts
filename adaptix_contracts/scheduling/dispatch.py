@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+
 from uuid import UUID
 
 from pydantic import BaseModel, Field
-
 
 class DispatchConsoleAssignment(BaseModel):
     id: UUID
@@ -17,36 +16,33 @@ class DispatchConsoleAssignment(BaseModel):
     console_id: UUID
     console_name: str
     role: str  # call_taker, dispatcher, supervisor
-    radio_channels: List[str] = Field(default_factory=list)
+    radio_channels: list[str] = Field(default_factory=list)
     assigned_by: UUID
     assigned_at: datetime
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class CallTakerCoverageRule(BaseModel):
     id: UUID
     tenant_id: UUID
     minimum_call_takers: int
-    time_window: Optional[str] = None  # e.g. "peak", "overnight"
+    time_window: str | None = None  # e.g. "peak", "overnight"
     active: bool = True
     created_by: UUID
     created_at: datetime
     updated_at: datetime
-
 
 class DispatcherCoverageRule(BaseModel):
     id: UUID
     tenant_id: UUID
     minimum_dispatchers: int
-    agency_type: Optional[str] = None  # law, fire, ems
-    time_window: Optional[str] = None
+    agency_type: str | None = None  # law, fire, ems
+    time_window: str | None = None
     active: bool = True
     created_by: UUID
     created_at: datetime
     updated_at: datetime
-
 
 class RadioChannelAssignment(BaseModel):
     id: UUID
@@ -60,8 +56,7 @@ class RadioChannelAssignment(BaseModel):
     assigned_at: datetime
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class DispatchSupervisorCoverage(BaseModel):
     id: UUID
@@ -74,7 +69,6 @@ class DispatchSupervisorCoverage(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-
 class MandatoryBreakCoverageRule(BaseModel):
     id: UUID
     tenant_id: UUID
@@ -84,7 +78,6 @@ class MandatoryBreakCoverageRule(BaseModel):
     created_by: UUID
     created_at: datetime
     updated_at: datetime
-
 
 class HighVolumeForecastWindow(BaseModel):
     id: UUID

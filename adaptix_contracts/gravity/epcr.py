@@ -17,9 +17,8 @@ DEPENDENCY TRUTH:
 from __future__ import annotations
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
-from pydantic import BaseModel
 
+from pydantic import BaseModel
 
 class EPCRChartState(str, Enum):
     DRAFT = "draft"
@@ -29,30 +28,26 @@ class EPCRChartState(str, Enum):
     EXPORTED = "exported"
     REJECTED = "rejected"
 
-
 class NEMSISReadiness(str, Enum):
     READY = "ready"
     BLOCKED = "blocked"
     WARNING = "warning"
     NOT_VALIDATED = "not_validated"
 
-
 class BillingReadiness(str, Enum):
     READY = "ready"
     INCOMPLETE = "incomplete"
     BLOCKED = "blocked"
-
 
 class NEMSISBlocker(BaseModel):
     field: str
     message: str
     severity: str
 
-
 class EPCRChartListItemResponse(BaseModel):
     id: str
     incident_number: str
-    patient_name: Optional[str] = None
+    patient_name: str | None = None
     state: EPCRChartState
     nemsis_readiness: NEMSISReadiness
     billing_readiness: BillingReadiness
@@ -60,24 +55,22 @@ class EPCRChartListItemResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-
 class EPCRChartDetailResponse(BaseModel):
     id: str
     incident_number: str
-    patient_name: Optional[str] = None
+    patient_name: str | None = None
     state: EPCRChartState
     nemsis_readiness: NEMSISReadiness
     billing_readiness: BillingReadiness
     clinical_completeness_pct: float
-    nemsis_blockers: List[NEMSISBlocker] = []
-    nemsis_warnings: List[NEMSISBlocker] = []
-    timeline: List[dict] = []
+    nemsis_blockers: list[NEMSISBlocker] = []
+    nemsis_warnings: list[NEMSISBlocker] = []
+    timeline: list[dict] = []
     audit_state: str
     validation_state: str
     created_at: datetime
     updated_at: datetime
 
-
 class EPCRChartListResponse(BaseModel):
-    items: List[EPCRChartListItemResponse]
+    items: list[EPCRChartListItemResponse]
     total: int

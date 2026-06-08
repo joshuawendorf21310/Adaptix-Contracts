@@ -12,10 +12,9 @@ Rules:
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional, List, Dict, Any
+from typing import Any
 from pydantic import BaseModel, Field
 import uuid
-
 
 class AdaptixRole(str, Enum):
     """Canonical role set for Adaptix platform."""
@@ -37,13 +36,12 @@ class AdaptixRole(str, Enum):
     READ_ONLY = "read_only"
     SERVICE_ACCOUNT = "service_account"
 
-
 class AdaptixRoleSet(BaseModel):
     """Verified role set for an authenticated user."""
 
-    roles: List[AdaptixRole] = Field(default_factory=list)
-    permissions: List[str] = Field(default_factory=list)
-    entitlements: List[str] = Field(default_factory=list)
+    roles: list[AdaptixRole] = Field(default_factory=list)
+    permissions: list[str] = Field(default_factory=list)
+    entitlements: list[str] = Field(default_factory=list)
 
     def has_role(self, role: AdaptixRole) -> bool:
         return role in self.roles
@@ -63,19 +61,17 @@ class AdaptixRoleSet(BaseModel):
     def is_service_account(self) -> bool:
         return AdaptixRole.SERVICE_ACCOUNT in self.roles
 
-
 class AdaptixTenantContext(BaseModel):
     """Verified tenant context derived from auth token — never from raw headers."""
 
     tenant_id: str = Field(..., description="Verified tenant UUID")
-    agency_name: Optional[str] = None
-    agency_slug: Optional[str] = None
-    modules_enabled: List[str] = Field(default_factory=list)
+    agency_name: str | None = None
+    agency_slug: str | None = None
+    modules_enabled: list[str] = Field(default_factory=list)
     is_active: bool = True
 
     def has_module(self, module: str) -> bool:
         return module in self.modules_enabled
-
 
 class AdaptixAuthContext(BaseModel):
     """
@@ -90,19 +86,19 @@ class AdaptixAuthContext(BaseModel):
         ..., description="Verified tenant UUID — same as tenant_context.tenant_id"
     )
     session_id: str = Field(..., description="Active session UUID")
-    email: Optional[str] = None
-    full_name: Optional[str] = None
+    email: str | None = None
+    full_name: str | None = None
     role_set: AdaptixRoleSet = Field(default_factory=AdaptixRoleSet)
     tenant_context: AdaptixTenantContext
     is_founder: bool = False
     is_service_account: bool = False
-    token_jti: Optional[str] = None  # JWT ID for revocation checks
+    token_jti: str | None = None  # JWT ID for revocation checks
 
     @classmethod
     def from_token_payload(
         cls,
-        payload: Dict[str, Any],
-        trusted_tenant_id: Optional[str] = None,
+        payload: dict[str, Any],
+        trusted_tenant_id: str | None = None,
     ) -> "AdaptixAuthContext":
         """Construct from verified JWT payload."""
         tenant_id = payload.get("tenant_id")
@@ -160,7 +156,6 @@ class AdaptixAuthContext(BaseModel):
             token_jti=payload.get("jti"),
         )
 
-
 class AdaptixServiceContext(BaseModel):
     """
     Context for internal service-to-service calls.
@@ -169,12 +164,11 @@ class AdaptixServiceContext(BaseModel):
 
     source_service: str = Field(..., description="Originating service name")
     correlation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    causation_id: Optional[str] = None
+    causation_id: str | None = None
     tenant_id: str = Field(..., description="Tenant scope for this call")
-    actor_id: Optional[str] = None  # User who initiated the chain
+    actor_id: str | None = None  # User who initiated the chain
     request_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    signature: Optional[str] = None  # HMAC signature for verification
-
+    signature: str | None = None  # HMAC signature for verification
 
 class AdaptixSignedInternalContext(BaseModel):
     """
@@ -183,9 +177,9 @@ class AdaptixSignedInternalContext(BaseModel):
     """
 
     service_context: AdaptixServiceContext
-    auth_context: Optional[AdaptixAuthContext] = None
+    auth_context: AdaptixAuthContext | None = None
     signature_verified: bool = False
-    forwarded_at: Optional[str] = None
+    forwarded_at: str | None = None
 
     def is_trusted(self) -> bool:
         """Returns True only if signature has been verified."""

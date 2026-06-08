@@ -5,9 +5,11 @@ Contains event schemas, validators, and registry for cross-service events.
 
 from __future__ import annotations
 import os
-from typing import Any, Callable, Dict, Optional, Set
+from typing import Any
+from collections.abc import Callable
 
 import httpx
+import builtins
 
 
 class EventMetadata:
@@ -30,7 +32,7 @@ class EventMetadata:
         self.correlation_id = correlation_id
         self.trace_id = trace_id
 
-    def dict(self) -> Dict[str, Any]:
+    def dict(self) -> builtins.dict[str, Any]:
         """Convert the metadata to a dictionary.
 
         Returns:
@@ -55,13 +57,13 @@ class EventSchema:
         self,
         event_type: str,
         metadata: EventMetadata,
-        payload: Dict[str, Any],
+        payload: builtins.dict[str, Any],
     ) -> None:
         self.event_type = event_type
         self.metadata = metadata
         self.payload = payload
 
-    def dict(self) -> Dict[str, Any]:
+    def dict(self) -> builtins.dict[str, Any]:
         """Convert the event to a dictionary.
 
         Returns:
@@ -114,7 +116,7 @@ class LocalEventConsumerRegistry:
     """
 
     def __init__(self) -> None:
-        self._handlers: Dict[str, Set[Callable[[EventSchema], Any]]] = {}
+        self._handlers: dict[str, set[Callable[[EventSchema], Any]]] = {}
 
     def register(self, event_type: str, handler: Callable[[EventSchema], Any]) -> None:
         """Register a handler for a specific event type.

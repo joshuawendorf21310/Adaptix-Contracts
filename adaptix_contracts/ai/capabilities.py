@@ -4,9 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 import uuid
-
 
 class AIProviderStatus(str, Enum):
     CONFIGURED = "configured"
@@ -15,13 +14,11 @@ class AIProviderStatus(str, Enum):
     UNAVAILABLE = "unavailable"
     ERROR = "error"
 
-
 class AIRiskLevel(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
-
 
 @dataclass
 class AISourceField:
@@ -32,7 +29,6 @@ class AISourceField:
     redacted: bool = True
     included_in_prompt: bool = False
 
-
 @dataclass
 class AIRedactionPolicy:
     """Policy for redacting PHI/PII from AI inputs/outputs."""
@@ -41,7 +37,7 @@ class AIRedactionPolicy:
     redact_pii: bool = True
     redact_prompts_from_logs: bool = True
     redact_completions_from_logs: bool = True
-    allowed_log_fields: List[str] = field(
+    allowed_log_fields: list[str] = field(
         default_factory=lambda: [
             "module",
             "capability_key",
@@ -59,7 +55,6 @@ class AIRedactionPolicy:
         self.redact_phi = True
         self.redact_prompts_from_logs = True
         self.redact_completions_from_logs = True
-
 
 @dataclass
 class AICapabilityRegistryEntry:
@@ -79,7 +74,6 @@ class AICapabilityRegistryEntry:
     enabled: bool = True
     version: str = "1.0"
 
-
 @dataclass
 class AITextGenerationRequest:
     """Request for AI text generation."""
@@ -89,12 +83,11 @@ class AITextGenerationRequest:
     module: str
     capability_key: str
     source_record_id: str
-    source_fields: List[AISourceField]
+    source_fields: list[AISourceField]
     prompt_policy_version: str
     correlation_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    causation_id: Optional[str] = None
-    context_metadata: Dict[str, Any] = field(default_factory=dict)
-
+    causation_id: str | None = None
+    context_metadata: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class AITextGenerationResponse:
@@ -110,15 +103,15 @@ class AITextGenerationResponse:
     input_redacted: bool
     output_redacted: bool
     human_review_required: bool
-    confidence: Optional[float]
+    confidence: float | None
     risk_level: AIRiskLevel
     created_at: datetime
     correlation_id: str
     audit_event_id: str
     # NOTE: generated_text is NOT logged - only returned to caller
-    generated_text: Optional[str] = None
+    generated_text: str | None = None
     validation_passed: bool = False
-    error: Optional[str] = None
+    error: str | None = None
     # Hard rules - AI never signs or marks complete
     ai_signed: bool = False
     ai_marked_complete: bool = False
@@ -126,7 +119,6 @@ class AITextGenerationResponse:
     def __post_init__(self):
         self.ai_signed = False
         self.ai_marked_complete = False
-
 
 @dataclass
 class AIReadinessAssessment:
@@ -137,16 +129,15 @@ class AIReadinessAssessment:
     module: str
     record_id: str
     assessment_type: str
-    missing_fields: List[str]
-    contradictions: List[str]
-    warnings: List[str]
+    missing_fields: list[str]
+    contradictions: list[str]
+    warnings: list[str]
     readiness_score: float  # 0.0 - 1.0
     human_review_required: bool
     risk_level: AIRiskLevel
     created_at: datetime
     audit_event_id: str
     correlation_id: str
-
 
 @dataclass
 class AIDraftNarrative:
@@ -172,7 +163,6 @@ class AIDraftNarrative:
         self.ai_marked_complete = False
         self.ai_auto_locked = False
 
-
 @dataclass
 class AIHumanReviewRequirement:
     """Requirement for human review of AI output."""
@@ -183,9 +173,8 @@ class AIHumanReviewRequirement:
     reason: str
     risk_level: AIRiskLevel
     required_reviewer_role: str
-    deadline: Optional[datetime] = None
+    deadline: datetime | None = None
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-
 
 @dataclass
 class AIAuditRecord:
@@ -203,15 +192,14 @@ class AIAuditRecord:
     input_redacted: bool
     output_redacted: bool
     human_review_required: bool
-    confidence: Optional[float]
+    confidence: float | None
     risk_level: str
     created_at: datetime
     correlation_id: str
-    causation_id: Optional[str] = None
+    causation_id: str | None = None
     # Explicitly excluded: prompt_text, completion_text, PHI, tokens, secrets
-    error: Optional[str] = None
+    error: str | None = None
     validation_passed: bool = False
-
 
 @dataclass
 class AIGeneratedTextMetadata:
@@ -225,9 +213,9 @@ class AIGeneratedTextMetadata:
     risk_level: AIRiskLevel
     human_review_required: bool
     human_reviewed: bool = False
-    human_reviewer_id: Optional[str] = None
-    human_reviewed_at: Optional[datetime] = None
-    accepted: Optional[bool] = None
+    human_reviewer_id: str | None = None
+    human_reviewed_at: datetime | None = None
+    accepted: bool | None = None
     edited: bool = False
     rejected: bool = False
     regenerated: bool = False

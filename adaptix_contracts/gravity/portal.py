@@ -6,9 +6,8 @@ ADAPTIX_PLATFORM_GRAVITY_COMPLETION_LOCK
 from __future__ import annotations
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
-from pydantic import BaseModel
 
+from pydantic import BaseModel
 
 class PortalDocumentState(str, Enum):
     REQUESTED = "requested"
@@ -18,23 +17,21 @@ class PortalDocumentState(str, Enum):
     REJECTED = "rejected"
     RESUBMISSION_REQUIRED = "resubmission_required"
 
-
 class PortalDocumentRequestResponse(BaseModel):
     id: str
     tenant_id: str
     patient_id: str
     document_type: str
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     required: bool
     state: PortalDocumentState
-    rejection_reason: Optional[str] = None
-    due_at: Optional[datetime] = None
-    submitted_at: Optional[datetime] = None
-    accepted_at: Optional[datetime] = None
+    rejection_reason: str | None = None
+    due_at: datetime | None = None
+    submitted_at: datetime | None = None
+    accepted_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
-
 
 class PortalDocumentStatusResponse(BaseModel):
     total_required: int
@@ -44,11 +41,9 @@ class PortalDocumentStatusResponse(BaseModel):
     pending: int
     completion_pct: float
 
-
 class PortalDocumentListResponse(BaseModel):
-    items: List[PortalDocumentRequestResponse]
+    items: list[PortalDocumentRequestResponse]
     status: PortalDocumentStatusResponse
-
 
 class PortalDocumentSubmissionResponse(BaseModel):
     id: str
@@ -58,11 +53,10 @@ class PortalDocumentSubmissionResponse(BaseModel):
     file_size_bytes: int
     mime_type: str
     state: str
-    rejection_reason: Optional[str] = None
+    rejection_reason: str | None = None
     submitted_at: datetime
-    reviewed_at: Optional[datetime] = None
-    reviewed_by: Optional[str] = None
-
+    reviewed_at: datetime | None = None
+    reviewed_by: str | None = None
 
 class PatientHomeResponse(BaseModel):
     """
@@ -71,10 +65,10 @@ class PatientHomeResponse(BaseModel):
     """
 
     patient_profile: dict
-    open_actions: List[dict]
+    open_actions: list[dict]
     invoice_summary: dict
     document_summary: PortalDocumentStatusResponse
     communication_summary: dict
-    timeline: List[dict]
-    alerts: List[dict]
+    timeline: list[dict]
+    alerts: list[dict]
     permissions: dict

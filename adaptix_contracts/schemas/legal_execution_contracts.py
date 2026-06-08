@@ -5,10 +5,9 @@ including contract types, status enums, and mapping relationships.
 """
 
 from enum import Enum
-from typing import Dict, Optional
+
 from datetime import datetime
 from pydantic import BaseModel, Field
-
 
 class ContractType(str, Enum):
     """Enumeration of contract types supported by the platform.
@@ -27,7 +26,6 @@ class ContractType(str, Enum):
     EMERGENCY_SERVICES_AGREEMENT = "emergency_services_agreement"
     BILLING_SERVICES_AGREEMENT = "billing_services_agreement"
 
-
 class ContractStatus(str, Enum):
     """Enumeration of contract execution status values.
 
@@ -44,7 +42,6 @@ class ContractStatus(str, Enum):
     CANCELED = "canceled"
     VOIDED = "voided"
 
-
 class TenantContractStatusMap(BaseModel):
     """Mapping between tenant, contract type, and execution status.
 
@@ -52,10 +49,9 @@ class TenantContractStatusMap(BaseModel):
     """
 
     tenant_id: str = Field(..., description="Tenant ID")
-    contract_statuses: Dict[ContractType, ContractStatus] = Field(
+    contract_statuses: dict[ContractType, ContractStatus] = Field(
         ..., description="Mapping of contract types to their current statuses"
     )
-
 
 class ContractSignatureEvent(BaseModel):
     """Event payload for contract signature events.
@@ -70,8 +66,7 @@ class ContractSignatureEvent(BaseModel):
     signer_name: str = Field(..., description="Name of the signer")
     timestamp: datetime = Field(..., description="Timestamp of the signature")
     contract_id: str = Field(..., description="ID of the contract document")
-    metadata: Optional[Dict[str, str]] = Field(None, description="Additional metadata")
-
+    metadata: dict[str, str] | None = Field(None, description="Additional metadata")
 
 class ContractAccessCheckRequest(BaseModel):
     """Request to check if a tenant has access to a module via contract.
@@ -86,7 +81,6 @@ class ContractAccessCheckRequest(BaseModel):
         description="Status required for access (defaults to COMPLETED)",
     )
 
-
 class ContractAccessCheckResponse(BaseModel):
     """Response from checking tenant's access to module via contract.
 
@@ -96,7 +90,7 @@ class ContractAccessCheckResponse(BaseModel):
     tenant_id: str = Field(..., description="Tenant ID")
     contract_type: ContractType = Field(..., description="Type of contract checked")
     has_access: bool = Field(..., description="Whether tenant has access")
-    current_status: Optional[ContractStatus] = Field(
+    current_status: ContractStatus | None = Field(
         None, description="Current status of the contract"
     )
-    reason: Optional[str] = Field(None, description="Reason for access decision")
+    reason: str | None = Field(None, description="Reason for access decision")

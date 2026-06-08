@@ -18,12 +18,10 @@ Rules:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional
+
 from pydantic import BaseModel
 
-
 # ─── Cognito Configuration ────────────────────────────────────────────────────
-
 
 @dataclass
 class AdaptixCognitoConfig:
@@ -34,11 +32,11 @@ class AdaptixCognitoConfig:
     client_id: str
     issuer: str
     jwks_url: str
-    allowed_audiences: List[str] = field(default_factory=list)
-    allowed_token_use_values: List[str] = field(
+    allowed_audiences: list[str] = field(default_factory=list)
+    allowed_token_use_values: list[str] = field(
         default_factory=lambda: ["access", "id"]
     )
-    required_claims: List[str] = field(
+    required_claims: list[str] = field(
         default_factory=lambda: ["sub", "iss", "exp", "iat", "token_use"]
     )
     clock_skew_seconds: int = 30
@@ -78,9 +76,7 @@ class AdaptixCognitoConfig:
             self.user_pool_id and self.client_id and self.issuer and self.jwks_url
         )
 
-
 # ─── Cognito Claims ───────────────────────────────────────────────────────────
-
 
 class AdaptixCognitoClaims(BaseModel):
     """Validated Cognito JWT claims."""
@@ -93,19 +89,19 @@ class AdaptixCognitoClaims(BaseModel):
     token_use: str  # "access" or "id"
 
     # Cognito-specific
-    cognito_username: Optional[str] = None
-    email: Optional[str] = None
-    email_verified: Optional[bool] = None
-    cognito_groups: Optional[List[str]] = None
+    cognito_username: str | None = None
+    email: str | None = None
+    email_verified: bool | None = None
+    cognito_groups: Optional[list[str]] = None
 
     # Adaptix custom attributes (set by admin)
-    custom_adaptix_user_id: Optional[str] = None
-    custom_adaptix_tenant_id: Optional[str] = None
-    custom_adaptix_agency_id: Optional[str] = None
-    custom_adaptix_roles: Optional[str] = None  # JSON string of roles list
+    custom_adaptix_user_id: str | None = None
+    custom_adaptix_tenant_id: str | None = None
+    custom_adaptix_agency_id: str | None = None
+    custom_adaptix_roles: str | None = None  # JSON string of roles list
 
     # Optional Microsoft federation fields (when Entra is federated through Cognito)
-    identities: Optional[List[dict]] = None
+    identities: Optional[list[dict]] = None
 
     class Config:
         populate_by_name = True
@@ -132,9 +128,7 @@ class AdaptixCognitoClaims(BaseModel):
         }
         return cls(**{k: v for k, v in mapped.items() if v is not None})
 
-
 # ─── Auth Context ─────────────────────────────────────────────────────────────
-
 
 class AdaptixAuthContext(BaseModel):
     """
@@ -149,29 +143,29 @@ class AdaptixAuthContext(BaseModel):
     subject: str  # Cognito sub (stable user identifier)
     provider: str  # "cognito" | "cognito_entra_federation"
     provider_user_id: str  # Cognito sub or federated provider subject
-    email: Optional[str] = None
+    email: str | None = None
     email_verified: bool = False
-    display_name: Optional[str] = None
+    display_name: str | None = None
 
     # Adaptix identity (resolved from Cognito claims + DB lookup)
-    user_id: Optional[str] = None  # Adaptix user UUID
-    tenant_id: Optional[str] = None  # Adaptix tenant UUID
-    agency_id: Optional[str] = None  # Adaptix agency UUID
+    user_id: str | None = None  # Adaptix user UUID
+    tenant_id: str | None = None  # Adaptix tenant UUID
+    agency_id: str | None = None  # Adaptix agency UUID
 
     # Authorization (controlled by Adaptix, not Cognito)
-    roles: List[str] = field(default_factory=list)
-    permissions: List[str] = field(default_factory=list)
-    modules_enabled: List[str] = field(default_factory=list)
+    roles: list[str] = field(default_factory=list)
+    permissions: list[str] = field(default_factory=list)
+    modules_enabled: list[str] = field(default_factory=list)
     is_founder: bool = False
     is_service_account: bool = False
 
     # Token metadata
-    source_token_issuer: Optional[str] = None
-    token_use: Optional[str] = None  # "access" or "id"
+    source_token_issuer: str | None = None
+    token_use: str | None = None  # "access" or "id"
 
     # Tracing
-    correlation_id: Optional[str] = None
-    trace_id: Optional[str] = None
+    correlation_id: str | None = None
+    trace_id: str | None = None
 
     class Config:
         populate_by_name = True
@@ -193,9 +187,7 @@ class AdaptixAuthContext(BaseModel):
     def has_module(self, module: str) -> bool:
         return module in self.modules_enabled
 
-
 # ─── Internal Service Context ─────────────────────────────────────────────────
-
 
 class AdaptixServiceContext(BaseModel):
     """
@@ -206,12 +198,11 @@ class AdaptixServiceContext(BaseModel):
 
     source_service: str
     correlation_id: str
-    causation_id: Optional[str] = None
+    causation_id: str | None = None
     tenant_id: str
-    user_id: Optional[str] = None
-    request_id: Optional[str] = None
-    internal_auth_marker: Optional[str] = None  # Signed marker proving gateway origin
-
+    user_id: str | None = None
+    request_id: str | None = None
+    internal_auth_marker: str | None = None  # Signed marker proving gateway origin
 
 class AdaptixSignedInternalContext(BaseModel):
     """
@@ -220,14 +211,13 @@ class AdaptixSignedInternalContext(BaseModel):
     """
 
     service_context: AdaptixServiceContext
-    auth_context: Optional[AdaptixAuthContext] = None
+    auth_context: AdaptixAuthContext | None = None
     signature_verified: bool = False
 
     def is_trusted(self) -> bool:
         return self.signature_verified and bool(
             self.service_context.internal_auth_marker
         )
-
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 

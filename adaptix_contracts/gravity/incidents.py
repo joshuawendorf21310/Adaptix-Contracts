@@ -6,10 +6,9 @@ ADAPTIX_PLATFORM_GRAVITY_COMPLETION_LOCK
 from __future__ import annotations
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+
 from pydantic import BaseModel
 from .modules import GravityAIRunPayload
-
 
 class IncidentState(str, Enum):
     ACTIVE = "active"
@@ -18,13 +17,11 @@ class IncidentState(str, Enum):
     CLOSED = "closed"
     REOPENED = "reopened"
 
-
 class IncidentPriority(str, Enum):
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
-
 
 class IncidentResourceResponse(BaseModel):
     id: str
@@ -33,8 +30,7 @@ class IncidentResourceResponse(BaseModel):
     resource_id: str
     resource_label: str
     assigned_at: datetime
-    released_at: Optional[datetime] = None
-
+    released_at: datetime | None = None
 
 class IncidentTimelineEventResponse(BaseModel):
     id: str
@@ -42,43 +38,40 @@ class IncidentTimelineEventResponse(BaseModel):
     timestamp: datetime
     event_type: str
     description: str
-    actor_id: Optional[str] = None
-    actor_name: Optional[str] = None
-    severity: Optional[str] = None
-
+    actor_id: str | None = None
+    actor_name: str | None = None
+    severity: str | None = None
 
 class IncidentLinkResponse(BaseModel):
     id: str
     incident_id: str
     linked_type: str
     linked_id: str
-    linked_label: Optional[str] = None
-
+    linked_label: str | None = None
 
 class IncidentResponse(BaseModel):
     id: str
     tenant_id: str
     record_id: str
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     state: IncidentState
     priority: IncidentPriority
     patient_count: int = 0
-    scene_address: Optional[str] = None
-    scene_lat: Optional[float] = None
-    scene_lng: Optional[float] = None
-    cad_call_id: Optional[str] = None
-    resources: List[IncidentResourceResponse] = []
-    links: List[IncidentLinkResponse] = []
-    timeline: List[IncidentTimelineEventResponse] = []
-    ai_summary: Optional[GravityAIRunPayload] = None
-    command_notes: Optional[str] = None
+    scene_address: str | None = None
+    scene_lat: float | None = None
+    scene_lng: float | None = None
+    cad_call_id: str | None = None
+    resources: list[IncidentResourceResponse] = []
+    links: list[IncidentLinkResponse] = []
+    timeline: list[IncidentTimelineEventResponse] = []
+    ai_summary: GravityAIRunPayload | None = None
+    command_notes: str | None = None
     created_at: datetime
     updated_at: datetime
-    closed_at: Optional[datetime] = None
+    closed_at: datetime | None = None
     actor_id: str
     version: int
-
 
 class IncidentListItemResponse(BaseModel):
     id: str
@@ -86,41 +79,35 @@ class IncidentListItemResponse(BaseModel):
     state: IncidentState
     priority: IncidentPriority
     patient_count: int
-    scene_address: Optional[str] = None
+    scene_address: str | None = None
     resource_count: int
     created_at: datetime
     updated_at: datetime
 
-
 class CreateIncidentRequest(BaseModel):
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     priority: IncidentPriority
-    scene_address: Optional[str] = None
+    scene_address: str | None = None
     patient_count: int = 0
 
-
 class UpdateIncidentRequest(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    priority: Optional[IncidentPriority] = None
-    command_notes: Optional[str] = None
+    title: str | None = None
+    description: str | None = None
+    priority: IncidentPriority | None = None
+    command_notes: str | None = None
     version: int
-
 
 class EscalateIncidentRequest(BaseModel):
     reason: str
 
-
 class CloseIncidentRequest(BaseModel):
-    resolution_note: Optional[str] = None
-
+    resolution_note: str | None = None
 
 class AssignResourceRequest(BaseModel):
     resource_type: str
     resource_id: str
     resource_label: str
-
 
 class IncidentActionResponse(BaseModel):
     incident: IncidentResponse

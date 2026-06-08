@@ -8,11 +8,10 @@ No raw exception text may be returned to clients.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional, List, Any, Dict
+from typing import Any
 from pydantic import BaseModel, Field
 import uuid
 from datetime import datetime, timezone
-
 
 class AdaptixErrorCode(str, Enum):
     """Canonical error codes for Adaptix platform."""
@@ -70,15 +69,13 @@ class AdaptixErrorCode(str, Enum):
     AUDIT_WRITE_FAILED = "audit_write_failed"
     PHI_ACCESS_DENIED = "phi_access_denied"
 
-
 class AdaptixValidationErrorDetail(BaseModel):
     """Detail for a single field validation failure."""
 
     field: str
     message: str
-    value: Optional[Any] = None
+    value: Any | None = None
     code: str = "invalid_value"
-
 
 class AdaptixProviderErrorDetail(BaseModel):
     """Detail for a provider integration failure."""
@@ -86,22 +83,20 @@ class AdaptixProviderErrorDetail(BaseModel):
     provider: str
     status: str  # provider_unavailable | credential_gated | not_configured | error
     message: str
-    provider_code: Optional[str] = None
+    provider_code: str | None = None
     retryable: bool = False
-
 
 class AdaptixTraceContext(BaseModel):
     """Trace context for correlating errors across services."""
 
     request_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    correlation_id: Optional[str] = None
-    causation_id: Optional[str] = None
-    tenant_id: Optional[str] = None
-    actor_id: Optional[str] = None
-    service_name: Optional[str] = None
-    route: Optional[str] = None
-    duration_ms: Optional[float] = None
-
+    correlation_id: str | None = None
+    causation_id: str | None = None
+    tenant_id: str | None = None
+    actor_id: str | None = None
+    service_name: str | None = None
+    route: str | None = None
+    duration_ms: float | None = None
 
 class AdaptixErrorEnvelope(BaseModel):
     """
@@ -114,10 +109,10 @@ class AdaptixErrorEnvelope(BaseModel):
     success: bool = False
     error_code: AdaptixErrorCode
     message: str
-    detail: Optional[str] = None
-    validation_errors: Optional[List[AdaptixValidationErrorDetail]] = None
-    provider_error: Optional[AdaptixProviderErrorDetail] = None
-    trace: Optional[AdaptixTraceContext] = None
+    detail: str | None = None
+    validation_errors: Optional[list[AdaptixValidationErrorDetail]] = None
+    provider_error: AdaptixProviderErrorDetail | None = None
+    trace: AdaptixTraceContext | None = None
     timestamp: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
@@ -126,7 +121,7 @@ class AdaptixErrorEnvelope(BaseModel):
     def unauthorized(
         cls,
         message: str = "Authentication required",
-        trace: Optional[AdaptixTraceContext] = None,
+        trace: AdaptixTraceContext | None = None,
     ) -> "AdaptixErrorEnvelope":
         return cls(
             error_code=AdaptixErrorCode.UNAUTHORIZED,
@@ -138,7 +133,7 @@ class AdaptixErrorEnvelope(BaseModel):
     def forbidden(
         cls,
         message: str = "Access denied",
-        trace: Optional[AdaptixTraceContext] = None,
+        trace: AdaptixTraceContext | None = None,
     ) -> "AdaptixErrorEnvelope":
         return cls(
             error_code=AdaptixErrorCode.FORBIDDEN,
@@ -150,7 +145,7 @@ class AdaptixErrorEnvelope(BaseModel):
     def not_found(
         cls,
         resource: str,
-        trace: Optional[AdaptixTraceContext] = None,
+        trace: AdaptixTraceContext | None = None,
     ) -> "AdaptixErrorEnvelope":
         return cls(
             error_code=AdaptixErrorCode.NOT_FOUND,
@@ -161,9 +156,9 @@ class AdaptixErrorEnvelope(BaseModel):
     @classmethod
     def validation_failed(
         cls,
-        errors: List[AdaptixValidationErrorDetail],
+        errors: list[AdaptixValidationErrorDetail],
         message: str = "Validation failed",
-        trace: Optional[AdaptixTraceContext] = None,
+        trace: AdaptixTraceContext | None = None,
     ) -> "AdaptixErrorEnvelope":
         return cls(
             error_code=AdaptixErrorCode.VALIDATION_FAILED,
@@ -178,7 +173,7 @@ class AdaptixErrorEnvelope(BaseModel):
         provider: str,
         message: str,
         retryable: bool = False,
-        trace: Optional[AdaptixTraceContext] = None,
+        trace: AdaptixTraceContext | None = None,
     ) -> "AdaptixErrorEnvelope":
         return cls(
             error_code=AdaptixErrorCode.PROVIDER_UNAVAILABLE,
@@ -196,7 +191,7 @@ class AdaptixErrorEnvelope(BaseModel):
     def credential_gated(
         cls,
         provider: str,
-        trace: Optional[AdaptixTraceContext] = None,
+        trace: AdaptixTraceContext | None = None,
     ) -> "AdaptixErrorEnvelope":
         return cls(
             error_code=AdaptixErrorCode.CREDENTIAL_GATED,
@@ -214,7 +209,7 @@ class AdaptixErrorEnvelope(BaseModel):
     def internal_error(
         cls,
         message: str = "An internal error occurred",
-        trace: Optional[AdaptixTraceContext] = None,
+        trace: AdaptixTraceContext | None = None,
     ) -> "AdaptixErrorEnvelope":
         return cls(
             error_code=AdaptixErrorCode.INTERNAL_ERROR,
@@ -222,6 +217,6 @@ class AdaptixErrorEnvelope(BaseModel):
             trace=trace,
         )
 
-    def to_http_response(self) -> Dict[str, Any]:
+    def to_http_response(self) -> dict[str, Any]:
         """Return dict suitable for FastAPI JSONResponse."""
         return self.model_dump(exclude_none=True)

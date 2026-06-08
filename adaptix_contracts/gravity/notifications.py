@@ -8,50 +8,45 @@ All modules route user-visible action feedback through this system.
 
 from __future__ import annotations
 from datetime import datetime
-from typing import List, Optional
+
 from pydantic import BaseModel
 from .modules import GravityNotificationSeverity, GravityNotificationState
-
 
 class NotificationCreateRequest(BaseModel):
     tenant_id: str
     title: str
-    message: Optional[str] = None
+    message: str | None = None
     severity: GravityNotificationSeverity
     module: str
-    source_record_id: Optional[str] = None
-    source_record_type: Optional[str] = None
-    action_url: Optional[str] = None
-
+    source_record_id: str | None = None
+    source_record_type: str | None = None
+    action_url: str | None = None
 
 class NotificationResponse(BaseModel):
     id: str
     tenant_id: str
     title: str
-    message: Optional[str] = None
+    message: str | None = None
     severity: GravityNotificationSeverity
     state: GravityNotificationState
     module: str
-    source_record_id: Optional[str] = None
-    source_record_type: Optional[str] = None
-    action_url: Optional[str] = None
+    source_record_id: str | None = None
+    source_record_type: str | None = None
+    action_url: str | None = None
     created_at: datetime
-    read_at: Optional[datetime] = None
-    resolved_at: Optional[datetime] = None
-    snoozed_until: Optional[datetime] = None
-    escalated_at: Optional[datetime] = None
-    audit_event_id: Optional[str] = None
-
+    read_at: datetime | None = None
+    resolved_at: datetime | None = None
+    snoozed_until: datetime | None = None
+    escalated_at: datetime | None = None
+    audit_event_id: str | None = None
 
 class NotificationListResponse(BaseModel):
-    items: List[NotificationResponse]
+    items: list[NotificationResponse]
     total: int
     unread_count: int
 
-
 class NotificationSnoozeRequest(BaseModel):
     snoozed_until: datetime
-
 
 class NotificationActionResponse(BaseModel):
     notification: NotificationResponse

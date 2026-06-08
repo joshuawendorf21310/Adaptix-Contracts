@@ -7,11 +7,10 @@ Every event must include tenant, actor, correlation, timestamp, idempotency, and
 
 from __future__ import annotations
 
-from typing import Optional, Any, Dict
+from typing import Any
 from pydantic import BaseModel, Field
 import uuid
 from datetime import datetime, timezone
-
 
 class AdaptixEventEnvelope(BaseModel):
     """
@@ -33,7 +32,7 @@ class AdaptixEventEnvelope(BaseModel):
     tenant_id: str = Field(
         ..., description="Tenant scope — required for all tenant events"
     )
-    actor_id: Optional[str] = Field(
+    actor_id: str | None = Field(
         None, description="User or service that caused this event"
     )
     source_service: str = Field(..., description="Service that published this event")
@@ -41,7 +40,7 @@ class AdaptixEventEnvelope(BaseModel):
         default_factory=lambda: str(uuid.uuid4()),
         description="Correlation ID for tracing across services",
     )
-    causation_id: Optional[str] = Field(
+    causation_id: str | None = Field(
         None, description="ID of the event or request that caused this event"
     )
     idempotency_key: str = Field(
@@ -55,10 +54,10 @@ class AdaptixEventEnvelope(BaseModel):
     payload_schema: str = Field(
         default="adaptix/v1", description="Schema namespace for payload validation"
     )
-    payload: Dict[str, Any] = Field(
+    payload: dict[str, Any] = Field(
         default_factory=dict, description="Event-specific payload data"
     )
-    metadata: Optional[Dict[str, Any]] = Field(
+    metadata: Optional[dict[str, Any]] = Field(
         None, description="Optional additional metadata (routing hints, flags, etc.)"
     )
 
@@ -68,11 +67,11 @@ class AdaptixEventEnvelope(BaseModel):
         event_type: str,
         tenant_id: str,
         source_service: str,
-        payload: Dict[str, Any],
-        actor_id: Optional[str] = None,
-        correlation_id: Optional[str] = None,
-        causation_id: Optional[str] = None,
-        idempotency_key: Optional[str] = None,
+        payload: dict[str, Any],
+        actor_id: str | None = None,
+        correlation_id: str | None = None,
+        causation_id: str | None = None,
+        idempotency_key: str | None = None,
         event_version: str = "1.0",
     ) -> "AdaptixEventEnvelope":
         """Factory method for creating a properly formed event."""

@@ -6,10 +6,9 @@ ADAPTIX_PLATFORM_GRAVITY_COMPLETION_LOCK
 from __future__ import annotations
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+
 from pydantic import BaseModel
 from .modules import GravityAIRunPayload
-
 
 class EmailThreadState(str, Enum):
     OPEN = "open"
@@ -18,13 +17,11 @@ class EmailThreadState(str, Enum):
     RESOLVED = "resolved"
     ARCHIVED = "archived"
 
-
 class SMSThreadState(str, Enum):
     OPEN = "open"
     RESOLVED = "resolved"
     OPTED_OUT = "opted_out"
     BLOCKED = "blocked"
-
 
 class CallState(str, Enum):
     COMPLETED = "completed"
@@ -33,21 +30,19 @@ class CallState(str, Enum):
     FAILED = "failed"
     IN_PROGRESS = "in_progress"
 
-
 class EmailMessageResponse(BaseModel):
     id: str
     thread_id: str
     from_address: str
-    from_name: Optional[str] = None
-    to_addresses: List[str]
+    from_name: str | None = None
+    to_addresses: list[str]
     subject: str
     body_preview: str
     delivery_state: str
-    sent_at: Optional[datetime] = None
-    received_at: Optional[datetime] = None
+    sent_at: datetime | None = None
+    received_at: datetime | None = None
     has_attachments: bool
     phi_warning: bool
-
 
 class EmailThreadResponse(BaseModel):
     id: str
@@ -55,39 +50,36 @@ class EmailThreadResponse(BaseModel):
     subject: str
     state: EmailThreadState
     priority: str
-    assignee_id: Optional[str] = None
-    assignee_name: Optional[str] = None
+    assignee_id: str | None = None
+    assignee_name: str | None = None
     participant_count: int
     message_count: int
     last_message_at: datetime
-    snoozed_until: Optional[datetime] = None
-    messages: List[EmailMessageResponse] = []
-    ai_suggestion: Optional[GravityAIRunPayload] = None
-    tags: List[str] = []
+    snoozed_until: datetime | None = None
+    messages: list[EmailMessageResponse] = []
+    ai_suggestion: GravityAIRunPayload | None = None
+    tags: list[str] = []
     phi_warning: bool = False
     created_at: datetime
     updated_at: datetime
-
 
 class EmailThreadListItemResponse(BaseModel):
     id: str
     subject: str
     state: EmailThreadState
     priority: str
-    assignee_name: Optional[str] = None
+    assignee_name: str | None = None
     message_count: int
     last_message_at: datetime
     has_ai_suggestion: bool
     phi_warning: bool
 
-
 class SendEmailRequest(BaseModel):
-    thread_id: Optional[str] = None
-    to_addresses: List[str]
+    thread_id: str | None = None
+    to_addresses: list[str]
     subject: str
     body_html: str
-    reply_to_message_id: Optional[str] = None
-
+    reply_to_message_id: str | None = None
 
 class SMSMessageResponse(BaseModel):
     id: str
@@ -98,50 +90,45 @@ class SMSMessageResponse(BaseModel):
     sent_at: datetime
     phi_warning: bool
 
-
 class SMSThreadResponse(BaseModel):
     id: str
     tenant_id: str
     phone_number: str
-    contact_name: Optional[str] = None
+    contact_name: str | None = None
     state: SMSThreadState
     message_count: int
     last_message_at: datetime
-    messages: List[SMSMessageResponse] = []
-    patient_id: Optional[str] = None
-    patient_name: Optional[str] = None
+    messages: list[SMSMessageResponse] = []
+    patient_id: str | None = None
+    patient_name: str | None = None
     opt_in_status: str
     created_at: datetime
     updated_at: datetime
 
-
 class SendSMSRequest(BaseModel):
-    thread_id: Optional[str] = None
+    thread_id: str | None = None
     phone_number: str
     body: str
-
 
 class PhoneCallResponse(BaseModel):
     id: str
     tenant_id: str
     phone_number: str
-    contact_name: Optional[str] = None
+    contact_name: str | None = None
     direction: str
     state: CallState
-    disposition: Optional[str] = None
-    duration_seconds: Optional[int] = None
-    patient_id: Optional[str] = None
-    patient_name: Optional[str] = None
-    notes: Optional[str] = None
+    disposition: str | None = None
+    duration_seconds: int | None = None
+    patient_id: str | None = None
+    patient_name: str | None = None
+    notes: str | None = None
     started_at: datetime
-    ended_at: Optional[datetime] = None
+    ended_at: datetime | None = None
     created_at: datetime
-
 
 class DispositionCallRequest(BaseModel):
     disposition: str
-    notes: Optional[str] = None
-
+    notes: str | None = None
 
 class CommunicationActionResponse(BaseModel):
     audit_event_id: str

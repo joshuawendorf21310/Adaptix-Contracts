@@ -4,22 +4,19 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+
 from uuid import UUID
 
 from pydantic import BaseModel, Field
-
 
 # ---------------------------------------------------------------------------
 # Enumerations
 # ---------------------------------------------------------------------------
 
-
 class ScheduleStatus(str, Enum):
     DRAFT = "draft"
     PUBLISHED = "published"
     ARCHIVED = "archived"
-
 
 class ShiftStatus(str, Enum):
     OPEN = "open"
@@ -27,12 +24,10 @@ class ShiftStatus(str, Enum):
     CANCELLED = "cancelled"
     COMPLETED = "completed"
 
-
 class AssignmentStatus(str, Enum):
     PENDING = "pending"
     CONFIRMED = "confirmed"
     CANCELLED = "cancelled"
-
 
 class TimeOffStatus(str, Enum):
     PENDING = "pending"
@@ -40,13 +35,11 @@ class TimeOffStatus(str, Enum):
     DENIED = "denied"
     CANCELLED = "cancelled"
 
-
 class OvertimeStatus(str, Enum):
     OFFERED = "offered"
     ACCEPTED = "accepted"
     DECLINED = "declined"
     EXPIRED = "expired"
-
 
 class SwapStatus(str, Enum):
     REQUESTED = "requested"
@@ -54,13 +47,11 @@ class SwapStatus(str, Enum):
     DENIED = "denied"
     CANCELLED = "cancelled"
 
-
 class HoldoverStatus(str, Enum):
     PENDING = "pending"
     APPROVED = "approved"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
-
 
 class RiskLevel(str, Enum):
     LOW = "low"
@@ -68,27 +59,24 @@ class RiskLevel(str, Enum):
     HIGH = "high"
     CRITICAL = "critical"
 
-
 # ---------------------------------------------------------------------------
 # Core Scheduling Models
 # ---------------------------------------------------------------------------
-
 
 class Schedule(BaseModel):
     id: UUID
     tenant_id: UUID
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     agency_type: str  # ems, fire, law_enforcement, dispatch, corrections
     status: ScheduleStatus = ScheduleStatus.DRAFT
     start_date: datetime
     end_date: datetime
     created_by: UUID
-    updated_by: Optional[UUID] = None
+    updated_by: UUID | None = None
     created_at: datetime
     updated_at: datetime
-    correlation_id: Optional[str] = None
-
+    correlation_id: str | None = None
 
 class ShiftTemplate(BaseModel):
     id: UUID
@@ -99,22 +87,21 @@ class ShiftTemplate(BaseModel):
     start_time: str  # HH:MM
     end_time: str  # HH:MM
     duration_hours: float
-    recurrence_rule: Optional[str] = None  # iCal RRULE
+    recurrence_rule: str | None = None  # iCal RRULE
     minimum_staff: int = 1
-    required_ranks: List[str] = Field(default_factory=list)
-    required_specialties: List[str] = Field(default_factory=list)
-    station_id: Optional[UUID] = None
-    beat_id: Optional[UUID] = None
-    zone_id: Optional[UUID] = None
+    required_ranks: list[str] = Field(default_factory=list)
+    required_specialties: list[str] = Field(default_factory=list)
+    station_id: UUID | None = None
+    beat_id: UUID | None = None
+    zone_id: UUID | None = None
     created_by: UUID
     created_at: datetime
     updated_at: datetime
 
-
 class ShiftInstance(BaseModel):
     id: UUID
     tenant_id: UUID
-    template_id: Optional[UUID] = None
+    template_id: UUID | None = None
     schedule_id: UUID
     agency_type: str
     shift_date: datetime
@@ -122,17 +109,16 @@ class ShiftInstance(BaseModel):
     end_time: datetime
     status: ShiftStatus = ShiftStatus.OPEN
     minimum_staff: int = 1
-    station_id: Optional[UUID] = None
-    beat_id: Optional[UUID] = None
-    zone_id: Optional[UUID] = None
-    notes: Optional[str] = None
+    station_id: UUID | None = None
+    beat_id: UUID | None = None
+    zone_id: UUID | None = None
+    notes: str | None = None
     created_by: UUID
-    updated_by: Optional[UUID] = None
+    updated_by: UUID | None = None
     created_at: datetime
     updated_at: datetime
-    correlation_id: Optional[str] = None
-    audit_event_id: Optional[UUID] = None
-
+    correlation_id: str | None = None
+    audit_event_id: UUID | None = None
 
 class ShiftAssignment(BaseModel):
     id: UUID
@@ -140,17 +126,16 @@ class ShiftAssignment(BaseModel):
     shift_id: UUID
     person_id: UUID
     person_name: str
-    rank: Optional[str] = None
-    specialty: Optional[str] = None
+    rank: str | None = None
+    specialty: str | None = None
     status: AssignmentStatus = AssignmentStatus.CONFIRMED
     assigned_by: UUID
     assigned_at: datetime
-    unassigned_by: Optional[UUID] = None
-    unassigned_at: Optional[datetime] = None
+    unassigned_by: UUID | None = None
+    unassigned_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class AvailabilityWindow(BaseModel):
     id: UUID
@@ -159,11 +144,10 @@ class AvailabilityWindow(BaseModel):
     start_time: datetime
     end_time: datetime
     available: bool = True
-    reason: Optional[str] = None
+    reason: str | None = None
     created_by: UUID
     created_at: datetime
     updated_at: datetime
-
 
 class TimeOffRequest(BaseModel):
     id: UUID
@@ -171,16 +155,15 @@ class TimeOffRequest(BaseModel):
     person_id: UUID
     start_date: datetime
     end_date: datetime
-    reason: Optional[str] = None
+    reason: str | None = None
     status: TimeOffStatus = TimeOffStatus.PENDING
-    reviewed_by: Optional[UUID] = None
-    reviewed_at: Optional[datetime] = None
-    denial_reason: Optional[str] = None
+    reviewed_by: UUID | None = None
+    reviewed_at: datetime | None = None
+    denial_reason: str | None = None
     created_by: UUID
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class OvertimeOffer(BaseModel):
     id: UUID
@@ -190,14 +173,13 @@ class OvertimeOffer(BaseModel):
     offered_by: UUID
     status: OvertimeStatus = OvertimeStatus.OFFERED
     offered_at: datetime
-    expires_at: Optional[datetime] = None
-    accepted_at: Optional[datetime] = None
-    declined_at: Optional[datetime] = None
-    notes: Optional[str] = None
+    expires_at: datetime | None = None
+    accepted_at: datetime | None = None
+    declined_at: datetime | None = None
+    notes: str | None = None
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class OvertimeAcceptance(BaseModel):
     id: UUID
@@ -205,8 +187,7 @@ class OvertimeAcceptance(BaseModel):
     offer_id: UUID
     person_id: UUID
     accepted_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class ShiftSwapRequest(BaseModel):
     id: UUID
@@ -217,13 +198,12 @@ class ShiftSwapRequest(BaseModel):
     target_shift_id: UUID
     status: SwapStatus = SwapStatus.REQUESTED
     requested_at: datetime
-    reviewed_by: Optional[UUID] = None
-    reviewed_at: Optional[datetime] = None
-    denial_reason: Optional[str] = None
+    reviewed_by: UUID | None = None
+    reviewed_at: datetime | None = None
+    denial_reason: str | None = None
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class HoldoverOrder(BaseModel):
     id: UUID
@@ -234,15 +214,14 @@ class HoldoverOrder(BaseModel):
     status: HoldoverStatus = HoldoverStatus.PENDING
     ordered_by: UUID
     ordered_at: datetime
-    approved_by: Optional[UUID] = None
-    approved_at: Optional[datetime] = None
+    approved_by: UUID | None = None
+    approved_at: datetime | None = None
     duration_hours: float = 4.0
     ai_recommended: bool = False
     human_review_required: bool = True
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class StaffingRule(BaseModel):
     id: UUID
@@ -250,27 +229,25 @@ class StaffingRule(BaseModel):
     agency_type: str
     rule_type: str
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     parameters: dict = Field(default_factory=dict)
     active: bool = True
     created_by: UUID
     created_at: datetime
     updated_at: datetime
 
-
 class MinimumStaffingRule(BaseModel):
     id: UUID
     tenant_id: UUID
     agency_type: str
-    station_id: Optional[UUID] = None
-    shift_type: Optional[str] = None
+    station_id: UUID | None = None
+    shift_type: str | None = None
     minimum_count: int
-    rank_requirements: List[str] = Field(default_factory=list)
+    rank_requirements: list[str] = Field(default_factory=list)
     active: bool = True
     created_by: UUID
     created_at: datetime
     updated_at: datetime
-
 
 class RankCoverageRule(BaseModel):
     id: UUID
@@ -283,19 +260,17 @@ class RankCoverageRule(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-
 class BeatCoverageRule(BaseModel):
     id: UUID
     tenant_id: UUID
     beat_id: UUID
     beat_name: str
     minimum_officers: int
-    required_rank: Optional[str] = None
+    required_rank: str | None = None
     active: bool = True
     created_by: UUID
     created_at: datetime
     updated_at: datetime
-
 
 class ZoneCoverageRule(BaseModel):
     id: UUID
@@ -309,7 +284,6 @@ class ZoneCoverageRule(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-
 class UnionRule(BaseModel):
     id: UUID
     tenant_id: UUID
@@ -322,7 +296,6 @@ class UnionRule(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-
 class SeniorityRule(BaseModel):
     id: UUID
     tenant_id: UUID
@@ -334,21 +307,19 @@ class SeniorityRule(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-
 class CourtAppearance(BaseModel):
     id: UUID
     tenant_id: UUID
     person_id: UUID
     court_date: datetime
     court_time: str
-    case_number: Optional[str] = None
-    location: Optional[str] = None
-    shift_id: Optional[UUID] = None
+    case_number: str | None = None
+    location: str | None = None
+    shift_id: UUID | None = None
     conflict_detected: bool = False
     created_by: UUID
     created_at: datetime
     updated_at: datetime
-
 
 class TrainingAssignment(BaseModel):
     id: UUID
@@ -358,29 +329,27 @@ class TrainingAssignment(BaseModel):
     start_time: datetime
     end_time: datetime
     mandatory: bool = False
-    shift_id: Optional[UUID] = None
+    shift_id: UUID | None = None
     conflict_detected: bool = False
     created_by: UUID
     created_at: datetime
     updated_at: datetime
 
-
 class SpecialEvent(BaseModel):
     id: UUID
     tenant_id: UUID
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     event_date: datetime
     start_time: datetime
     end_time: datetime
-    location: Optional[str] = None
+    location: str | None = None
     multi_agency: bool = False
-    agencies_involved: List[str] = Field(default_factory=list)
+    agencies_involved: list[str] = Field(default_factory=list)
     status: str = "planned"
     created_by: UUID
     created_at: datetime
     updated_at: datetime
-
 
 class SpecialDetail(BaseModel):
     id: UUID
@@ -389,48 +358,44 @@ class SpecialDetail(BaseModel):
     person_id: UUID
     agency_type: str
     role: str
-    shift_id: Optional[UUID] = None
+    shift_id: UUID | None = None
     assigned_by: UUID
     assigned_at: datetime
     created_at: datetime
     updated_at: datetime
-
 
 class PatrolBeat(BaseModel):
     id: UUID
     tenant_id: UUID
     name: str
     code: str
-    district_id: Optional[UUID] = None
-    zone_id: Optional[UUID] = None
-    description: Optional[str] = None
+    district_id: UUID | None = None
+    zone_id: UUID | None = None
+    description: str | None = None
     active: bool = True
     created_at: datetime
     updated_at: datetime
-
 
 class PatrolZone(BaseModel):
     id: UUID
     tenant_id: UUID
     name: str
     code: str
-    district_id: Optional[UUID] = None
-    description: Optional[str] = None
+    district_id: UUID | None = None
+    description: str | None = None
     active: bool = True
     created_at: datetime
     updated_at: datetime
-
 
 class Squad(BaseModel):
     id: UUID
     tenant_id: UUID
     name: str
     agency_type: str
-    supervisor_id: Optional[UUID] = None
+    supervisor_id: UUID | None = None
     active: bool = True
     created_at: datetime
     updated_at: datetime
-
 
 class Station(BaseModel):
     id: UUID
@@ -438,11 +403,10 @@ class Station(BaseModel):
     name: str
     code: str
     agency_type: str
-    address: Optional[str] = None
+    address: str | None = None
     active: bool = True
     created_at: datetime
     updated_at: datetime
-
 
 class Apparatus(BaseModel):
     id: UUID
@@ -455,7 +419,6 @@ class Apparatus(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-
 class VehicleAssignment(BaseModel):
     id: UUID
     tenant_id: UUID
@@ -467,8 +430,7 @@ class VehicleAssignment(BaseModel):
     assigned_at: datetime
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class EquipmentAssignment(BaseModel):
     id: UUID
@@ -481,40 +443,38 @@ class EquipmentAssignment(BaseModel):
     assigned_at: datetime
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class ScheduleAuditEvent(BaseModel):
     id: UUID
     tenant_id: UUID
     event_type: str
     actor_id: UUID
-    actor_name: Optional[str] = None
+    actor_name: str | None = None
     record_id: UUID
     record_type: str
-    schedule_id: Optional[UUID] = None
-    shift_id: Optional[UUID] = None
-    before_state: Optional[dict] = None
-    after_state: Optional[dict] = None
+    schedule_id: UUID | None = None
+    shift_id: UUID | None = None
+    before_state: dict | None = None
+    after_state: dict | None = None
     metadata: dict = Field(default_factory=dict)
     created_at: datetime
-    correlation_id: Optional[str] = None
-
+    correlation_id: str | None = None
 
 class ScheduleAIAssessment(BaseModel):
     id: UUID
     tenant_id: UUID
     capability_key: str
     actor_id: UUID
-    schedule_id: Optional[UUID] = None
-    shift_id: Optional[UUID] = None
+    schedule_id: UUID | None = None
+    shift_id: UUID | None = None
     assessment_type: str
-    findings: List[dict] = Field(default_factory=list)
-    recommended_actions: List[str] = Field(default_factory=list)
-    blocking_issues: List[str] = Field(default_factory=list)
+    findings: list[dict] = Field(default_factory=list)
+    recommended_actions: list[str] = Field(default_factory=list)
+    blocking_issues: list[str] = Field(default_factory=list)
     human_review_required: bool = True
-    policy_references: List[str] = Field(default_factory=list)
+    policy_references: list[str] = Field(default_factory=list)
     confidence: float = 0.0
     risk_level: RiskLevel = RiskLevel.LOW
     created_at: datetime
-    audit_event_id: Optional[UUID] = None
+    audit_event_id: UUID | None = None

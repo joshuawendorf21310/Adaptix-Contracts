@@ -4,11 +4,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 import uuid
 
 from .capabilities import AIRiskLevel, AISourceField
-
 
 class SmartTextModule(str, Enum):
     CAD = "cad"
@@ -24,7 +23,6 @@ class SmartTextModule(str, Enum):
     COMMUNICATIONS = "communications"
     DOCUMENTS = "documents"
     FOUNDER = "founder"
-
 
 class SmartTextCapability(str, Enum):
     # CAD
@@ -68,7 +66,6 @@ class SmartTextCapability(str, Enum):
     # Founder
     FOUNDER_PLATFORM_READINESS = "founder.platform_readiness_summary"
 
-
 @dataclass
 class SmartTextRequest:
     """Request for smart text generation."""
@@ -78,12 +75,11 @@ class SmartTextRequest:
     module: SmartTextModule
     capability: SmartTextCapability
     source_record_id: str
-    source_fields: List[AISourceField]
+    source_fields: list[AISourceField]
     prompt_policy_version: str = "1.0"
     correlation_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    causation_id: Optional[str] = None
-    context: Dict[str, Any] = field(default_factory=dict)
-
+    causation_id: str | None = None
+    context: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class SmartTextResponse:
@@ -95,15 +91,15 @@ class SmartTextResponse:
     capability: SmartTextCapability
     source_record_id: str
     # draft_text is returned to caller but NEVER logged
-    draft_text: Optional[str]
+    draft_text: str | None
     human_review_required: bool
     risk_level: AIRiskLevel
-    missing_fields: List[str]
-    warnings: List[str]
+    missing_fields: list[str]
+    warnings: list[str]
     audit_event_id: str
     correlation_id: str
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    error: Optional[str] = None
+    error: str | None = None
     provider_status: str = "unknown"
     # Hard rules
     ai_signed: bool = False
@@ -112,7 +108,6 @@ class SmartTextResponse:
     def __post_init__(self):
         self.ai_signed = False
         self.ai_marked_complete = False
-
 
 @dataclass
 class SmartTextAuditEntry:
@@ -130,12 +125,12 @@ class SmartTextAuditEntry:
     human_review_required: bool
     created_at: datetime
     correlation_id: str
-    causation_id: Optional[str] = None
-    error: Optional[str] = None
+    causation_id: str | None = None
+    error: str | None = None
     # Lifecycle tracking
-    accepted: Optional[bool] = None
+    accepted: bool | None = None
     edited: bool = False
     rejected: bool = False
     regenerated: bool = False
-    human_reviewer_id: Optional[str] = None
-    human_reviewed_at: Optional[datetime] = None
+    human_reviewer_id: str | None = None
+    human_reviewed_at: datetime | None = None

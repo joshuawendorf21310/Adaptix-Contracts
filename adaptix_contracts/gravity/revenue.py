@@ -6,9 +6,8 @@ ADAPTIX_PLATFORM_GRAVITY_COMPLETION_LOCK
 from __future__ import annotations
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
-from pydantic import BaseModel
 
+from pydantic import BaseModel
 
 class PaymentFailureState(str, Enum):
     OPEN = "open"
@@ -16,13 +15,11 @@ class PaymentFailureState(str, Enum):
     RESOLVED = "resolved"
     WRITTEN_OFF = "written_off"
 
-
 class ChurnRisk(str, Enum):
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
-
 
 class RevenueOverviewResponse(BaseModel):
     mrr: int  # cents
@@ -40,7 +37,6 @@ class RevenueOverviewResponse(BaseModel):
     payment_failure_count: int
     generated_at: datetime
 
-
 class PaymentFailureResponse(BaseModel):
     id: str
     tenant_id: str
@@ -52,21 +48,19 @@ class PaymentFailureResponse(BaseModel):
     failure_reason: str
     state: PaymentFailureState
     attempt_count: int
-    next_retry_at: Optional[datetime] = None
-    resolved_at: Optional[datetime] = None
+    next_retry_at: datetime | None = None
+    resolved_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
-
 
 class ChurnRiskScoreResponse(BaseModel):
     customer_id: str
     customer_name: str
     risk: ChurnRisk
     score: float
-    signals: List[str]
+    signals: list[str]
     mrr_at_risk: int
-    last_activity_at: Optional[datetime] = None
-
+    last_activity_at: datetime | None = None
 
 class RevenueForecastResponse(BaseModel):
     period: str
@@ -76,7 +70,6 @@ class RevenueForecastResponse(BaseModel):
     churn_risk_mrr: int
     expansion_opportunity_mrr: int
     generated_at: datetime
-
 
 class RetryPaymentResponse(BaseModel):
     failure: PaymentFailureResponse

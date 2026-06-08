@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+
 from uuid import UUID
 
 from pydantic import BaseModel, Field
-
 
 class CorrectionsPost(BaseModel):
     id: UUID
@@ -22,7 +21,6 @@ class CorrectionsPost(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-
 class CorrectionsShiftAssignment(BaseModel):
     id: UUID
     tenant_id: UUID
@@ -36,8 +34,7 @@ class CorrectionsShiftAssignment(BaseModel):
     assigned_at: datetime
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class CorrectionsReliefCoverage(BaseModel):
     id: UUID
@@ -52,24 +49,22 @@ class CorrectionsReliefCoverage(BaseModel):
     assigned_by: UUID
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class CorrectionsTransportStaffing(BaseModel):
     id: UUID
     tenant_id: UUID
     shift_id: UUID
     transport_id: UUID
-    officer_ids: List[UUID] = Field(default_factory=list)
+    officer_ids: list[UUID] = Field(default_factory=list)
     destination: str
     transport_type: str  # court, medical, transfer
     departure_time: datetime
-    return_time: Optional[datetime] = None
+    return_time: datetime | None = None
     assigned_by: UUID
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class CorrectionsPostCoverageRule(BaseModel):
     id: UUID

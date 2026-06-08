@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+
 from uuid import UUID
 
 from pydantic import BaseModel, Field
-
 
 class FireStationAssignment(BaseModel):
     id: UUID
@@ -21,8 +20,7 @@ class FireStationAssignment(BaseModel):
     assigned_at: datetime
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class ApparatusAssignment(BaseModel):
     id: UUID
@@ -32,23 +30,22 @@ class ApparatusAssignment(BaseModel):
     apparatus_unit: str
     apparatus_type: str  # engine, ladder, medic, rescue, tanker
     station_id: UUID
-    crew: List[UUID] = Field(default_factory=list)
-    driver_id: Optional[UUID] = None
-    officer_id: Optional[UUID] = None
+    crew: list[UUID] = Field(default_factory=list)
+    driver_id: UUID | None = None
+    officer_id: UUID | None = None
     minimum_crew: int = 3
     assigned_by: UUID
     assigned_at: datetime
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class FireMinimumStaffingRule(BaseModel):
     id: UUID
     tenant_id: UUID
     station_id: UUID
-    apparatus_id: Optional[UUID] = None
-    apparatus_type: Optional[str] = None
+    apparatus_id: UUID | None = None
+    apparatus_type: str | None = None
     minimum_crew: int
     required_officer: bool = True
     required_driver: bool = True
@@ -57,7 +54,6 @@ class FireMinimumStaffingRule(BaseModel):
     created_by: UUID
     created_at: datetime
     updated_at: datetime
-
 
 class FireRoleCoverageRule(BaseModel):
     id: UUID
@@ -70,7 +66,6 @@ class FireRoleCoverageRule(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-
 class FireSpecialtyCoverage(BaseModel):
     id: UUID
     tenant_id: UUID
@@ -82,19 +77,17 @@ class FireSpecialtyCoverage(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-
 class VolunteerAvailability(BaseModel):
     id: UUID
     tenant_id: UUID
     person_id: UUID
-    station_id: Optional[UUID] = None
+    station_id: UUID | None = None
     available_from: datetime
     available_to: datetime
     available: bool = True
-    notes: Optional[str] = None
+    notes: str | None = None
     created_at: datetime
     updated_at: datetime
-
 
 class CallbackRoster(BaseModel):
     id: UUID
@@ -102,29 +95,28 @@ class CallbackRoster(BaseModel):
     station_id: UUID
     shift_id: UUID
     shortage_reason: str
-    callback_candidates: List[UUID] = Field(default_factory=list)
-    notified_at: Optional[datetime] = None
+    callback_candidates: list[UUID] = Field(default_factory=list)
+    notified_at: datetime | None = None
     filled: bool = False
-    filled_by: Optional[UUID] = None
-    filled_at: Optional[datetime] = None
+    filled_by: UUID | None = None
+    filled_at: datetime | None = None
     created_by: UUID
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
-
+    audit_event_id: UUID | None = None
 
 class MutualAidStaffingRequest(BaseModel):
     id: UUID
     tenant_id: UUID
     requesting_agency_id: UUID
-    providing_agency_id: Optional[UUID] = None
-    event_id: Optional[UUID] = None
-    shift_id: Optional[UUID] = None
-    requested_roles: List[str] = Field(default_factory=list)
+    providing_agency_id: UUID | None = None
+    event_id: UUID | None = None
+    shift_id: UUID | None = None
+    requested_roles: list[str] = Field(default_factory=list)
     requested_count: int
     status: str = "pending"  # pending, accepted, declined, fulfilled
     requested_at: datetime
-    responded_at: Optional[datetime] = None
+    responded_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
-    audit_event_id: Optional[UUID] = None
+    audit_event_id: UUID | None = None

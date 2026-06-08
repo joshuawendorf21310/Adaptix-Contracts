@@ -38,7 +38,8 @@ from __future__ import annotations
 import json as _json
 import logging
 import os
-from typing import Annotated, Callable, Optional
+from typing import Annotated, Optional
+from collections.abc import Callable
 
 import jwt as pyjwt
 from fastapi import Header, HTTPException, Request, status

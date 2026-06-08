@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field
-
 
 class SchedulingEvent(BaseModel):
     """Base scheduling event envelope."""
@@ -17,13 +16,12 @@ class SchedulingEvent(BaseModel):
     actor_id: UUID
     record_id: UUID
     record_type: str
-    schedule_id: Optional[UUID] = None
-    shift_id: Optional[UUID] = None
-    payload: Dict[str, Any] = Field(default_factory=dict)
-    correlation_id: Optional[str] = None
-    audit_event_id: Optional[UUID] = None
+    schedule_id: UUID | None = None
+    shift_id: UUID | None = None
+    payload: dict[str, Any] = Field(default_factory=dict)
+    correlation_id: str | None = None
+    audit_event_id: UUID | None = None
     occurred_at: datetime
-
 
 # ---------------------------------------------------------------------------
 # Shift Events
@@ -74,7 +72,6 @@ SCHEDULE_MDT_AVAILABILITY_UPDATED = "schedule.mdt.availability.updated"
 
 # Audit
 SCHEDULE_AUDIT_EVENT_CREATED = "schedule.audit.event.created"
-
 
 ALL_SCHEDULING_EVENTS = [
     SCHEDULE_SHIFT_CREATED,
